@@ -1,3 +1,6 @@
+> What if intelligence is not about finding the best solution,
+> but about moving between multiple ways of thinking?
+
 # Nomadic Intelligence
 ### A Non-Dogmatic AI Architecture
 
