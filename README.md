@@ -31,6 +31,8 @@ python nomadic_toy_model.py
 > AI should not converge to a single solution.
 > It should move between multiple structures depending on the situation.
 
+---
+
 graph LR
     subgraph "Dogmatic AI (Rigid)"
     A((Fixed Objective)) --> B[Static Strategy]
@@ -46,20 +48,6 @@ graph LR
     F -.-> H
     G -.-> H
     end
-
-sequenceDiagram
-    participant Env as Environment
-    participant Perc as Perception (Delta x)
-    participant Core as Nomadic Core
-    participant Attr as Attractor Pool
-
-    Env->>Perc: Signal (Raw Data)
-    Perc->>Core: Calculate Delta x
-    Note over Core: If Delta x > Threshold:<br/>Separatrix Collapse!
-    Core->>Attr: Select New Attractor
-    Attr-->>Core: Update Transformation Law
-    Core->>Env: Action (Resonance)
-    Note over Core: Track Strategic Dwell Time (tau_k)
 
 ---
 
