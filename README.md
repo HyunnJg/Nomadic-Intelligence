@@ -31,8 +31,7 @@ python nomadic_toy_model.py
 > AI should not converge to a single solution.
 > It should move between multiple structures depending on the situation.
 
----
-
+```mermaid
 graph LR
     subgraph "Dogmatic AI (Rigid)"
     A((Fixed Objective)) --> B[Static Strategy]
