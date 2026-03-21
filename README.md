@@ -133,6 +133,37 @@ while True:
     action = attractor.act(context)
     update_system(delta)
 ```
+---
+
+## 🚀 Quick Start: The Cosmic Dance in Action
+
+Want to see Nomadic Intelligence in practice? We have provided a minimal, zero-dependency Python toy model that demonstrates the core philosophy. 
+
+In this simulation, the environment experiences a sudden paradigm shift ($\Delta x$ surges). 
+- The **Dogmatic Agent** stubbornly sticks to its fixed optimal strategy and is eventually destroyed.
+- The **Nomadic Agent** detects the anomaly, collapses its current separatrix, and smoothly shifts to a new topological attractor (survival mode) to endure.
+
+### Run the Toy Model
+Simply download and run the script. No external libraries required!
+
+```bash
+git clone [https://github.com/HyunnJg/Nomadic-Intelligence.git](https://github.com/HyunnJg/Nomadic-Intelligence.git)
+cd Nomadic-Intelligence
+python nomadic_toy_model.py
+--- Day 3 ---
+🤖 Dogmatic Agent : Harvesting smoothly... (Health: 130)
+🌌 Nomadic Agent  : Harvesting smoothly... [Current Attractor: Stable Harvesting] (Health: 130)
+
+------------------------------------------------------------
+⚠️ [PARADIGM SHIFT] The rules of the universe have changed! (Delta x surges)
+------------------------------------------------------------
+--- Day 4 ---
+🤖 Dogmatic Agent : Refusing to adapt! Critical damage! (Health: 100)
+🌌 Nomadic Agent  : Adapted! Defending... [Current Attractor: Defensive Survival] (Health: 128)
+
+...
+💀 The Dogmatic Agent has been destroyed by its own rigidity.
+✨ The Nomadic Agent survived by continuously destroying and recreating its structure.
 
 ---
 
