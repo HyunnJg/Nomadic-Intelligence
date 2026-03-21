@@ -20,6 +20,7 @@ We have provided a minimal, zero-dependency Python toy model that demonstrates o
 **Try it yourself:**
 ```bash
 git clone https://github.com/HyunnJg/Nomadic-Intelligence.git
+cd Nomadic-Intelligence
 python nomadic_toy_model.py
 ```
 
