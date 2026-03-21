@@ -1,6 +1,5 @@
 > What if intelligence is not about finding the best solution,
 > but about moving between multiple ways of thinking?
-This is not a completed AI library, but a **'Conceptual Framework & Manifesto'** for a new AI architecture.
 
 # Nomadic Intelligence
 ### A Non-Dogmatic AI Architecture

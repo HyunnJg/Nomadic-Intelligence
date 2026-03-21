@@ -35,9 +35,18 @@ $$R_{sync}(t) = \frac{1}{1 + \epsilon_t}$$
 Penalizes the system for staying in a fixed state/attractor for too long (structural rigidity).
 $$P_{dogma}(t) = \int_{t-\tau}^{t} \exp\left(-\left\| \frac{d\mathcal{I}}{dt} \right\|\right) dt$$
 
-### 3. Nomadic Traversal Bonus ($R_{nomad}$)
-Rewards high-entropy trajectories that transition between different strange attractors ($\mathcal{A}_i \to \mathcal{A}_j$).
-$$R_{nomad}(t) = \mathcal{H}(\text{trajectory}) \cdot \mathbb{I}(\text{Transition})$$
+### 3. Nomadic Traversal Bonus ($R_{\text{nomad}}$)
+
+Rewards high-entropy trajectories that successfully transition between different strange attractors ($\mathcal{A}_i \to \mathcal{A}_j$).
+
+$$R_{\text{nomad}}(t) = \mathcal{H}(\text{trajectory}) \cdot \mathbb{I}_{\text{transition}}$$
+
+#### **Variables:**
+| Symbol | Definition | Description |
+| :--- | :--- | :--- |
+| $\mathcal{H}(\text{traj})$ | **Trajectory Entropy** | Measures the non-repetitive, fractal-like complexity of the path. |
+| $\mathbb{I}_{\text{transition}}$ | **Indicator Function** | Returns $1$ if a state transition between different attractors is detected, else $0$. |
+| $R_{\text{nomad}}(t)$ | **Nomadic Bonus** | The final reward for exploring new cognitive structures without losing coherence. |
 
 ---
 
