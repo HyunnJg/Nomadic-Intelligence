@@ -31,6 +31,36 @@ python nomadic_toy_model.py
 > AI should not converge to a single solution.
 > It should move between multiple structures depending on the situation.
 
+graph LR
+    subgraph "Dogmatic AI (Rigid)"
+    A((Fixed Objective)) --> B[Static Strategy]
+    B --> C{Delta x Surge!}
+    C -->|Failure| D[Structural Collapse]
+    end
+
+    subgraph "Nomadic Intelligence (Fluid)"
+    E((Attractor A)) -- Delta x --> F((Attractor B))
+    F -- Delta x --> G((Attractor C))
+    G -- "tau_k check" --> E
+    E -.-> H[Homeomorphic Identity]
+    F -.-> H
+    G -.-> H
+    end
+
+sequenceDiagram
+    participant Env as Environment
+    participant Perc as Perception (Delta x)
+    participant Core as Nomadic Core
+    participant Attr as Attractor Pool
+
+    Env->>Perc: Signal (Raw Data)
+    Perc->>Core: Calculate Delta x
+    Note over Core: If Delta x > Threshold:<br/>Separatrix Collapse!
+    Core->>Attr: Select New Attractor
+    Attr-->>Core: Update Transformation Law
+    Core->>Env: Action (Resonance)
+    Note over Core: Track Strategic Dwell Time (tau_k)
+
 ---
 
 ## ⚠️ The Problem
