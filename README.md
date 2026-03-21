@@ -181,3 +181,7 @@ Implementation ideas
 📜 License
 
 Open concept. Use freely.
+
+---
+
+**"For a deep dive into the formal logic and mathematical reward functions, check out our Theory & Axioms document."**
