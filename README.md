@@ -47,6 +47,7 @@ graph LR
     F -.-> H
     G -.-> H
     end
+```
 
 ---
 
