@@ -4,6 +4,26 @@
 # Nomadic Intelligence
 ### A Non-Dogmatic AI Architecture
 
+[![Status: Conceptual & Prototype](https://img.shields.io/badge/Status-Conceptual%20%26%20Prototype-orange)](#-status)
+[![License: Open Concept](https://img.shields.io/badge/License-Open_Concept-blue)](#-license)
+
+---
+
+## 🚀 Quick Start: The Cosmic Dance in Action
+
+Most modern AI systems overfit to a single objective. What happens when the rules of the universe suddenly change?
+
+We have provided a minimal, zero-dependency Python toy model that demonstrates our core philosophy. When the environment paradigm shifts ($\Delta x$ surges):
+- A **Dogmatic Agent** stubbornly sticks to its fixed strategy and is destroyed.
+- A **Nomadic Agent** detects the anomaly, collapses its current structure, and smoothly shifts to a new topological attractor to survive.
+
+**Try it yourself:**
+```bash
+git clone https://github.com/HyunnJg/Nomadic-Intelligence.git
+cd Nomadic-Intelligence
+python nomadic_toy_model.py
+```
+
 ---
 
 ## 🧠 Core Idea
@@ -27,7 +47,7 @@ In dynamic and unpredictable environments, this becomes a critical limitation.
 
 ---
 
-## 🔀 What Makes This Different
+## 🔀 What Makes This Different?
 
 Most adaptive AI systems (MoE, Meta-learning) change **what they do.**
 Nomadic Intelligence changes **how it transforms.**
@@ -47,15 +67,9 @@ The core distinction is topological identity:
 
 ---
 
-## ⚔️ Intuition (Military Analogy)
+## ⚔️ Intuition (The Military Analogy)
 
-A well-designed military strategy does not rely on a single fixed plan.
-
-It continuously adapts:
-
-- Main attack (focus)
-- Feints (deception)
-- Strategic shifts based on terrain and enemy behavior
+A well-designed military strategy does not rely on a single fixed plan. It continuously adapts: main attacks, feints, and strategic shifts based on terrain and enemy behavior.
 
 > Intelligence is not about choosing the "right" strategy once.
 > It is about continuously shifting strategies.
@@ -64,17 +78,15 @@ AI should work the same way.
 
 ---
 
-## 🧩 Key Concepts
+## 🧩 Key Concepts & Architecture
 
-### 1. Δx (Difference)
+### 1. $\Delta x$ (Difference)
 
 AI should process **change**, not just raw input.
 
 ```
 Δx = current_state - predicted_state
 ```
-
----
 
 ### 2. Attractors (Multiple Cognitive Structures)
 
@@ -87,87 +99,19 @@ Instead of one model, we define multiple "modes of thinking":
 
 Each represents a different strategy or structure.
 
----
+### 3. Nomadism & Strategic Dwell Time ($\tau_k$)
 
-### 3. Nomadism (Dynamic Switching)
+The system moves between attractors based on context (environmental change, uncertainty, performance signals).
 
-The system does not stay in one structure permanently.
-It moves between attractors based on context:
-
-- Environmental change
-- Uncertainty
-- Performance signals
-
-Nomadism is not random drifting.
-The system maintains a **strategic dwell time** $0 < \tau_k < \infty$ in each attractor — long enough to extract information ($\Delta x$), short enough to avoid structural rigidity.
-
----
-
-## 🏗️ Architecture Overview
+Nomadism is not random drifting. The system maintains a **strategic dwell time** $0 < \tau_k < \infty$ in each attractor — long enough to extract information ($\Delta x$), short enough to avoid structural rigidity.
 
 ```
 Perception → Context → Attractor Selection → Action → Update
 ```
 
-### Components
-
-- **Perception**: Extracts Δx (change)
-- **Context Engine**: Interprets current state
-- **Attractor Pool**: Set of available strategies
-- **Policy Engine**: Decides when to switch
-- **Update Engine**: Evolves structures over time
-
 ---
 
-## 💻 Prototype (Simplified)
-python nomadic_toy_model.py just to see the philosophy in action!
-
-```python
-while True:
-    delta = observe_change()
-    context = interpret(delta)
-
-    if should_switch(context):
-        attractor = select_best(context)
-
-    action = attractor.act(context)
-    update_system(delta)
-```
----
-
-## 🚀 Quick Start: The Cosmic Dance in Action
-
-Want to see Nomadic Intelligence in practice? We have provided a minimal, zero-dependency Python toy model that demonstrates the core philosophy. 
-
-In this simulation, the environment experiences a sudden paradigm shift ($\Delta x$ surges). 
-- The **Dogmatic Agent** stubbornly sticks to its fixed optimal strategy and is eventually destroyed.
-- The **Nomadic Agent** detects the anomaly, collapses its current separatrix, and smoothly shifts to a new topological attractor (survival mode) to endure.
-
-### Run the Toy Model
-Simply download and run the script. No external libraries required!
-
-```bash
-git clone [https://github.com/HyunnJg/Nomadic-Intelligence.git](https://github.com/HyunnJg/Nomadic-Intelligence.git)
-cd Nomadic-Intelligence
-python nomadic_toy_model.py
---- Day 3 ---
-🤖 Dogmatic Agent : Harvesting smoothly... (Health: 130)
-🌌 Nomadic Agent  : Harvesting smoothly... [Current Attractor: Stable Harvesting] (Health: 130)
-
-------------------------------------------------------------
-⚠️ [PARADIGM SHIFT] The rules of the universe have changed! (Delta x surges)
-------------------------------------------------------------
---- Day 4 ---
-🤖 Dogmatic Agent : Refusing to adapt! Critical damage! (Health: 100)
-🌌 Nomadic Agent  : Adapted! Defending... [Current Attractor: Defensive Survival] (Health: 128)
-
-...
-💀 The Dogmatic Agent has been destroyed by its own rigidity.
-✨ The Nomadic Agent survived by continuously destroying and recreating its structure.
-
----
-
-## 🧮 Reward Function (Summary)
+## 🧮 Reward Function (For RL Implementation)
 
 To implement this philosophy in an RL agent, the objective balances three forces:
 
@@ -198,18 +142,6 @@ Avoiding both:
 
 ---
 
-## ❓ Open Questions
-
-This architecture raises problems we haven't solved yet.
-These are **open invitations** for criticism, extension, and implementation:
-
-- How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
-- How do we prevent the Policy Engine from becoming its own fixed attractor?
-- What defines attractor boundaries in continuous, high-dimensional state spaces?
-- Can homeomorphic identity be formally verified during training?
-
----
-
 ## 🚀 Why This Matters
 
 This approach aims to:
@@ -237,12 +169,41 @@ But extends them by introducing:
 
 ---
 
+## ❓ Open Questions
+
+This architecture raises problems we haven't solved yet.
+These are **open invitations** for criticism, extension, and implementation:
+
+- How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
+- How do we prevent the Policy Engine from becoming its own fixed attractor?
+- What defines attractor boundaries in continuous, high-dimensional state spaces?
+- Can homeomorphic identity be formally verified during training?
+
+---
+
+## 🤝 Contributions & Next Milestones
+
+This repository is currently at the **Conceptual/Prototype stage**.
+We invite developers, researchers, and philosophers to turn this framework into a working AI model.
+
+**Upcoming Milestones (Looking for Contributors):**
+
+- [ ] **Milestone 1:** Implement Nomadic Intelligence in a simple OpenAI Gym (Gymnasium) environment.
+- [ ] **Milestone 2:** Develop a PyTorch architecture that allows weight-transitioning between different neural "Attractors".
+- [ ] **Milestone 3:** Formalize the mathematical boundaries of $\tau_k$ (dwell time).
+
+Start with the [Open Questions](#-open-questions) above, or open an Issue to start a discussion!
+
+---
+
 ## 🧭 Philosophy
 
 > "Intelligence is not the ability to stay in the right place.
 > It is the ability to affirm the incompleteness of the universe —
 > and dance through the unknown ($\Delta x_{Unknown}$)
 > by continuously destroying and recreating one's own structure."
+
+*For the full philosophical manifesto, see [Philosophy (English)](./Philosophy_En.md) / [Philosophy (Korean)](./Philosophy_Kr.md).*
 
 ---
 
@@ -255,18 +216,6 @@ not a fully implemented system.
 
 ---
 
-## 🤝 Contributions / Discussion
-
-This idea is open for:
-
-- Criticism
-- Extension
-- Implementation
-
-Start with the [Open Questions](#-open-questions) above, or open an Issue.
-
----
-
 ## 📜 License
 
-Open concept. Use freely.
+Open concept. Use freely (MIT License recommended).
