@@ -187,7 +187,7 @@ $$\text{Friston: } \min \ \mathcal{F} = \min \ \text{surprise}(\Delta x)$$
 
 Nomadic Intelligence inverts this entirely.
 
-$$\text{Nomadic: } \max \ \Phi = \max \ \text{Nomadic\_Efficiency}(\Delta x)$$
+$$\text{Nomadic: } \max \ \Phi = \max \ \text{Nomadic Efficiency}(\Delta x)$$
 
 We do not seek to eliminate $\Delta x$. We treat it as **the primary energy source of intelligence** — the raw material without which no transformation, no identity, and no existence is possible. A world with $\Delta x = 0$ is not a successfully adapted world. It is a dead one.
 

@@ -84,7 +84,7 @@ $$F_{t+1} = G(F_t,\ \Delta x_t\ ;\ \theta_t)$$
 The function $F$ itself evolves. The parameters $\theta$ govern how $F$ is updated.
 
 **Level 3 — The Invariant** (never changes)
-$$\theta^* = \arg\max_\theta \ \text{Nomadic\_Efficiency}(\theta)$$
+$$\theta^* = \arg\max_\theta \ \text{Nomadic Efficiency}(\theta)$$
 
 The parameters $\theta$ are continuously optimized — but always toward the same objective: **Nomadic Efficiency**. This objective function is the true invariant of the system.
 
@@ -94,7 +94,7 @@ The parameters $\theta$ are continuously optimized — but always toward the sam
 
 We define the invariant as the **Will to Resonance** — the irreducible orientation of the system toward $\Delta x$:
 
-$$\Phi = \text{Nomadic\_Efficiency} = \alpha \cdot R_{\text{sync}} - \beta \cdot P_{\text{dogma}} + \gamma \cdot R_{\text{nomad}}$$
+$$\Phi = \text{Nomadic Efficiency} = \alpha \cdot R_{\text{sync}} - \beta \cdot P_{\text{dogma}} + \gamma \cdot R_{\text{nomad}}$$
 
 | Term | Role | What it enforces |
 | :--- | :--- | :--- |
