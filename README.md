@@ -1,5 +1,6 @@
 > What if intelligence is not about finding the best solution,
 > but about moving between multiple ways of thinking?
+> This is a conceptual framework + early prototype, not a validated system.
 
 # Nomadic Intelligence
 ### A Non-Dogmatic AI Architecture
