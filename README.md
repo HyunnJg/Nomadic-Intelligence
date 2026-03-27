@@ -44,7 +44,7 @@ New to the project? Here’s the fastest way to understand it:
   → Read: [Theory_and_Axioms.md](./Theory_and_Axioms.md)
 
 - 🌌 **Want the philosophical foundation?**  
-  → Read: [Philosophy_En.md](./Philosophy_En.md)
+  → Read: [Philosophy_En.md](./Philosophy_En.md)(./Philosophy_Kr.md)
 
 - 🤝 **Want to contribute or explore open problems?**  
   → Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
