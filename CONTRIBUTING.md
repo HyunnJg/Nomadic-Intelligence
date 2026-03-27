@@ -93,3 +93,16 @@ If you change the toy model's logic, update the relevant section in `Theory_and_
 This project emerged from philosophical dialogue, not engineering specification. Disagreement is welcome. Pushback on the core axioms is welcome. The only thing that isn't welcome is closing the system down — turning an open question into a fixed answer without sufficient argument.
 
 If you're unsure whether your contribution fits, open an Issue and ask. There are no bad questions here.
+
+---
+
+## 🟢 Good First Issues
+
+If you're new to the project, here are some simple ways to contribute:
+
+- ✍️ Improve clarity in README or Example.md (wording, structure, readability)
+- 🧪 Propose a simple dwell-time ($\tau_k$) heuristic for the toy model
+- 📊 Suggest a basic benchmark environment (e.g., Gym) to test Nomadic vs Dogmatic agents
+- 🎨 Create a simple diagram explaining attractor switching
+
+These contributions don’t require deep ML expertise — just clear thinking and curiosity.

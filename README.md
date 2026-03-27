@@ -1,4 +1,4 @@
-**This is a conceptual framework + early prototype, not a validated system.**
+**This repository presents a conceptual framework and a toy prototype, not a fully validated machine learning system.**
 > What if intelligence is not about finding the best solution,
 > but about moving between multiple ways of thinking?
 
