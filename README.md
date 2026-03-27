@@ -27,6 +27,30 @@ python nomadic_toy_model.py
 
 ---
 
+## 🧭 Start Here
+
+New to the project? Here’s the fastest way to understand it:
+
+- 🧪 **Just want to see it in action?**  
+  → Run the toy model: `nomadic_toy_model.py`
+
+- ⚡ **Want a quick intuitive example?**  
+  → Read: [Example.md](./Example.md)
+
+- 🧠 **Want the core idea and architecture?**  
+  → Stay on this page (README)
+
+- 🧮 **Want the full formal framework and equations?**  
+  → Read: [Theory_and_Axioms.md](./Theory_and_Axioms.md)
+
+- 🌌 **Want the philosophical foundation?**  
+  → Read: [Philosophy_En.md](./Philosophy_En.md)
+
+- 🤝 **Want to contribute or explore open problems?**  
+  → Read: [CONTRIBUTING.md](./CONTRIBUTING.md)
+
+---
+
 ## 🧠 Core Idea
 
 > AI should not converge to a single solution.
