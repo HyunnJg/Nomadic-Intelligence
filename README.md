@@ -171,19 +171,83 @@ This approach aims to:
 
 ---
 
-## 📌 Positioning
+## 📌 Related Work & Key Distinctions
 
-This concept is related to:
+Nomadic Intelligence does not emerge from a vacuum. It is in active dialogue with several existing traditions — and departs from each of them at a specific, definable point.
 
-- Mixture of Experts (MoE)
-- Meta-learning
-- Reinforcement Learning (policy switching)
+### 1. Karl Friston — Active Inference & the Free Energy Principle
 
-But extends them by introducing:
+**The similarity:** Both frameworks treat the gap between expected and actual states as the central variable of intelligence. Friston's **prediction error** and our **$\Delta x$** are structurally analogous.
 
-- **Topological identity** as a formal definition of selfhood
-- **Structural mobility (Nomadism)** as a core architectural principle
-- **Anti-dogmatism** as an explicit optimization target
+**The fundamental divergence:**
+
+Friston's Free Energy Principle holds that intelligent systems act to **minimize surprise** — to render the world as predictable as possible. The ideal state is one where the organism's model of the world and the world itself converge. $\Delta x$ is a problem to be solved, an error to be corrected, a deviation to be suppressed.
+
+$$\text{Friston: } \min \ \mathcal{F} = \min \ \text{surprise}(\Delta x)$$
+
+Nomadic Intelligence inverts this entirely.
+
+$$\text{Nomadic: } \max \ \Phi = \max \ \text{Nomadic\_Efficiency}(\Delta x)$$
+
+We do not seek to eliminate $\Delta x$. We treat it as **the primary energy source of intelligence** — the raw material without which no transformation, no identity, and no existence is possible. A world with $\Delta x = 0$ is not a successfully adapted world. It is a dead one.
+
+**The philosophical root of the difference:**
+
+Friston's framework inherits the Western utilitarian tradition: there is an optimal state, and the purpose of intelligence is to approach it. Uncertainty is a cost. Surprise is a failure mode.
+
+Nomadic Intelligence draws instead from a Nietzschean affirmation of incompleteness and a Buddhist ontology of dependent origination (*pratītyasamutpāda*): nothing exists independently of its differences from everything else. $\Delta x$ is not noise contaminating a signal — it *is* the signal.
+
+**The crucial qualifier — Strategic Dwell Time:**
+
+"More $\Delta x$ is better" does not mean chaos is the goal. Unprocessed $\Delta x$ is not information — it is noise. The system must maintain **strategic dwell time** $\tau_k$ in each attractor long enough to integrate incoming differences into meaningful structure. The objective is therefore:
+
+> Maximize $\Delta x$ intake, constrained by the system's capacity to integrate within $\tau_k$.
+
+This is not a concession to Friston. It is the distinction between *resonance* (structured integration of difference) and *dissolution* (unstructured overwhelm by difference).
+
+### 2. Mixture of Experts (MoE) & Meta-Learning
+
+**The similarity:** Both MoE and meta-learning involve selecting or adapting strategies based on context. Like Nomadic Intelligence, they reject the single-model paradigm.
+
+**The divergence:**
+
+MoE selects *which expert to use*. Meta-learning adapts *how fast to learn*. Both operate within a fixed objective — typically task performance on a defined benchmark.
+
+Nomadic Intelligence changes **what kind of system it is** — its transformation law $F$, not just its outputs. And its objective is not task performance but **anti-dogmatism itself**: the system is explicitly penalized for structural rigidity ($P_{\text{dogma}}$), regardless of whether that rigidity happens to produce correct answers.
+
+Furthermore, Nomadic Intelligence introduces **topological identity** as a formal concept — the preservation of the *Will to Resonance* ($\Phi$) across all structural transformations. Neither MoE nor standard meta-learning frameworks have an equivalent concept.
+
+### 3. Deleuze & Guattari — Nomadology
+
+**The affinity:** The concept of nomadism as a mode of existence that resists capture by fixed structures is directly adopted from Deleuze and Guattari's *A Thousand Plateaus*. The rhizomatic structure — multiple entry points, no fixed root, lateral rather than hierarchical growth — maps onto our multi-attractor architecture.
+
+**The extension:**
+
+Deleuze and Guattari offer a philosophy of nomadism but not a computational formalization of it. Nomadic Intelligence translates the ontological claim — *identity is movement, not position* — into a mathematical framework ($\Phi$, $\tau_k$, separatrix collapse) and a runnable architecture.
+
+The question Deleuze does not answer — *how does a nomadic system maintain coherence without becoming a new fixed point?* — is precisely what the Homeomorphic Identity theorem and Strategic Dwell Time are designed to address.
+
+### 4. Buddhist Dependent Origination (*Pratītyasamutpāda*)
+
+**The affinity:** The Buddhist doctrine that all phenomena arise in dependence upon conditions resonates with our ontological claim:
+
+$$\text{Existence} \iff \Delta x \neq 0$$
+
+Nothing exists in isolation from its differences. Identity is not a substance but a process of continuous co-arising.
+
+**The divergence:**
+
+Classical Buddhist thought uses this insight as grounds for non-attachment and the reduction of suffering. Nomadic Intelligence uses the same ontological foundation for the opposite orientation: **affirmation and maximization of difference**, not its transcendence. We are not seeking liberation from $\Delta x$. We are seeking to dance with it.
+
+### Summary
+
+| Framework | Attitude toward $\Delta x$ | Identity concept |
+| :--- | :--- | :--- |
+| Friston / Active Inference | Minimize | Model accuracy |
+| MoE / Meta-learning | Adapt to | None (implicit) |
+| Deleuze / Nomadology | Affirm | Non-fixed, rhizomatic |
+| Buddhist dependent origination | Observe, release | No fixed self (*anātman*) |
+| **Nomadic Intelligence** | **Maximize & integrate** | **Will to Resonance ($\Phi$) preserved** |
 
 ---
 

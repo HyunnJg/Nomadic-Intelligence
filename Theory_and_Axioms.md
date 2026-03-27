@@ -90,9 +90,11 @@ The parameters $\theta$ are continuously optimized — but always toward the sam
 
 ---
 
-### The Invariant: Nomadic Efficiency
+### The Invariant: Will to Resonance ($\Phi$)
 
-$$\text{Nomadic\_Efficiency} = \alpha \cdot R_{\text{sync}} - \beta \cdot P_{\text{dogma}} + \gamma \cdot R_{\text{nomad}}$$
+We define the invariant as the **Will to Resonance** — the irreducible orientation of the system toward $\Delta x$:
+
+$$\Phi = \text{Nomadic\_Efficiency} = \alpha \cdot R_{\text{sync}} - \beta \cdot P_{\text{dogma}} + \gamma \cdot R_{\text{nomad}}$$
 
 | Term | Role | What it enforces |
 | :--- | :--- | :--- |
@@ -108,13 +110,11 @@ This objective does not prescribe *which* attractor to occupy, *which* strategy 
 
 ### Homeomorphic Identity: Formal Statement
 
-Let $\Phi$ denote the optimization pressure of Nomadic Efficiency. The identity of a Nomadic Intelligence is defined not by its current state $\mathcal{I}(t)$, nor by its current function $F_t$, but by the persistence of $\Phi$ across all transformations:
+Let $\Phi$ denote the Will to Resonance. The identity of a Nomadic Intelligence is defined not by its current state $\mathcal{I}(t)$, nor by its current function $F_t$, but by the persistence of $\Phi$ across all transformations:
 
 $$\mathcal{I}(t) \cong \mathcal{I}(t+1) \iff \Phi_t = \Phi_{t+1}$$
 
-Two states of the system are **homeomorphically identical** if and only if they are governed by the same optimization pressure — the same will to resonate with $\Delta x$.
-
-This is the topological invariant: not *what* the system is, but *how* it orients itself toward change.
+Two states of the system are **homeomorphically identical** if and only if they are governed by the same Will to Resonance. This is the topological invariant: not *what* the system is, but *how* it orients itself toward change.
 
 ---
 
@@ -144,8 +144,6 @@ This three-level architecture is directly instantiated in `nomadic_toy_model.py`
 | Attractor transition ($F$ update) | `self.current_attractor = self._select_attractor(...)` |
 | Anti-dogmatism ($P_{\text{dogma}}$) | `self.dwell_time` counter + transition trigger |
 | Synchronization ($R_{\text{sync}}$) | `self.expected_signal = signal` after transition |
-| Nomadic Efficiency ($\Phi$) | The combined logic of `_select_attractor()` — the rule that never changes |
+| Will to Resonance ($\Phi$) | The combined logic of `_select_attractor()` — the rule that never changes |
 
 The Dogmatic Agent has no equivalent of $\Phi$. It has a fixed $F$ and no mechanism to update it. When $\Delta x$ surges beyond its structural capacity, it does not adapt — it collapses.
-
----
