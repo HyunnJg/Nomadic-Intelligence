@@ -6,6 +6,22 @@ Nomadic Intelligence sits at the intersection of philosophy, mathematics, and AI
 
 ---
 
+## ⚡ Why Now?
+
+This project is at an early and unusually open stage — which means your contribution has an outsized chance of shaping its direction.
+
+A minimal prototype already works. In a 3-regime phase-transition environment, the Nomadic model converges to **~58% of the Fixed baseline's error** (Seq MSE: 0.22 vs 0.42) with no hyperparameter tuning. The gate learned to specialize experts per regime **without explicit regime labels** — purely from the $\Delta x$ signal.
+
+That's the proof of concept. What's missing is everything that comes after:
+- The math isn't fully formalized
+- The architecture isn't optimized
+- The benchmark environment doesn't exist yet
+- The philosophical framework hasn't been stress-tested by outside readers
+
+**The problems are real, the baseline is working, and the direction is open.** If that combination sounds interesting to you, keep reading.
+
+---
+
 ## 🧭 Who Can Contribute
 
 This project actively welcomes three kinds of contributors:
@@ -56,17 +72,20 @@ For significant changes to the theory or axioms, please open an Issue first to d
 
 These are the highest-priority areas where contributions would have the most impact. They are listed in `README.md` as Open Questions, reproduced here with more context:
 
-**1. Determining $\tau_k$ (Dwell Time)**
-How should the system decide how long to stay in an attractor? Options include fixed thresholds, learned parameters, or dynamic adjustment based on $\Delta x$ variance. No solution exists yet.
+**1. Formalizing $\\tau_k$ (Dwell Time)**
+The prototype shows measurable dwell time behavior — the switch latency distribution peaks at 1–2 batches, with occasional longer stays. But right now this is implicit and uncontrolled. How do we make it explicit and learnable? Options include fixed thresholds, learned parameters, or dynamic adjustment based on $\\Delta x$ variance. This is the most tractable entry point for an ML engineer.
 
-**2. Preventing the Policy Engine from Becoming a Fixed Attractor**
-The rule that selects attractors (the `_select_attractor` function) is itself a fixed structure. This is a known self-referential problem. If the selection policy rigidifies, the system becomes dogmatic at the meta-level.
+**2. Stabilizing the $\\Delta x$ Signal**
+In the current prototype, `delta_hybrid_raw` grows unbounded during training (reaching ~30 by epoch 200). A `tanh` squash is containing it, but this is a patch, not a solution. A principled distributional distance measure — KL divergence or Wasserstein distance between consecutive batches — would fix this properly. This is a well-scoped engineering problem.
 
-**3. Attractor Boundaries in Continuous State Spaces**
-The toy model uses discrete attractors with hard boundaries. In real high-dimensional environments, attractor boundaries are continuous and fuzzy. How do we define and detect them?
+**3. Preventing the Policy Engine from Becoming a Fixed Attractor**
+The gate that selects attractors is itself a fixed structure — a known self-referential problem. If the selection policy rigidifies, the system becomes dogmatic at the meta-level. This is philosophically the most interesting problem in the project. No one has solved it yet.
 
-**4. Formal Verification of Homeomorphic Identity**
-The claim $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ needs a verifiable criterion. What measurable property during training would confirm that the Will to Resonance ($\Phi$) is being preserved?
+**4. Attractor Boundaries in Continuous State Spaces**
+The prototype uses soft MoE routing as a proxy for attractor boundaries. In real high-dimensional environments, boundaries are continuous and fuzzy. Formally defining when a "Separatrix Collapse" has occurred is an open mathematical problem.
+
+**5. Formal Verification of Homeomorphic Identity**
+The claim $\\mathcal{I}(t) \\cong \\mathcal{I}(t+1)$ needs a verifiable criterion. What measurable property during training would confirm that the Will to Resonance ($\\Phi$) is being preserved? This bridges the philosophy and the engineering — and no one has proposed a concrete answer yet.
 
 ---
 
@@ -98,11 +117,19 @@ If you're unsure whether your contribution fits, open an Issue and ask. There ar
 
 ## 🟢 Good First Issues
 
-If you're new to the project, here are some simple ways to contribute:
+Not sure where to start? These are concrete, self-contained contributions that don't require deep ML expertise — just curiosity and clear thinking.
 
-- ✍️ Improve clarity in README or Example.md (wording, structure, readability)
-- 🧪 Propose a simple dwell-time ($\tau_k$) heuristic for the toy model
-- 📊 Suggest a basic benchmark environment (e.g., Gym) to test Nomadic vs Dogmatic agents
-- 🎨 Create a simple diagram explaining attractor switching
+**For engineers:**
+- 🔧 Implement a simple heuristic for $\\tau_k$: e.g., "switch attractor if $\\Delta x > \\theta$ for $N$ consecutive batches" and measure its effect on Seq MSE
+- 📉 Replace the `delta_hybrid_raw` signal with a KL divergence estimate between consecutive batch distributions and compare stability
+- 🏋️ Run the prototype on a different non-stationary dataset and report whether attractor specialization still emerges
 
-These contributions don’t require deep ML expertise — just clear thinking and curiosity.
+**For theorists & philosophers:**
+- 🔍 Identify a specific claim in `Theory_and_Axioms.md` that is unfalsifiable as currently stated, and propose how to make it testable
+- 📖 Write a critique of the Friston comparison — where does the analogy hold and where does it break down?
+- 🌐 Propose a fourth philosophical tradition (beyond Deleuze, Buddhism, Nietzsche) that either supports or challenges the framework
+
+**For anyone:**
+- 🌍 Translate `Philosophy_En.md` into another language
+- 📊 Reproduce the prototype results and document any differences in behavior
+- ❓ Open an Issue with a question the documentation doesn't answer — if you're confused, others will be too.

@@ -85,15 +85,14 @@ The core distinction is topological identity:
 
 ---
 
-## ⚔️ Intuition: From the Minefield to the Architecture
-
-> "나는 전문 AI 연구자는 아니지만, DMZ 지뢰밭에서 동료를 구했던 경험처럼 위기 상황에서 즉각적으로 태세를 전환하는 지능을 구현하고 싶었다."
-> 
-> *"I am not a professional AI researcher. However, much like the moment I had to instantaneously shift my stance to save a comrade in a DMZ minefield, I wanted to build an intelligence that doesn't just solve problems—but survives them by adapting in real-time."*
+## ⚔️ Intuition (The Military Analogy)
 
 A well-designed military strategy does not rely on a single fixed plan. It continuously adapts: main attacks, feints, and strategic shifts based on terrain and enemy behavior.
 
-Intelligence is not about choosing the "right" strategy once. It is about **continuously shifting strategies** before the environment (the minefield) claims you.
+> Intelligence is not about choosing the "right" strategy once.
+> It is about continuously shifting strategies.
+
+AI should work the same way.
 
 ---
 
