@@ -56,7 +56,7 @@ When $\|\Delta x\|$ is large but $\|\Delta W\|$ is small, the rigidity ratio exc
 
 Rewards successful topological transitions between attractors. This term is the most technically challenging component — see **Engineering Challenge 1** below for the differentiability problem.
 
-$$\mathcal{L}_{nomad} = -\mathcal{H}(\text{trajectory}) \cdot \sigma(\text{transition\_score})$$
+$$\mathcal{L}_{nomad} = -\mathcal{H}(\text{trajectory}) \cdot \sigma(\text{transition score})$$
 
 Rather than a hard binary indicator, we use a soft transition score passed through a sigmoid $\sigma$ to maintain differentiability, multiplied by trajectory entropy $\mathcal{H}$ to reward non-repetitive structural movement.
 
