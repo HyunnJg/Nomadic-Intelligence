@@ -17,6 +17,29 @@ This project explores a simple question:
 
 ---
 
+## 🚀 Quick Start
+
+```bash
+# 1. clone
+git clone https://github.com/HyunnJg/nomadic-intelligence.git
+cd nomadic-intelligence
+
+# 2. create environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 3. install dependencies
+pip install -r requirements.txt
+
+# 4. check config
+# edit config.yaml if you want to change epochs, temperature, save_dir, etc.
+
+# 5. run experiment
+python run_structured.py --config config.yaml
+```
+
+---
+
 ## 📌 Project Position
 
 This repository is a **conceptual and experimental prototype**.
@@ -88,29 +111,6 @@ If you are interested in:
 your perspective is welcome.
 
 Critique, extensions, and reinterpretations are all encouraged.
-
----
-
-## 🚀 Quick Start
-
-```bash
-# 1. clone
-git clone https://github.com/HyunnJg/nomadic-intelligence.git
-cd nomadic-intelligence
-
-# 2. create environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. install dependencies
-pip install -r requirements.txt
-
-# 4. check config
-# edit config.yaml if you want to change epochs, temperature, save_dir, etc.
-
-# 5. run experiment
-python run_structured.py --config config.yaml
-```
 
 ---
 
