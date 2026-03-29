@@ -434,4 +434,5 @@ not a fully implemented system.
 
 ## 📜 License
 
-Open concept. Use freely (MIT License recommended).
+MIT License. See [LICENSE.txt](./LICENSE.txt).
+
