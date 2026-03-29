@@ -11,23 +11,21 @@
 
 ## 🚀 Quick Start
 
+```bash
 # 1. clone
 git clone https://github.com/your-repo/nomadic-intelligence.git
 cd nomadic-intelligence
 
 # 2. create environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # (Windows: venv\Scripts\activate)
 
 # 3. install dependencies
 pip install -r requirements.txt
 
 # 4. run experiment
 python experiments/multi_regime/run_structured.py
-
-Results will be saved in:
-
-results/figures/
+```
 
 ---
 
@@ -215,14 +213,21 @@ But extends them by introducing:
 
 The primary metric is **Sequence MSE** — performance when the model receives data in phase-transition order, with access to temporal $\Delta x$ signals. This is the condition Nomadic Intelligence is designed for.
 
-| Model | Test MSE (Epoch 50) | Test MSE (Epoch 200) |
-| :--- | :--- | :--- |
-| Fixed (baseline) | 0.4232 | 0.4187 |
-| **Nomadic (sequence)** | **0.2173** | **0.2447** |
+Two runs were conducted under identical code and seed, differing only in compute backend. Both outperform the Fixed baseline. They fail in different directions — which itself reveals something about the architecture's sensitivity.
 
-The Nomadic model converges to approximately **58% of the Fixed model's error** under phase-transition conditions. The Fixed model shows negligible improvement after epoch 50 — it has structurally saturated. The Nomadic model continues to adapt.
+| Model | Backend | Seq MSE (Best) | Seq MSE (Ep 200) | Static MSE (Ep 200) | Switch Latency (Ep 200) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Fixed (baseline) | CPU | — | 0.4187 | 0.4187 | — |
+| Nomadic | CPU | **0.2173** (Ep 50) | 0.2447 | 8.64 | ~1.1 (stable) |
+| Nomadic | CUDA | **0.2424** (Ep 125) | 0.2812 | 2.09 | ~0.03 (collapsed) |
 
-> **Note on Static MSE:** The Nomadic model's static test MSE rises significantly during training (reaching ~8.6 by epoch 200). This is expected and not a failure mode — when evaluated without temporal context, the model cannot determine which attractor to occupy. Static MSE is not the target metric for this architecture. See `Theory_and_Axioms.md` for the distinction between synchronization loss and static prediction accuracy.
+**CPU run:** Achieves lower Seq MSE peak but Static MSE rises to 8.6 — the model becomes fully context-dependent and cannot function without temporal $\Delta x$ input.
+
+**CUDA run:** More stable Static MSE (2.1), but Switch Latency collapses to near-zero by Epoch 175 — the gate stops switching attractors. The nomadic behavior partially degrades into a fixed routing pattern. Seq MSE rises accordingly in the final epochs.
+
+Both results confirm the core claim — the Nomadic model significantly outperforms the Fixed baseline under phase-transition conditions — while exposing two distinct failure modes that define the next engineering targets.
+
+> **Note on Static MSE:** Static evaluation removes temporal context, forcing the model to predict without knowing which regime it's in. This is not the target condition for this architecture. Static MSE is included as a diagnostic, not a success criterion.
 
 ---
 
@@ -230,7 +235,7 @@ The Nomadic model converges to approximately **58% of the Fixed model's error** 
 
 The gate learned to assign different experts to different regimes **without explicit regime labels** — purely from the $\Delta x$ signal and the Topological Loss.
 
-**Regime–Expert alignment (Top-1 selection ratio):**
+**Regime–Expert alignment (Top-1 selection ratio, CPU run):**
 
 | Regime | Expert 0 | Expert 1 | Expert 2 |
 | :--- | :--- | :--- | :--- |
@@ -240,62 +245,56 @@ The gate learned to assign different experts to different regimes **without expl
 
 Regime A and C share Expert 1 — both are additive structures. Regime B activates Expert 0, which handles the subtractive pattern. The system discovered this grouping without supervision.
 
-The `regime_expert_alignment` plot confirms that when the dominant regime shifts, the dominant expert shifts in response — with a measurable transition latency ($\tau_k$) that grows as the gate becomes more decisive.
-
-**Known limitation — Expert 1 hub behavior:** Expert 1 dominates across Regime A and C, functioning as a "hub" rather than a fully specialized attractor. True multi-attractor separation — where each regime maps cleanly to a distinct expert — has not yet been achieved. This is an active open problem. Possible directions: load-balancing loss, anti-collapse regularization, or stronger expert specialization incentives.
+**Known limitation — Expert 1 hub behavior:** Expert 1 dominates across Regime A and C, preventing full multi-attractor separation. The CUDA run's Switch Latency collapse suggests this hub tendency can strengthen over training, eventually reducing the system to near-static routing. Preventing this is an active open problem.
 
 ---
 
 ### Nomadic Behavior Confirmed
 
-**Transition Entropy > Stable Entropy** (across all 220 epochs):
+**Transition Entropy > Stable Entropy** (across all 220 epochs, CPU run):
 
-When the environment is in a transition phase, gate entropy rises — the system explores expert combinations more freely. During stable phases, entropy drops as one expert dominates. This is the computational signature of Strategic Dwell Time ($\tau_k$): the system is neither wandering randomly nor locked into a fixed structure.
+When the environment is in a transition phase, gate entropy rises — the system explores expert combinations more freely. During stable phases, entropy drops as one expert dominates. This is the computational signature of Strategic Dwell Time ($\tau_k$).
 
----
-
-### What Optimization Could Improve
-
-This prototype used default hyperparameters with no tuning. Known improvement vectors:
-
-- **$\tau_k$ formalization:** Dwell time is currently implicit. Explicit learnable dwell time would sharpen attractor boundaries.
-- **$\Delta x$ estimation:** The hybrid delta signal grows unbounded during training (raw values reach ~30 by epoch 200). A more principled distributional distance measure (KL divergence, Wasserstein) would stabilize this.
-- **Expert count scaling:** 3 experts for 3 regimes is a minimal setup. Scaling to more experts in higher-dimensional environments is the next test.
-- **Continuous attractor boundaries:** The current architecture uses soft MoE routing. Formal attractor boundary detection (Challenge 2 in `Implementation_Draft.md`) would enable more precise Separatrix Collapse behavior.
-
-**If you want to contribute to any of these — start here.** The baseline is working. The improvement vectors are clear. See [Contributing](./CONTRIBUTING.md).
+The CUDA run shows this pattern holds in early training but weakens after Epoch 150 as Switch Latency approaches zero — consistent with the hub collapse hypothesis.
 
 ---
 
-## ❓ Open Problems
+### What the Two Runs Tell Us
 
-These are the live, unsolved problems in this project. Each one is an open invitation — for experiments, theory, visualization, or metric design. You don't need to understand everything to start somewhere.
+The CPU/CUDA divergence is not a hardware artifact. It reflects **initialization sensitivity** — the same architecture, same seed, same code, produces qualitatively different long-term behavior depending on floating-point execution order.
 
-**1. Expert Hub Collapse**
-Expert 1 dominates across multiple regimes, preventing true multi-attractor structure. The system behaves as a soft nomad rather than a sharp one.
-*Possible directions:* load-balancing loss, anti-collapse regularization, expert specialization incentives.
+This means:
+- The current results cannot be considered fully reproducible without multi-seed averaging
+- The architecture has not yet converged to a stable training dynamic
+- Small structural changes (loss weights, $\Delta x$ signal, gate design) likely have large effects
 
-**2. Stable vs Transition Entropy Separation**
-Gate entropy is currently high in both stable and transition phases. The goal is low entropy during stable regimes (committed to one attractor) and high entropy only during transitions (actively searching).
-*Possible directions:* entropy penalty conditioned on detected regime stability.
-
-**3. Formalizing $\tau_k$ (Dwell Time)**
-Dwell time is currently implicit — the system exhibits it, but doesn't control it. Making $\tau_k$ explicit and learnable is the most tractable next engineering step.
-*Possible directions:* Option-Critic architectures, learned threshold parameters, variance-based triggers.
-
-**4. Regime–Expert Alignment Metrics**
-Current alignment evidence is visual. A quantitative score would make the claim rigorous and reproducible.
-*Possible directions:* mutual information between regime label and expert selection, conditional entropy, switching consistency ratio.
-
-**5. Attractor Boundaries in Continuous State Spaces**
-The prototype uses soft MoE routing as a proxy. Formally defining when a Separatrix Collapse has occurred — in continuous high-dimensional weight space — is an open mathematical problem.
-
-**6. Formal Verification of Homeomorphic Identity**
-The claim $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ needs a measurable criterion. What observable property during training would confirm that the Will to Resonance ($\Phi$) is being preserved across structural transitions?
+These are not reasons to distrust the results. They are the exact reasons this project needs contributors.
 
 ---
 
-*We welcome small experiments, theoretical suggestions, visualization improvements, and metric design. See [CONTRIBUTING.md](./CONTRIBUTING.md) for where to start.*
+### Known Improvement Vectors
+
+| Problem | Observable symptom | Possible direction |
+| :--- | :--- | :--- |
+| Switch Latency collapse | CUDA run: latency → 0 after Ep 150 | Explicit $\tau_k$ lower bound, anti-fixation penalty |
+| Expert hub dominance | Expert 1 across A and C | Load-balancing loss, anti-collapse regularization |
+| $\Delta x$ signal drift | Raw delta grows to ~30 by Ep 200 | KL divergence or Wasserstein distance estimate |
+| Initialization sensitivity | CPU vs CUDA divergence | Multi-seed averaging, better weight init |
+| Static generalization gap | Static MSE 2–9× Seq MSE | Partially context-free routing as secondary objective |
+
+**The baseline is working. The failure modes are visible. The improvement vectors are clear.** See [Contributing](./CONTRIBUTING.md).
+
+---
+
+## ❓ Open Questions
+
+This architecture raises problems we haven't solved yet.
+These are **open invitations** for criticism, extension, and implementation:
+
+- How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
+- How do we prevent the Policy Engine from becoming its own fixed attractor?
+- What defines attractor boundaries in continuous, high-dimensional state spaces?
+- Can homeomorphic identity be formally verified during training?
 
 ---
 
