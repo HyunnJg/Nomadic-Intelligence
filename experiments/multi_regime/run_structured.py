@@ -1,29 +1,10 @@
-# nomadic_multi_regime_transition.py
-# ------------------------------------------------------------
-# Nomadic Intelligence - Phase Transition Upgrade (Full Patched)
-# ------------------------------------------------------------
-# Key upgrades
-# 1) Phase-transition sequence dataset
-# 2) Stronger hybrid delta with error-spike sensitivity
-# 3) tanh-squashed hybrid delta for gate stability
-# 4) Static eval vs Sequence eval separated
-# 5) Full-train gate distance computation
-# 6) Switch latency / transition entropy / dwell time metrics
-# 7) Regime vs Expert alignment visualization
-#
-# Run:
-#   python nomadic_multi_regime_transition.py
-#
-# Optional:
-#   python nomadic_multi_regime_transition.py --epochs 220 --save_dir outputs_transition
-# ------------------------------------------------------------
-
 import os
 import argparse
 import random
 from dataclasses import dataclass
 from typing import Dict, Tuple, List
 
+import yaml
 import numpy as np
 import torch
 import torch.nn as nn
@@ -94,6 +75,62 @@ class Config:
 
     # output
     save_dir: str = "outputs_transition"
+
+
+# ============================================================
+# YAML helpers
+# ============================================================
+
+def load_yaml_config(path: str) -> dict:
+    with open(path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    return data if data is not None else {}
+
+
+def build_config_from_yaml(yaml_dict: dict) -> Config:
+    runtime = yaml_dict.get("runtime", {})
+    training = yaml_dict.get("training", {})
+    model = yaml_dict.get("model", {})
+    data = yaml_dict.get("data", {})
+    loss = yaml_dict.get("loss", {})
+    delta = yaml_dict.get("delta", {})
+
+    device_value = runtime.get("device", "auto")
+    if device_value == "auto":
+        device_value = "cuda" if torch.cuda.is_available() else "cpu"
+
+    cfg = Config(
+        seed=runtime.get("seed", 42),
+        save_dir=runtime.get("save_dir", "outputs_transition"),
+        device=device_value,
+
+        epochs=training.get("epochs", 220),
+        lr=training.get("lr", 2e-3),
+        weight_decay=training.get("weight_decay", 1e-5),
+
+        hidden_dim=model.get("hidden_dim", 64),
+        num_experts=model.get("num_experts", 3),
+        gate_hidden_dim=model.get("gate_hidden_dim", 64),
+        temperature=model.get("temperature", 0.60),
+
+        overlap_std=data.get("overlap_std", 0.9),
+        phase_batch_size=data.get("phase_batch_size", 64),
+        phase_train_cycles=data.get("phase_train_cycles", 40),
+        phase_test_cycles=data.get("phase_test_cycles", 12),
+        transition_steps=data.get("transition_steps", 8),
+
+        alpha_dogma=loss.get("alpha_dogma", 0.04),
+        beta_nomad=loss.get("beta_nomad", 0.05),
+        gamma_diversity=loss.get("gamma_diversity", 0.08),
+        lambda_sep=loss.get("lambda_sep", 0.08),
+        lambda_cons=loss.get("lambda_cons", 0.03),
+
+        ema_decay=delta.get("ema_decay", 0.80),
+        err_baseline_momentum=delta.get("err_baseline_momentum", 0.85),
+        w_env=delta.get("w_env", 1.0),
+        w_err=delta.get("w_err", 2.0),
+    )
+    return cfg
 
 
 # ============================================================
@@ -756,9 +793,6 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
             nomad_bonus = compute_nomad_bonus(gate_probs)
             diversity_loss = compute_diversity_loss(expert_outputs)
 
-            # NOTE:
-            # batch-local regime separation is not reliable here because many batches are nearly single-regime.
-            # keep the terms for completeness, but interpret full-set distance instead.
             _, sep_loss, cons_loss, _, _ = compute_regime_gate_stats(
                 gate_probs=gate_probs,
                 regime_ids=rb,
@@ -803,20 +837,17 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         logs["train_cons_losses"].append(epoch_cons / max(n_batches, 1))
         logs["train_entropy"].append(epoch_entropy / max(n_batches, 1))
 
-        # Full-train static gate distance
         _, _, _, train_gate_dist_full, _, _, _, _, _ = evaluate_nomadic_static_full(
             model, X_train, Y_train, R_train, cfg
         )
         logs["train_mean_gate_distance"].append(train_gate_dist_full)
 
-        # Static test eval
         test_mse_static, _, _, test_gate_dist_static, _, _, _, _, _ = evaluate_nomadic_static_full(
             model, X_test, Y_test, R_test, cfg
         )
         logs["test_mse_static"].append(test_mse_static)
         logs["test_mean_gate_distance_static"].append(test_gate_dist_static)
 
-        # Sequence test eval
         test_mse_sequence, _, dynamics_eval, _, _ = evaluate_nomadic_sequence_dynamics(
             model, X_test, Y_test, R_test, phase_tags_test, cfg
         )
@@ -863,7 +894,7 @@ def plot_dataset(X: torch.Tensor, R: torch.Tensor, save_path: str):
     plt.ylabel("x2")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -879,7 +910,7 @@ def plot_training_curves(fixed_logs: dict, nomadic_logs: dict, save_path: str):
     plt.title("Fixed vs Nomadic Test MSE (Static vs Sequence)")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -898,7 +929,7 @@ def plot_nomadic_losses(nomadic_logs: dict, save_path: str):
     plt.title("Nomadic Loss Components")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -915,7 +946,7 @@ def plot_delta_trace(nomadic_logs: dict, save_path: str):
     plt.title("Hybrid Delta Trace")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -935,7 +966,7 @@ def plot_usage_bars(usage: Dict[str, np.ndarray], save_path: str, title: str):
     plt.title(title)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -950,7 +981,7 @@ def plot_gate_heatmap(usage: Dict[str, np.ndarray], save_path: str):
     plt.xticks(range(mat.shape[1]), [f"Expert {i}" for i in range(mat.shape[1])])
     plt.title("Regime-Expert Usage Heatmap")
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -965,7 +996,7 @@ def plot_gate_distance_curve(nomadic_logs: dict, save_path: str):
     plt.title("Regime Mean Gate Distance")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -980,7 +1011,7 @@ def plot_phase_entropy(dynamics: dict, save_path: str):
     plt.title("Gate Entropy across Phase Sequence")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -994,7 +1025,7 @@ def plot_expert_trajectory(dynamics: dict, save_path: str):
     plt.ylabel("Dominant Expert")
     plt.title("Dominant Expert Trajectory across Phase Sequence")
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1006,7 +1037,7 @@ def plot_dwell_histogram(dwell_times: List[int], save_path: str):
     plt.ylabel("Count")
     plt.title("Dwell Time Distribution")
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1019,7 +1050,7 @@ def plot_switch_latency_histogram(latencies: List[int], save_path: str):
     plt.ylabel("Count")
     plt.title("Switch Latency Distribution")
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1034,7 +1065,7 @@ def plot_entropy_comparison(nomadic_logs: dict, save_path: str):
     plt.title("Stable vs Transition Gate Entropy")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1048,7 +1079,7 @@ def plot_switch_latency_curve(nomadic_logs: dict, save_path: str):
     plt.title("Epoch-wise Mean Switch Latency")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1066,7 +1097,7 @@ def plot_regime_expert_alignment(dynamics: dict, save_path: str):
     plt.title("Regime vs Expert Alignment across Phase Sequence")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(save_path, dpi=160)
+    plt.savefig(save_path)
     plt.close()
 
 
@@ -1137,49 +1168,41 @@ def print_report(
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=220)
-    parser.add_argument("--save_dir", type=str, default="outputs_transition")
-    parser.add_argument("--temperature", type=float, default=0.60)
-    parser.add_argument("--overlap_std", type=float, default=0.9)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--phase_batch_size", type=int, default=64)
-    parser.add_argument("--transition_steps", type=int, default=8)
-    parser.add_argument("--phase_train_cycles", type=int, default=40)
-    parser.add_argument("--phase_test_cycles", type=int, default=12)
+    parser.add_argument("--config", type=str, default="config.yaml")
+    parser.add_argument("--save_dir", type=str, default=None)
+    parser.add_argument("--device", type=str, default=None, choices=["cpu", "cuda", "auto"])
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
-    cfg = Config(
-        epochs=args.epochs,
-        save_dir=args.save_dir,
-        temperature=args.temperature,
-        overlap_std=args.overlap_std,
-        seed=args.seed,
-        phase_batch_size=args.phase_batch_size,
-        transition_steps=args.transition_steps,
-        phase_train_cycles=args.phase_train_cycles,
-        phase_test_cycles=args.phase_test_cycles,
-        device="cuda" if torch.cuda.is_available() else "cpu",
-    )
+    yaml_cfg = load_yaml_config(args.config)
+    cfg = build_config_from_yaml(yaml_cfg)
+
+    if args.save_dir is not None:
+        cfg.save_dir = args.save_dir
+
+    if args.seed is not None:
+        cfg.seed = args.seed
+
+    if args.device is not None:
+        cfg.device = "cuda" if (args.device == "auto" and torch.cuda.is_available()) else args.device
 
     ensure_dir(cfg.save_dir)
     set_seed(cfg.seed)
 
     print(f"Using device: {cfg.device}")
     print(f"Saving outputs to: {cfg.save_dir}")
+    print(f"Loaded config from: {args.config}")
 
-    # phase-sequence data
     X_train, Y_train, R_train, phase_tags_train = generate_phase_sequence(cfg, cfg.phase_train_cycles, cfg.device)
     X_test, Y_test, R_test, phase_tags_test = generate_phase_sequence(cfg, cfg.phase_test_cycles, cfg.device)
 
     plot_dataset(X_train, R_train, os.path.join(cfg.save_dir, "phase_dataset_input_space.png"))
 
-    # train
     fixed_model, fixed_logs = train_fixed(cfg, X_train, Y_train, R_train, X_test, Y_test, R_test)
     nomadic_model, nomadic_logs = train_nomadic(
         cfg, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test
     )
 
-    # static eval
     fixed_total_mse, fixed_per_regime = evaluate_fixed(fixed_model, X_test, Y_test, R_test)
     (
         nomadic_static_total_mse,
@@ -1195,12 +1218,10 @@ def main():
         nomadic_model, X_test, Y_test, R_test, cfg
     )
 
-    # sequence eval
     seq_total_mse, seq_usage, dynamics, _, _ = evaluate_nomadic_sequence_dynamics(
         nomadic_model, X_test, Y_test, R_test, phase_tags_test, cfg
     )
 
-    # plots
     plot_training_curves(
         fixed_logs,
         nomadic_logs,
