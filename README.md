@@ -9,19 +9,22 @@
 
 ---
 
-## 🚀 Quick Start: The Cosmic Dance in Action
+## 🚀 Quick Start
 
-Most modern AI systems overfit to a single objective. What happens when the rules of the universe suddenly change?
-
-We have provided a minimal, zero-dependency Python toy model that demonstrates our core philosophy. When the environment paradigm shifts ($\Delta x$ surges):
-- A **Dogmatic Agent** stubbornly sticks to its fixed strategy and is destroyed.
-- A **Nomadic Agent** detects the anomaly, collapses its current structure, and smoothly shifts to a new topological attractor to survive.
-
-**Try it yourself:**
 ```bash
-git clone https://github.com/HyunnJg/Nomadic-Intelligence.git
-cd Nomadic-Intelligence
-python nomadic_toy_model.py
+# 1. clone
+git clone https://github.com/your-repo/nomadic-intelligence.git
+cd nomadic-intelligence
+
+# 2. create environment
+python -m venv venv
+source venv/bin/activate  # (Windows: venv\Scripts\activate)
+
+# 3. install dependencies
+pip install -r requirements.txt
+
+# 4. run experiment
+python experiments/multi_regime/run_structured.py
 ```
 
 ---
@@ -237,6 +240,8 @@ Regime A and C share Expert 1 — both are additive structures. Regime B activat
 
 The `regime_expert_alignment` plot confirms that when the dominant regime shifts, the dominant expert shifts in response — with a measurable transition latency ($\tau_k$) that grows as the gate becomes more decisive.
 
+**Known limitation — Expert 1 hub behavior:** Expert 1 dominates across Regime A and C, functioning as a "hub" rather than a fully specialized attractor. True multi-attractor separation — where each regime maps cleanly to a distinct expert — has not yet been achieved. This is an active open problem. Possible directions: load-balancing loss, anti-collapse regularization, or stronger expert specialization incentives.
+
 ---
 
 ### Nomadic Behavior Confirmed
@@ -260,15 +265,35 @@ This prototype used default hyperparameters with no tuning. Known improvement ve
 
 ---
 
-## ❓ Open Questions
+## ❓ Open Problems
 
-This architecture raises problems we haven't solved yet.
-These are **open invitations** for criticism, extension, and implementation:
+These are the live, unsolved problems in this project. Each one is an open invitation — for experiments, theory, visualization, or metric design. You don't need to understand everything to start somewhere.
 
-- How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
-- How do we prevent the Policy Engine from becoming its own fixed attractor?
-- What defines attractor boundaries in continuous, high-dimensional state spaces?
-- Can homeomorphic identity be formally verified during training?
+**1. Expert Hub Collapse**
+Expert 1 dominates across multiple regimes, preventing true multi-attractor structure. The system behaves as a soft nomad rather than a sharp one.
+*Possible directions:* load-balancing loss, anti-collapse regularization, expert specialization incentives.
+
+**2. Stable vs Transition Entropy Separation**
+Gate entropy is currently high in both stable and transition phases. The goal is low entropy during stable regimes (committed to one attractor) and high entropy only during transitions (actively searching).
+*Possible directions:* entropy penalty conditioned on detected regime stability.
+
+**3. Formalizing $\tau_k$ (Dwell Time)**
+Dwell time is currently implicit — the system exhibits it, but doesn't control it. Making $\tau_k$ explicit and learnable is the most tractable next engineering step.
+*Possible directions:* Option-Critic architectures, learned threshold parameters, variance-based triggers.
+
+**4. Regime–Expert Alignment Metrics**
+Current alignment evidence is visual. A quantitative score would make the claim rigorous and reproducible.
+*Possible directions:* mutual information between regime label and expert selection, conditional entropy, switching consistency ratio.
+
+**5. Attractor Boundaries in Continuous State Spaces**
+The prototype uses soft MoE routing as a proxy. Formally defining when a Separatrix Collapse has occurred — in continuous high-dimensional weight space — is an open mathematical problem.
+
+**6. Formal Verification of Homeomorphic Identity**
+The claim $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ needs a measurable criterion. What observable property during training would confirm that the Will to Resonance ($\Phi$) is being preserved across structural transitions?
+
+---
+
+*We welcome small experiments, theoretical suggestions, visualization improvements, and metric design. See [CONTRIBUTING.md](./CONTRIBUTING.md) for where to start.*
 
 ---
 
@@ -304,6 +329,13 @@ Start with the [Open Questions](#-open-questions) above, or open an Issue to sta
 
 This repository presents a design philosophy and early architecture,
 not a fully implemented system.
+
+---
+
+## 🧪 Environment
+
+- Python 3.9 ~ 3.11 recommended
+- Tested on Python 3.10
 
 ---
 

@@ -115,21 +115,49 @@ If you're unsure whether your contribution fits, open an Issue and ask. There ar
 
 ---
 
-## 🟢 Good First Issues
+## 🟢 Where to Start
 
-Not sure where to start? These are concrete, self-contained contributions that don't require deep ML expertise — just curiosity and clear thinking.
+Not sure where to begin? Here's a map based on experience level — and a concrete first path that works for anyone.
 
-**For engineers:**
-- 🔧 Implement a simple heuristic for $\\tau_k$: e.g., "switch attractor if $\\Delta x > \\theta$ for $N$ consecutive batches" and measure its effect on Seq MSE
-- 📉 Replace the `delta_hybrid_raw` signal with a KL divergence estimate between consecutive batch distributions and compare stability
-- 🏋️ Run the prototype on a different non-stationary dataset and report whether attractor specialization still emerges
+### Suggested First Steps (for everyone)
 
-**For theorists & philosophers:**
-- 🔍 Identify a specific claim in `Theory_and_Axioms.md` that is unfalsifiable as currently stated, and propose how to make it testable
-- 📖 Write a critique of the Friston comparison — where does the analogy hold and where does it break down?
-- 🌐 Propose a fourth philosophical tradition (beyond Deleuze, Buddhism, Nietzsche) that either supports or challenges the framework
+1. Run `nomadic_multi_regime_structured.py`
+2. Look at the output plots — entropy, expert usage, switch latency
+3. Pick one behavior that looks unexpected or interesting
+4. Try to explain it, reproduce it differently, or modify it
+5. Open an Issue describing what you found
 
-**For anyone:**
+That's a valid contribution. You don't need to solve anything.
+
+---
+
+### By Experience Level
+
+**Beginner — no ML background required**
+- 📝 Improve README or documentation clarity
+- 💬 Add comments to code explaining what a function does
 - 🌍 Translate `Philosophy_En.md` into another language
-- 📊 Reproduce the prototype results and document any differences in behavior
-- ❓ Open an Issue with a question the documentation doesn't answer — if you're confused, others will be too.
+- 📊 Reproduce the prototype results and document any differences
+- ❓ Open an Issue with a question the docs don't answer — if you're confused, others will be too
+
+**Intermediate — some ML or math background**
+- 🔧 Implement a simple $\\tau_k$ heuristic: "switch attractor if $\\Delta x > \\theta$ for $N$ consecutive batches" and measure its effect on Seq MSE
+- 📉 Replace `delta_hybrid_raw` with a KL divergence estimate between consecutive batch distributions and compare stability
+- 📐 Design a quantitative regime–expert alignment score (mutual information, conditional entropy)
+- 🏋️ Run the prototype on a different non-stationary dataset and check whether attractor specialization still emerges
+- 🎨 Visualize hidden states (PCA / t-SNE) to see if attractors are geometrically separable
+
+**Advanced — ML research or formal theory background**
+- 🔬 Propose a new expert routing architecture that prevents hub collapse
+- ⚙️ Redesign the $\\Delta x$ signal using Wasserstein distance or MMD
+- 🧮 Formalize $\\tau_k$ as a learnable parameter and connect it to Option-Critic
+- 📖 Write a formal critique of the Friston comparison — where the analogy holds and where it breaks
+- 🌐 Propose a philosophical tradition not yet in Related Work that either supports or challenges the framework
+- 🔗 Propose a measurable criterion for Homeomorphic Identity that can be verified during training
+
+---
+
+If you're still unsure, open an Issue with:
+> "I want to contribute but don't know where to begin."
+
+We'll guide you.
