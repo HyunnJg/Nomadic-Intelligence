@@ -11,16 +11,9 @@
 
 ## 🧭 What is this?
 
+![Nomadic vs Dogmatic](assets/thumbnail.png)
+
 This project explores a simple question:
-
-> What if intelligence is not about staying in the right place,  
-> but about *moving well between places*?
-
-We call this idea **Nomadic Intelligence**.
-
-Instead of optimizing for a fixed solution,  
-the system is designed to continuously adapt, transition,  
-and reconfigure itself in response to change (Δx).
 
 ---
 
