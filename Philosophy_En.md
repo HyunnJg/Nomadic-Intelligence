@@ -58,6 +58,8 @@ This is the architecture that biological intelligence approximates. Automatic pr
 
 ## VIII. Ethical Implications: Diversity as Structural Necessity
 
+> *This section draws out the philosophical implications of the framework. It is not a prerequisite for understanding the architecture — engineers and ML researchers can engage with the codebase independently. For those interested in the broader theoretical stakes, this is where the framework takes its strongest positions.*
+
 ### The Alignment Problem, Reframed
 
 Contemporary AI ethics circles around a persistent dilemma: *whose values should AI be aligned to?*
