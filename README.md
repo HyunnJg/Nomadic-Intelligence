@@ -9,11 +9,100 @@
 
 ---
 
+## 🧭 What is this?
+
+This project explores a simple question:
+
+> What if intelligence is not about staying in the right place,  
+> but about *moving well between places*?
+
+We call this idea **Nomadic Intelligence**.
+
+Instead of optimizing for a fixed solution,  
+the system is designed to continuously adapt, transition,  
+and reconfigure itself in response to change (Δx).
+
+---
+
+## 📌 Project Position
+
+This repository is a **conceptual and experimental prototype**.
+
+It is not a finalized solution, and it does not claim state-of-the-art performance.
+
+Instead, it aims to:
+
+- propose a new perspective on intelligence (Nomadic vs Dogmatic)
+- provide a minimal working system that embodies this idea
+- open the door for further exploration, critique, and extension
+
+The goal is not to conclude, but to **start a direction**.
+
+---
+
+## 🌌 Why this matters
+
+Most systems are optimized to converge.
+
+But real-world environments are:
+- non-stationary
+- uncertain
+- constantly shifting
+
+In such settings, rigidity becomes a liability.
+
+This project explores the hypothesis that:
+
+> Intelligence may be better understood as  
+> the ability to *transition effectively*,  
+> rather than to *remain optimal*.
+
+---
+
+## ⚙️ What's inside
+
+- A synthetic multi-regime environment (A / B / C + transitions)
+- A Mixture-of-Experts (MoE) model
+- A gating mechanism driven by a hybrid Δx signal:
+  - input shift (environmental change)
+  - prediction error (internal mismatch)
+- Regularization terms encouraging:
+  - anti-dogmatism (avoid collapse)
+  - nomadic behavior (entropy / transition)
+  - expert diversity and regime separation
+
+---
+
+## ❗ What this is NOT
+
+- This is not a production-ready system
+- This is not a benchmark-optimized model
+- This is not a complete theoretical framework
+
+It is a **starting point**, not an endpoint.
+
+---
+
+## 🤝 Invitation
+
+If you are interested in:
+
+- continual learning
+- adaptive systems
+- non-stationary environments
+- or alternative views on intelligence
+
+your perspective is welcome.
+
+Critique, extensions, and reinterpretations are all encouraged.
+
+---
+
 ## 🚀 Quick Start
 
 ```bash
 # 1. clone
-git clone https://github.com/your-repo/nomadic-intelligence.git
+git clone https://github.com/HyunnJg/nomadic-intelligence.git
 cd nomadic-intelligence
 
 # 2. create environment
