@@ -11,21 +11,23 @@
 
 ## 🚀 Quick Start
 
-```bash
 # 1. clone
 git clone https://github.com/your-repo/nomadic-intelligence.git
 cd nomadic-intelligence
 
 # 2. create environment
 python -m venv venv
-source venv/bin/activate  # (Windows: venv\Scripts\activate)
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 3. install dependencies
 pip install -r requirements.txt
 
 # 4. run experiment
 python experiments/multi_regime/run_structured.py
-```
+
+Results will be saved in:
+
+results/figures/
 
 ---
 
