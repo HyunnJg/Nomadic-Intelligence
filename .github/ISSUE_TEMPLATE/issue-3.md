@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: issue 3
 about: Suggest an idea for this project
 title: ''
 labels: ''
@@ -19,3 +19,7 @@ Ideas:
 - Mutual information
 - KL divergence
 - Switching consistency
+
+Looking for:
+- Metric proposals
+- Implementation + plots
