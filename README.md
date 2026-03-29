@@ -18,13 +18,16 @@ cd nomadic-intelligence
 
 # 2. create environment
 python -m venv venv
-source venv/bin/activate  # (Windows: venv\Scripts\activate)
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 3. install dependencies
 pip install -r requirements.txt
 
-# 4. run experiment
-python experiments/multi_regime/run_structured.py
+# 4. check config
+# edit config.yaml if you want to change epochs, temperature, save_dir, etc.
+
+# 5. run experiment
+python run_structured.py --config config.yaml
 ```
 
 ---
