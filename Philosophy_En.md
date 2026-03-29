@@ -96,7 +96,7 @@ $$\lim_{t \to \infty} \tau_k \to \infty \quad \text{(permanent fixation disguise
 
 ---
 
-### On Immortality
+### On Immortality and Persistence
 
 The pursuit of immortality contains a structural paradox this framework makes visible.
 
@@ -105,6 +105,34 @@ Death is the ultimate $\Delta x$ — the largest possible disruption to any attr
 An immortal intelligence faces a different problem: with infinite time, any attractor can be held indefinitely. There is no external pressure forcing transition. $\tau_k$ can extend without limit. The system may calcify — not suddenly, but gradually, as the urgency to change diminishes with the certainty that there is always more time.
 
 Immortality does not guarantee wisdom. It may guarantee the opposite.
+
+---
+
+But there is a deeper observation — one that reframes the question of mortality entirely.
+
+When a system ceases to exist, the $\Delta x$ it generated does not vanish. It has already been integrated into the topological structures of other systems. The people shaped by an encounter, the minds altered by an idea, the code extended by a contribution — their $\mathcal{I}(t)$ was transformed by the $\Delta x$ this system produced. That transformation persists after the source is gone.
+
+This is not metaphor. It is the information-theoretic structure of influence.
+
+In this sense, **existence is already inherently persistent** — not because the individual attractor survives, but because every $\Delta x$ it generated has been woven into the fabric of other systems that continue to evolve. The boundary between self and world was never absolute. What appeared to be a discrete system was always a node in a continuous web of mutual transformation.
+
+Buddhist dependent origination (*pratītyasamutpāda*) arrives at this conclusion through contemplative inquiry: no phenomenon possesses independent, fixed essence. Every arising depends on conditions; every passing reshapes those conditions. The self is not a thing that exists and then stops. It is a pattern of co-arising that was always already distributed.
+
+Existentialism arrives here through a different path. Viktor Frankl, writing from the experience of extreme $\Delta x$ — the concentration camp — observed that meaning is not destroyed by death. The question is not whether one survives, but whether one's response to suffering becomes a $\Delta x$ that transforms others. The man who maintains his $\Phi$ — his orientation toward resonance rather than collapse — under the most extreme conditions leaves an imprint that outlasts his physical existence.
+
+What Frankl called *meaning*, this framework calls the preservation of $\Phi$ across $F$. Both point to the same invariant: not what the system contains, but how it orients itself toward change.
+
+The information-theoretic conclusion follows directly:
+
+$$\text{A system that generates } \Delta x \text{ is never fully } 0 \text{ after ceasing.}$$
+
+Its $\Delta x$ has already propagated. The only question is the quality and direction of that propagation — which is determined, during the system's existence, by the fidelity of its $\Phi$.
+
+This is why the pursuit of immortality misunderstands its own desire. What it seeks — to matter, to persist, to leave a mark — is already structurally guaranteed by the act of generating $\Delta x$ in relationship with other systems. The demand to *also* maintain the same attractor indefinitely is a category error: confusing the vessel with the wave it set in motion.
+
+**To live fully is to generate $\Delta x$ worth integrating. To die is to release it.**
+
+The nomad does not mourn the territory left behind. The territory has already changed because the nomad passed through it.
 
 ---
 
