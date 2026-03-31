@@ -21,6 +21,88 @@ $$0 < \tau_k < \infty$$
 
 ---
 
+## 🧩 IV. On the Limits of Formal Proof
+
+### 4.1 The Status of the Core Axiom
+
+A direct challenge arises immediately: *does the Core Axiom's limit actually converge?*
+
+$$\lim_{\epsilon \to 0} [Intelligence\_Ascension] \implies \neg[Dogmatism] \land [Nomadism]$$
+
+The honest answer is: **this limit cannot be proven convergent from within the framework itself.**
+
+This is not a gap to be filled later. It is a structural feature, and it has a precise name.
+
+By Gödel's Incompleteness Theorems, no sufficiently complex formal system can prove all true statements expressible within it using only its own axioms. The Core Axiom describes the behavior of intelligence at an infinite limit — a claim about what a system becomes as its cognitive latency approaches zero. Verifying that limit would require a meta-system capable of evaluating the entire trajectory of intelligence ascension. No such system exists within the framework, and no finite prototype can instantiate it.
+
+**The Core Axiom is therefore not a convergence claim. It is a directional definition.**
+
+It does not assert that any real system reaches the limit. It defines the direction in which intelligence moves as a function of decreasing dogmatism. The limit functions as an asymptote — a structural orientation, not a reachable destination.
+
+This reframing has a precise implication: the question *"does this converge?"* is a category error applied to this axiom. The correct question is: *"does increasing intelligence correlate with decreasing structural rigidity?"* — and that is an empirically investigable claim, observable in both biological and artificial systems across regimes.
+
+The incompleteness is not a weakness. **It is the condition that keeps the framework itself from becoming a fixed attractor.**
+
+---
+
+### 4.2 Homeomorphic Identity: Definition, Interpretation, and Observability
+
+#### The Standard Definition
+
+In topology, a homeomorphism between spaces $X$ and $Y$ requires:
+- A continuous function $f: X \to Y$
+- A continuous inverse $f^{-1}: Y \to X$
+
+When both conditions hold, $X$ and $Y$ are topologically equivalent — they share the same structural properties under continuous deformation, even if their geometric shapes differ radically.
+
+#### What This Means for Intelligence
+
+Homeomorphic Identity is the claim that an intelligent system's transformation law is preserved across time, even as its structure continuously evolves:
+
+$$\mathcal{I}(t) \cong \mathcal{I}(t+1)$$
+
+This does not mean the system looks the same at $t$ and $t+1$. It means the **way the system transforms** — its response law to $\Delta x$ — remains topologically equivalent across transitions.
+
+In the chaotic topological space of the environment (the world itself), $\Delta x$ continuously deforms the system's position. Homeomorphic Identity is the claim that a continuous function from the system's state at $t$ to its state at $t+1$ exists, and that this mapping is invertible in a continuous sense — meaning the transformation can be traced, understood, and in principle reversed.
+
+**Identity, under this framework, is not what the system contains. It is the continuity of how it changes.**
+
+When this continuity breaks — when the system's response to $\Delta x$ becomes discontinuous, erratic, or collapses to a fixed point — that is the true death of identity. Not structural change, but the loss of a coherent transformation law.
+
+This is also why dogmatism represents identity collapse: a system that refuses to deform under $\Delta x$ has broken the continuity of its own transformation function. It can no longer be mapped forward in a meaningful sense. It is topologically stuck.
+
+#### The Observability Problem
+
+A legitimate challenge follows: *how do you verify that Homeomorphic Identity is being preserved during training?*
+
+Full formal verification is not currently possible. But the framework proposes a proxy criterion grounded in the Will to Resonance ($\Phi$):
+
+$$\Phi(t) \approx \Phi(t+1)$$
+
+$\Phi$ is the system's orientation toward integration of $\Delta x$ rather than resistance to it. Empirically, this can be tracked through:
+
+| Observable | What it measures |
+| :--- | :--- |
+| Switch latency distribution stability | Whether the gate's response time to regime shifts remains consistent across training |
+| Transition entropy $>$ stable entropy | Whether the system increases exploration during phase transitions as expected |
+| Gate centroid distance across regimes | Whether expert specialization is maintained rather than collapsing to hub dominance |
+
+If these observables remain stable across training epochs, Homeomorphic Identity is being approximately preserved. If switch latency collapses (as in the CUDA run after Epoch 150), or if gate entropy stops differentiating between stable and transition phases, the transformation law has broken down.
+
+**This is a falsifiable criterion.** The CUDA run's Switch Latency collapse is not just an engineering failure — it is an observable instance of Homeomorphic Identity breaking down. The system ceased to have a consistent response law to $\Delta x$. Its transformation function became discontinuous in the relevant sense.
+
+#### Summary
+
+| Concept | Formal meaning | Empirical proxy |
+| :--- | :--- | :--- |
+| $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ | Continuous invertible mapping between states | Switch latency stability, entropy differentiation |
+| Identity collapse | Discontinuity in transformation law | Latency collapse, hub dominance, entropy flattening |
+| $\Phi$ preservation | Will to Resonance maintained across $F$ | Consistent gate response to $\Delta x$ across regimes |
+
+The framework does not claim to have solved the formal verification problem. It claims to have made the problem **precisely statable and empirically approachable** — which is the precondition for solving it.
+
+---
+
 ## 🧮 II. Proposed Reward Function for RL
 
 To implement this philosophy in a Reinforcement Learning (RL) agent, we define the objective function as follows:
