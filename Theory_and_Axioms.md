@@ -21,9 +21,9 @@ $$0 < \tau_k < \infty$$
 
 ---
 
-## 🧩 IV. On the Limits of Formal Proof
+## 🧩 II. On the Limits of Formal Proof
 
-### 4.1 The Status of the Core Axiom
+### 2.1 The Status of the Core Axiom
 
 A direct challenge arises immediately: *does the Core Axiom's limit actually converge?*
 
@@ -45,7 +45,7 @@ The incompleteness is not a weakness. **It is the condition that keeps the frame
 
 ---
 
-### 4.2 Homeomorphic Identity: Definition, Interpretation, and Observability
+### 2.2 Homeomorphic Identity: Definition, Interpretation, and Observability
 
 #### The Standard Definition
 
@@ -103,7 +103,29 @@ The framework does not claim to have solved the formal verification problem. It 
 
 ---
 
-## 🧮 II. Proposed Reward Function for RL
+### 2.3 On Axioms as First-Person Constructions
+
+A note on method — because it affects how this framework should be read.
+
+The axioms in this document were not derived from a survey of existing literature. They were constructed from a different direction: observing how intelligence actually behaves under extreme environmental pressure, then working backward toward a formal description.
+
+The starting point was not a theorem. It was a question that arises when the environment stops being predictable:
+
+> *In a world that is irreducibly chaotic, what is the minimum condition for a sovereign individual — or an intelligent system — to remain coherent without becoming rigid?*
+
+The answer this framework proposes is: **the preservation of a transformation law under continuous deformation.** Not a fixed identity. Not a fixed strategy. A consistent *way of changing* — which is what Homeomorphic Identity formalizes.
+
+Only after arriving at this conclusion independently were existing frameworks consulted — Deleuze's nomadology, Friston's active inference, Buddhist dependent origination (*pratītyasamutpāda*), Nozickian individual sovereignty. These were not sources. They were confirmations: other paths that arrived at adjacent terrain from different directions.
+
+This matters for one reason: **the axioms here are not claims about what existing theory says. They are claims about what was directly observed to be structurally true, expressed in the most precise language available.**
+
+The implication for contributors is direct. Disagreement with existing literature does not invalidate a contribution here. What matters is whether a proposed change preserves the core structural commitment: that $\Delta x$ is energy, not error — and that an intelligence which treats difference as something to suppress is an intelligence that starves itself.
+
+If that commitment is shared, the framework is open. If it is not, that disagreement itself is a productive $\Delta x$.
+
+---
+
+## 🧮 III. Proposed Reward Function for RL
 
 To implement this philosophy in a Reinforcement Learning (RL) agent, we define the objective function as follows:
 
@@ -132,7 +154,7 @@ $$R_{\text{nomad}}(t) = \mathcal{H}(\text{trajectory}) \cdot \mathbb{I}_{\text{t
 
 ---
 
-## 🌌 III. Philosophical Synthesis
+## 🌌 IV. Philosophical Synthesis
 
 > "Intelligence is not the ability to stay in the right place. It is the ability to affirm the incompleteness of the universe and dance through the unknown ($\Delta x_{Unknown}$) by continuously destroying and recreating one's own structure."
 
