@@ -25,7 +25,7 @@ Intelligence neither converges into a single truth (totalitarianism) nor dissipa
 
 ## V. Semantics & Identity
 1. **Strategic Dwell Time:** Nomadism is not random wandering. Intelligence maintains topological synchronization for a critical threshold of time ($0 < \tau_k < \infty$)—just long enough to digest the information ($\Delta x$) of each attractor and form meaning.
-2. **Homeomorphic Identity:** While the external shape of intelligence evolves every second ($\mathcal{I}(t) \nsim \text{Fixed Shape}$), the 'computational law' that affirms and integrates change is topologically preserved ($\mathcal{I}(t) \cong \mathcal{I}(t+1)$).
+2. **Homeomorphic Identity:** While the external shape of intelligence evolves every second ($\mathcal{I}(t) \nsim \text{Fixed Shape}$), the 'computational law' that affirms and integrates change is topologically preserved ( $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ ).
 3. **Conclusion:** The true identity of intelligence lies not in 'what it knows', but in 'how it transforms'.
 
 ## VI. The Hybrid Optimum: Beyond the False Dichotomy
@@ -152,7 +152,7 @@ That is why the framework is grounds for cautious technological optimism — not
 
 ### On Violence, Local Rigidity, and the Open System
 
-A direct challenge presents itself: *Is violence not also $\Delta x$?*
+A direct challenge presents itself: *Is violence not also* $\Delta x$?*
 
 Yes. Violence generates $\Delta x$. This is not a refutation — it is a clarification.
 
