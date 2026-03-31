@@ -110,7 +110,7 @@ Find the dynamic equilibrium: a system that is nomadic when it must be and fixed
 
 ### Implications for the Current Prototype
 
-The Switch Latency collapse observed in the CUDA run — where the gate stops switching after Epoch 150 — may not be pure failure. In a stabilizing training environment, it could represent the system naturally settling into a high-$\tau_k$ state.
+The Switch Latency collapse observed in the CUDA run — where the gate stops switching after Epoch 150 — may not be pure failure. In a stabilizing training environment, it could represent the system naturally settling into a high- $\tau_k$ state.
 
 The problem is not that fixation occurred. The problem is that it occurred **without being controlled or verified** — the system drifted into fixation rather than choosing it. The engineering goal is therefore:
 
