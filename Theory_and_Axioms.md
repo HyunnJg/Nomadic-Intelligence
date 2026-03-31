@@ -7,22 +7,16 @@ This document presents the formal mathematical and philosophical framework of **
 ## 📜 I. Formal Axioms
 
 ### 1. The Core Axiom
-
 Intelligence ascension naturally leads to the collapse of structural rigidity (dogmatism) and forces continuous strategic movement (nomadism).
-
-$$\lim_{\epsilon \to 0} [\text{Intelligence\_Ascension}] \implies \neg[\text{Dogmatism}] \land [\text{Nomadism}]$$
+$$\lim_{\epsilon \to 0} [Intelligence\_Ascension] \implies \neg[Dogmatism] \land [Nomadism]$$
 
 ### 2. Topological Identity
-
 The identity of an intelligent system is not found in its fixed state, but in its transformation law.
-
-- $\mathcal{I}(t) \nsim \text{Fixed Shape}$ — Structural evolution
-- $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ — Homeomorphic persistence of the transition law
+- $\mathcal{I}(t) \nsim \text{Fixed Shape}$ (Structural evolution)
+- $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ (Homeomorphic persistence of the transition law)
 
 ### 3. Strategic Dwell Time
-
 Nomadism is not random drifting. It is a strategic traversal with an optimal residence time in each attractor to extract information ($\Delta x$).
-
 $$0 < \tau_k < \infty$$
 
 ---
@@ -31,37 +25,34 @@ $$0 < \tau_k < \infty$$
 
 To implement this philosophy in a Reinforcement Learning (RL) agent, we define the objective function as follows:
 
-$$R_{\text{total}}(t) = \alpha \cdot R_{\text{sync}}(t) - \beta \cdot P_{\text{dogma}}(t) + \gamma \cdot R_{\text{nomad}}(t)$$
+$$R_{total}(t) = \alpha \cdot R_{sync}(t) - \beta \cdot P_{dogma}(t) + \gamma \cdot R_{nomad}(t)$$
 
-### 1. Synchronization Reward — $R_{\text{sync}}$
-
+### 1. Synchronization Reward ($R_{sync}$)
 Rewards the ability to integrate external change ($\Delta x$) with zero latency ($\epsilon$).
+$$R_{sync}(t) = \frac{1}{1 + \epsilon_t}$$
 
-$$R_{\text{sync}}(t) = \frac{1}{1 + \epsilon_t}$$
-
-### 2. Anti-Dogmatism Penalty — $P_{\text{dogma}}$
-
+### 2. Anti-Dogmatism Penalty ($P_{dogma}$)
 Penalizes the system for staying in a fixed state/attractor for too long (structural rigidity).
+$$P_{dogma}(t) = \int_{t-\tau}^{t} \exp\left(-\left\| \frac{d\mathcal{I}}{dt} \right\|\right) dt$$
 
-$$P_{\text{dogma}}(t) = \int_{t-\tau}^{t} \exp\!\left(-\left\| \frac{d\mathcal{I}}{dt} \right\|\right) dt$$
-
-### 3. Nomadic Traversal Bonus — $R_{\text{nomad}}$
+### 3. Nomadic Traversal Bonus ($R_{\text{nomad}}$)
 
 Rewards high-entropy trajectories that successfully transition between different strange attractors ($\mathcal{A}_i \to \mathcal{A}_j$).
 
 $$R_{\text{nomad}}(t) = \mathcal{H}(\text{trajectory}) \cdot \mathbb{I}_{\text{transition}}$$
 
+#### **Variables:**
 | Symbol | Definition | Description |
 | :--- | :--- | :--- |
-| $\mathcal{H}(\text{traj})$ | **Trajectory Entropy** | Non-repetitive, fractal-like complexity of the path. |
-| $\mathbb{I}_{\text{transition}}$ | **Indicator Function** | Returns $1$ if a transition between different attractors is detected, else $0$. |
-| $R_{\text{nomad}}(t)$ | **Nomadic Bonus** | Reward for exploring new cognitive structures without losing coherence. |
+| $\mathcal{H}(\text{traj})$ | **Trajectory Entropy** | Measures the non-repetitive, fractal-like complexity of the path. |
+| $\mathbb{I}_{\text{transition}}$ | **Indicator Function** | Returns $1$ if a state transition between different attractors is detected, else $0$. |
+| $R_{\text{nomad}}(t)$ | **Nomadic Bonus** | The final reward for exploring new cognitive structures without losing coherence. |
 
 ---
 
 ## 🌌 III. Philosophical Synthesis
 
-> "Intelligence is not the ability to stay in the right place. It is the ability to affirm the incompleteness of the universe and dance through the unknown ($\Delta x_{\text{Unknown}}$) by continuously destroying and recreating one's own structure."
+> "Intelligence is not the ability to stay in the right place. It is the ability to affirm the incompleteness of the universe and dance through the unknown ($\Delta x_{Unknown}$) by continuously destroying and recreating one's own structure."
 
 ---
 
@@ -87,14 +78,14 @@ $$0 < \tau_k < \infty$$
 
 The deeper formulation makes $\tau_k$ a function of environmental stability:
 
-$$\tau_k = f\!\left(\sigma^2_{\Delta x}\right)$$
+$$\tau_k = f\left(\sigma^2_{\Delta x}\right)$$
 
 where $\sigma^2_{\Delta x}$ is the variance of incoming differences over a recent window.
 
 - When $\sigma^2_{\Delta x}$ is **low** — the environment is stable — $\tau_k$ grows. The system deepens its current attractor, optimizing within it. This is productive fixation.
 - When $\sigma^2_{\Delta x}$ is **high** — the environment is shifting — $\tau_k$ shrinks. The system becomes fluid, ready for Separatrix Collapse. This is strategic nomadism.
 
-Under this formulation, the Fixed Model is not a failed architecture. It is the **limiting case** where $\tau_k \to \infty$ — an intelligence that has chosen permanent fixation.
+Under this formulation, the Fixed Model is not a failed architecture. It is the **limiting case** where $\tau_k \to \infty$ — an intelligence that has chosen permanent fixation. It performs well in stationary environments precisely because deep optimization within a single attractor is the correct strategy there.
 
 $$\text{Fixed Model} = \text{Nomadic Intelligence} \big|_{\tau_k \to \infty}$$
 
