@@ -300,19 +300,23 @@ But extends them by introducing:
 
 The primary metric is **Sequence MSE** — performance when the model receives data in phase-transition order, with access to temporal $\Delta x$ signals. This is the condition Nomadic Intelligence is designed for.
 
-Two runs were conducted under identical code and seed, differing only in compute backend. Both outperform the Fixed baseline. They fail in different directions — which itself reveals something about the architecture's sensitivity.
+**Multi-seed results (CUDA, 3 seeds):**
 
-| Model | Backend | Seq MSE (Best) | Seq MSE (Ep 200) | Static MSE (Ep 200) | Switch Latency (Ep 200) |
+| Model | Seed | Seq MSE (Ep 200) | Fixed MSE (Ep 200) | Switch Latency (Ep 200) | Mean Dwell Time |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Fixed (baseline) | CPU | — | 0.4187 | 0.4187 | — |
-| Nomadic | CPU | **0.2173** (Ep 50) | 0.2447 | 8.64 | ~1.1 (stable) |
-| Nomadic | CUDA | **0.2424** (Ep 125) | 0.2812 | 2.09 | ~0.03 (collapsed) |
+| Fixed (baseline) | 42 | — | 0.4139 | — | — |
+| Fixed (baseline) | 123 | — | 0.4031 | — | — |
+| Fixed (baseline) | 456 | — | 0.4195 | — | — |
+| Nomadic | 42 | 0.2399 | — | 0.056 🚨 | 2.82 |
+| Nomadic | 123 | 0.2584 | — | 1.611 ✅ | 2.33 |
+| Nomadic | 456 | 0.2521 | — | 0.278 ⚠️ | 4.21 |
 
-**CPU run:** Achieves lower Seq MSE peak but Static MSE rises to 8.6 — the model becomes fully context-dependent and cannot function without temporal $\Delta x$ input.
+**Summary across 3 seeds:**
+- Nomadic Seq MSE: **0.250 ± 0.010**
+- Fixed MSE: **0.412 ± 0.008**
+- Nomadic outperforms Fixed baseline consistently: **~61% of baseline error**
 
-**CUDA run:** More stable Static MSE (2.1), but Switch Latency collapses to near-zero by Epoch 175 — the gate stops switching attractors. The nomadic behavior partially degrades into a fixed routing pattern. Seq MSE rises accordingly in the final epochs.
-
-Both results confirm the core claim — the Nomadic model significantly outperforms the Fixed baseline under phase-transition conditions — while exposing two distinct failure modes that define the next engineering targets.
+The core claim holds across all three seeds. The Nomadic model significantly outperforms the Fixed baseline under phase-transition conditions — without exception.
 
 > **Note on Static MSE:** Static evaluation removes temporal context, forcing the model to predict without knowing which regime it's in. This is not the target condition for this architecture. Static MSE is included as a diagnostic, not a success criterion.
 
@@ -322,40 +326,45 @@ Both results confirm the core claim — the Nomadic model significantly outperfo
 
 The gate learned to assign different experts to different regimes **without explicit regime labels** — purely from the $\Delta x$ signal and the Topological Loss.
 
-**Regime–Expert alignment (Top-1 selection ratio, CPU run):**
+**Regime–Expert alignment (Top-1 selection ratio, Seed 123 — healthiest run):**
 
 | Regime | Expert 0 | Expert 1 | Expert 2 |
 | :--- | :--- | :--- | :--- |
-| A ($y = x_1 + x_2$) | 0.00 | **0.85** | 0.15 |
-| B ($y = x_1 - x_2$) | **0.29** | 0.65 | 0.07 |
-| C ($y = -x_1 + 0.5x_2$) | 0.00 | **1.00** | 0.00 |
+| A ($y = x_1 + x_2$) | 0.042 | **0.905** | 0.054 |
+| B ($y = x_1 - x_2$) | **0.400** | 0.122 | 0.479 |
+| C ($y = -x_1 + 0.5x_2$) | 0.014 | **0.828** | 0.159 |
 
-Regime A and C share Expert 1 — both are additive structures. Regime B activates Expert 0, which handles the subtractive pattern. The system discovered this grouping without supervision.
-
-**Known limitation — Expert 1 hub behavior:** Expert 1 dominates across Regime A and C, preventing full multi-attractor separation. The CUDA run's Switch Latency collapse suggests this hub tendency can strengthen over training, eventually reducing the system to near-static routing. Preventing this is an active open problem.
+Regime A and C both activate Expert 1 — both are additive structures. Regime B distributes across Expert 0 and 2, handling the subtractive pattern differently. The system discovered structural similarity between regimes without supervision.
 
 ---
 
 ### Nomadic Behavior Confirmed
 
-**Transition Entropy > Stable Entropy** (across all 220 epochs, CPU run):
+**Transition Entropy > Stable Entropy — consistent across all 3 seeds:**
 
-When the environment is in a transition phase, gate entropy rises — the system explores expert combinations more freely. During stable phases, entropy drops as one expert dominates. This is the computational signature of Strategic Dwell Time ($\tau_k$).
+| Seed | Stable Entropy | Transition Entropy | Δ |
+| :--- | :--- | :--- | :--- |
+| 42 | 0.937 | 1.043 | +0.106 |
+| 123 | 0.985 | 1.045 | +0.060 |
+| 456 | 0.885 | 1.041 | +0.156 |
 
-The CUDA run shows this pattern holds in early training but weakens after Epoch 150 as Switch Latency approaches zero — consistent with the hub collapse hypothesis.
+When the environment is in a transition phase, gate entropy rises — the system explores expert combinations more freely. During stable phases, entropy drops as one expert dominates. This is the computational signature of Strategic Dwell Time ($\tau_k$), and it holds regardless of initialization.
 
 ---
 
-### What the Two Runs Tell Us
+### Switch Latency — The Critical Failure Mode
 
-The CPU/CUDA divergence is not a hardware artifact. It reflects **initialization sensitivity** — the same architecture, same seed, same code, produces qualitatively different long-term behavior depending on floating-point execution order.
+Switch Latency variance across seeds is the most significant finding of the multi-seed experiment:
 
-This means:
-- The current results cannot be considered fully reproducible without multi-seed averaging
-- The architecture has not yet converged to a stable training dynamic
-- Small structural changes (loss weights, $\Delta x$ signal, gate design) likely have large effects
+| Seed | Switch Latency | Status |
+| :--- | :--- | :--- |
+| 42 | 0.056 | 🚨 Collapsed — gate stopped switching |
+| 123 | 1.611 | ✅ Stable — nomadic behavior maintained |
+| 456 | 0.278 | ⚠️ Borderline — partial degradation |
 
-These are not reasons to distrust the results. They are the exact reasons this project needs contributors.
+This variance is not a hardware artifact. It reflects **initialization sensitivity** — the same architecture produces qualitatively different long-term behavior depending on weight initialization. Under the topological framing, Switch Latency collapse is not just an engineering failure: it is an observable instance of **Homeomorphic Identity breaking down**. The gate ceases to have a consistent transformation law in response to $\Delta x$.
+
+Making this transition explicit, measurable, and preventable is the primary open engineering problem.
 
 ---
 
@@ -363,13 +372,13 @@ These are not reasons to distrust the results. They are the exact reasons this p
 
 | Problem | Observable symptom | Possible direction |
 | :--- | :--- | :--- |
-| Switch Latency collapse | CUDA run: latency → 0 after Ep 150 | Explicit $\tau_k$ lower bound, anti-fixation penalty |
-| Expert hub dominance | Expert 1 across A and C | Load-balancing loss, anti-collapse regularization |
-| $\Delta x$ signal drift | Raw delta grows to ~30 by Ep 200 | KL divergence or Wasserstein distance estimate |
-| Initialization sensitivity | CPU vs CUDA divergence | Multi-seed averaging, better weight init |
-| Static generalization gap | Static MSE 2–9× Seq MSE | Partially context-free routing as secondary objective |
+| Switch Latency collapse | Seed 42: latency → 0.056 | Explicit $\tau_k$ lower bound, anti-fixation penalty |
+| Expert hub dominance | Expert 1 dominant across A and C | Load-balancing loss, anti-collapse regularization |
+| $\Delta x$ signal drift | Raw delta grows unbounded | KL divergence or Wasserstein distance estimate |
+| Initialization sensitivity | Latency variance 0.056~1.611 across seeds | Better weight init, explicit $\tau_k$ floor |
+| Static generalization gap | Static MSE 5–7× Seq MSE | Partially context-free routing as secondary objective |
 
-**The baseline is working. The failure modes are visible. The improvement vectors are clear.** See [Contributing](./CONTRIBUTING.md).
+**The baseline is working. The failure modes are visible across multiple seeds. The improvement vectors are clear.** See [Contributing](./CONTRIBUTING.md).
 
 ---
 
