@@ -69,9 +69,33 @@ class Config:
     # loss weights
     alpha_dogma: float = 0.04
     beta_nomad: float = 0.05
+    beta_phi: float = 0.05
     gamma_diversity: float = 0.08
     lambda_sep: float = 0.08
     lambda_cons: float = 0.03
+    lambda_load: float = 0.03
+    tau_k_min: int = 3
+    tau_k_penalty: float = 0.05
+
+    # phi / switching
+    phi_scale_env: float = 1.0
+    phi_scale_err: float = 1.5
+    phi_scale_explain: float = 2.0
+    phi_scale_gap: float = 1.0
+
+    temp_stable: float = 0.30
+    temp_transition: float = 1.00
+
+    use_hard_switch: bool = True
+    phi_hard_threshold: float = 0.35
+
+    # policy
+    policy_hidden_dim: int = 64
+    policy_mix_weight: float = 0.25      # target_onehot 합성 비율 (0.0 = policy 비활성)
+    policy_weight_stay: float = 0.20
+    policy_weight_target: float = 0.20
+    policy_weight_mode: float = 0.10
+    policy_switch_threshold: float = 0.50
 
     # output
     save_dir: str = "outputs_transition"
@@ -94,6 +118,8 @@ def build_config_from_yaml(yaml_dict: dict) -> Config:
     data = yaml_dict.get("data", {})
     loss = yaml_dict.get("loss", {})
     delta = yaml_dict.get("delta", {})
+    switching = yaml_dict.get("switching", {})
+    policy = yaml_dict.get("policy", {})
 
     device_value = runtime.get("device", "auto")
     if device_value == "auto":
@@ -124,11 +150,33 @@ def build_config_from_yaml(yaml_dict: dict) -> Config:
         gamma_diversity=loss.get("gamma_diversity", 0.08),
         lambda_sep=loss.get("lambda_sep", 0.08),
         lambda_cons=loss.get("lambda_cons", 0.03),
+        lambda_load=loss.get("lambda_load", 0.03),
+        tau_k_min=loss.get("tau_k_min", 3),
+        tau_k_penalty=loss.get("tau_k_penalty", 0.05),
 
         ema_decay=delta.get("ema_decay", 0.80),
         err_baseline_momentum=delta.get("err_baseline_momentum", 0.85),
         w_env=delta.get("w_env", 1.0),
         w_err=delta.get("w_err", 2.0),
+
+        phi_scale_env=switching.get("phi_scale_env", 1.0),
+        phi_scale_err=switching.get("phi_scale_err", 1.5),
+        phi_scale_explain=switching.get("phi_scale_explain", 2.0),
+        phi_scale_gap=switching.get("phi_scale_gap", 1.0),
+        beta_phi=switching.get("beta_phi", 0.05),
+
+        temp_stable=switching.get("temp_stable", 0.30),
+        temp_transition=switching.get("temp_transition", 1.00),
+
+        use_hard_switch=switching.get("use_hard_switch", True),
+        phi_hard_threshold=switching.get("phi_hard_threshold", 0.35),
+
+        policy_hidden_dim=policy.get("policy_hidden_dim", 64),
+        policy_mix_weight=policy.get("policy_mix_weight", 0.25),
+        policy_weight_stay=policy.get("policy_weight_stay", 0.20),
+        policy_weight_target=policy.get("policy_weight_target", 0.20),
+        policy_weight_mode=policy.get("policy_weight_mode", 0.10),
+        policy_switch_threshold=policy.get("policy_switch_threshold", 0.50),
     )
     return cfg
 
@@ -273,33 +321,92 @@ class GateNet(nn.Module):
     def __init__(self, input_dim: int, gate_hidden_dim: int, num_experts: int):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(input_dim + 1, gate_hidden_dim),  # x + delta_hybrid
+            nn.Linear(input_dim + 2, gate_hidden_dim),  # x + delta_hybrid + delta_err
             nn.ReLU(),
             nn.Linear(gate_hidden_dim, gate_hidden_dim),
             nn.ReLU(),
             nn.Linear(gate_hidden_dim, num_experts),
         )
 
-    def forward(self, x: torch.Tensor, delta_hybrid: torch.Tensor, temperature: float):
-        gate_input = torch.cat([x, delta_hybrid], dim=-1)
+    def forward(
+        self,
+        x: torch.Tensor,
+        delta_hybrid: torch.Tensor,
+        delta_err: torch.Tensor,
+        temperature: float,
+    ):
+        gate_input = torch.cat([x, delta_hybrid, delta_err], dim=-1)
         logits = self.net(gate_input)
         probs = F.softmax(logits / temperature, dim=-1)
         return probs, logits
 
 
+class PolicyNet(nn.Module):
+    """
+    Meta decision-maker: runs on top of GateNet, controls routing direction.
+
+    Inputs: x_summary(input_dim) + delta_hybrid(1) + delta_err(1) + phi_signal(1)
+    Outputs:
+      stay_switch_probs  [B, 2]  — stay(0) / switch(1)
+      target_probs       [B, E]  — which expert to prefer
+      mode_probs         [B, 2]  — soft(0) / hard(1)
+    """
+    def __init__(self, input_dim: int, hidden_dim: int, num_experts: int):
+        super().__init__()
+        self.shared = nn.Sequential(
+            nn.Linear(input_dim + 3, hidden_dim),   # x_summary + delta_hybrid + delta_err + phi
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+        )
+        self.stay_switch_head = nn.Linear(hidden_dim, 2)
+        self.target_head = nn.Linear(hidden_dim, num_experts)
+        self.mode_head = nn.Linear(hidden_dim, 2)
+
+    def forward(self, policy_input: torch.Tensor):
+        h = self.shared(policy_input)
+        stay_switch_probs = F.softmax(self.stay_switch_head(h), dim=-1)
+        target_probs      = F.softmax(self.target_head(h),      dim=-1)
+        mode_probs        = F.softmax(self.mode_head(h),        dim=-1)
+        return stay_switch_probs, target_probs, mode_probs
+
+
 class NomadicMoE(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int, output_dim: int, num_experts: int, gate_hidden_dim: int):
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_dim: int,
+        output_dim: int,
+        num_experts: int,
+        gate_hidden_dim: int,
+        policy_hidden_dim: int = 64,
+    ):
         super().__init__()
         self.num_experts = num_experts
         self.experts = nn.ModuleList([
             Expert(input_dim, hidden_dim, output_dim) for _ in range(num_experts)
         ])
         self.gate = GateNet(input_dim, gate_hidden_dim, num_experts)
+        self.policy = PolicyNet(input_dim, policy_hidden_dim, num_experts)
 
-    def forward(self, x: torch.Tensor, delta_hybrid: torch.Tensor, temperature: float):
-        gate_probs, gate_logits = self.gate(x, delta_hybrid, temperature)
+    def forward(
+        self,
+        x: torch.Tensor,
+        delta_hybrid: torch.Tensor,
+        delta_err: torch.Tensor,
+        temperature: float,
+        hard: bool = False,
+    ):
+        gate_probs, gate_logits = self.gate(x, delta_hybrid, delta_err, temperature)
         expert_outputs = torch.stack([expert(x) for expert in self.experts], dim=1)  # [B, E, 1]
-        y_hat = (gate_probs.unsqueeze(-1) * expert_outputs).sum(dim=1)               # [B, 1]
+
+        if hard:
+            top1 = gate_probs.argmax(dim=-1)
+            routing = F.one_hot(top1, num_classes=self.num_experts).float()
+        else:
+            routing = gate_probs
+
+        y_hat = (routing.unsqueeze(-1) * expert_outputs).sum(dim=1)
         return y_hat, gate_probs, gate_logits, expert_outputs
 
 
@@ -388,6 +495,52 @@ class HybridDeltaTracker:
 # Regularizers / metrics
 # ============================================================
 
+def compute_load_balancing_loss(gate_probs: torch.Tensor) -> torch.Tensor:
+    num_experts = gate_probs.size(-1)
+    mean_gate = gate_probs.mean(dim=0)  # [num_experts]
+    top1 = gate_probs.argmax(dim=-1)   # [batch]
+    top1_frac = torch.zeros(num_experts, device=gate_probs.device)
+    for i in range(num_experts):
+        top1_frac[i] = (top1 == i).float().mean()
+    loss = num_experts * (top1_frac * mean_gate).sum()
+    return loss
+
+class DwellTimeRegularizer:
+    def __init__(self, tau_k_min: int = 3, penalty: float = 0.05):
+        self.tau_k_min = tau_k_min
+        self.penalty = penalty
+        self.current_expert = None
+        self.dwell_count = 0
+
+    def reset(self):
+        self.current_expert = None
+        self.dwell_count = 0
+
+    def compute(self, gate_probs: torch.Tensor) -> torch.Tensor:
+        top1_counts = torch.bincount(
+            gate_probs.argmax(dim=-1),
+            minlength=gate_probs.size(-1)
+        )
+        dominant = int(top1_counts.argmax().item())
+
+        if dominant == self.current_expert:
+            self.dwell_count += 1
+        else:
+            self.current_expert = dominant
+            self.dwell_count = 1
+
+        eps = 1e-8
+        entropy = -(gate_probs * (gate_probs + eps).log()).sum(dim=-1).mean()
+
+        if self.dwell_count > self.tau_k_min:
+            excess = self.dwell_count - self.tau_k_min
+            bonus_weight = min(float(excess) * self.penalty, self.penalty * 10)
+            return bonus_weight * entropy
+
+        # 항상 gate_probs 연산 그래프에 연결된 텐서 반환 (0 * entropy = 0이지만 grad 경로 유지)
+        return 0.0 * entropy
+
+
 def compute_diversity_loss(expert_outputs: torch.Tensor) -> torch.Tensor:
     num_experts = expert_outputs.size(1)
     if num_experts < 2:
@@ -419,6 +572,110 @@ def compute_nomad_bonus(gate_probs: torch.Tensor) -> torch.Tensor:
     eps = 1e-8
     entropy = -(gate_probs * (gate_probs + eps).log()).sum(dim=-1).mean()
     return entropy
+
+
+def compute_explanation_signals(
+    y_true: torch.Tensor,
+    y_hat: torch.Tensor,
+    expert_outputs: torch.Tensor,
+    gate_probs: torch.Tensor,
+):
+    """
+    explanation_error:
+        현재 routing 결과가 데이터를 얼마나 설명 못하는가
+    best_expert_gap:
+        현재 top1 expert보다 더 잘 맞는 expert가 존재하는가
+    """
+    explanation_error = F.mse_loss(y_hat, y_true)
+
+    # expert_outputs: [B, E, 1], y_true: [B, 1]
+    # -> per_expert_sqerr: [B, E]
+    per_expert_sqerr = ((expert_outputs - y_true.unsqueeze(1)) ** 2).mean(dim=-1)
+
+    top1_idx = gate_probs.argmax(dim=-1)  # [B]
+    top1_err = per_expert_sqerr.gather(1, top1_idx.unsqueeze(1)).mean()
+
+    best_expert_err = per_expert_sqerr.min(dim=1).values.mean()
+
+    best_expert_gap = torch.relu(top1_err - best_expert_err)
+
+    return explanation_error, best_expert_gap
+
+
+def compute_phi_signal(
+    delta_env_scalar: float,
+    delta_err_scalar: float,
+    explanation_error: torch.Tensor,
+    best_expert_gap: torch.Tensor,
+    phi_scale_env: float = 1.0,
+    phi_scale_err: float = 1.5,
+    phi_scale_explain: float = 2.0,
+    phi_scale_gap: float = 1.0,
+):
+    """
+    높을수록:
+    - 환경 변화가 크고
+    - 현재 설명력이 부족하고
+    - 더 나은 expert가 존재할 가능성이 높다
+    => switching pressure 증가
+    """
+    device = explanation_error.device
+
+    env_term = phi_scale_env * torch.tensor(delta_env_scalar, device=device)
+    err_term = phi_scale_err * torch.tensor(delta_err_scalar, device=device)
+    explain_term = phi_scale_explain * explanation_error.detach()
+    gap_term = phi_scale_gap * best_expert_gap.detach()
+
+    phi_signal = torch.tanh(env_term + err_term + explain_term + gap_term)
+    return phi_signal
+
+
+def compute_adaptive_temperature(
+    phi_signal: torch.Tensor,
+    temp_stable: float = 0.30,
+    temp_transition: float = 1.00,
+):
+    phi_val = float(phi_signal.mean().item())
+    temp = temp_stable + (temp_transition - temp_stable) * phi_val
+    return temp
+
+
+def build_policy_input(
+    xb: torch.Tensor,
+    delta_hybrid: torch.Tensor,
+    delta_err_tensor: torch.Tensor,
+    phi_signal: torch.Tensor,
+) -> torch.Tensor:
+    """
+    x_summary(input_dim) + delta_hybrid(1) + delta_err(1) + phi_signal(1)
+    모두 배치 전체에 broadcast해서 [B, input_dim+3] 반환.
+    """
+    x_summary = xb.mean(dim=0, keepdim=True).expand(xb.size(0), -1)
+    phi_tensor = torch.full((xb.size(0), 1), float(phi_signal.mean().item()), device=xb.device)
+    return torch.cat([x_summary, delta_hybrid, delta_err_tensor, phi_tensor], dim=-1)
+
+
+def build_policy_targets(
+    y_true: torch.Tensor,
+    expert_outputs: torch.Tensor,
+    phi_signal: torch.Tensor,
+    switch_threshold: float,
+):
+    """
+    Heuristic teacher signals — no RL required.
+
+    stay_switch: phi > threshold → switch(1), else stay(0)
+    target_expert: expert with lowest mean squared error on this batch
+    mode: phi > threshold → soft(0), else hard(1)
+    """
+    per_expert_sqerr = ((expert_outputs - y_true.unsqueeze(1)) ** 2).mean(dim=-1)  # [B, E]
+    target_expert = per_expert_sqerr.mean(dim=0).argmin().long()
+
+    phi_val = float(phi_signal.mean().item())
+    switch_label = 1 if phi_val > switch_threshold else 0
+    mode_label   = 0 if phi_val > switch_threshold else 1  # soft=0 when switching, hard=1 when stable
+
+    return switch_label, target_expert, mode_label
 
 
 def gate_entropy(gate_probs: torch.Tensor) -> torch.Tensor:
@@ -585,7 +842,8 @@ def evaluate_nomadic_static_full(model: NomadicMoE, X: torch.Tensor, Y: torch.Te
     model.eval()
     with torch.no_grad():
         delta_hybrid = torch.zeros((X.size(0), 1), device=X.device)
-        y_pred, gate_probs, _, _ = model(X, delta_hybrid, cfg.temperature)
+        delta_err = torch.zeros((X.size(0), 1), device=X.device)
+        y_pred, gate_probs, _, _ = model(X, delta_hybrid, delta_err, cfg.temperature)
 
         total_mse = F.mse_loss(y_pred, Y).item()
         per_regime = mse_by_regime(Y, y_pred, R)
@@ -632,12 +890,75 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
 
     with torch.no_grad():
         for batch_idx, (xb, yb, rb) in enumerate(iterate_sequence_minibatches(X, Y, R, cfg.phase_batch_size)):
+            # 1) warm pass (delta_err=0, delta_hybrid=0)
             zero_delta = torch.zeros((xb.size(0), 1), device=cfg.device)
-            warm_y, _, _, _ = model(xb, zero_delta, cfg.temperature)
+            warm_y, _, _, _ = model(
+                xb, zero_delta, zero_delta, cfg.temperature, hard=False
+            )
             warm_mse = F.mse_loss(warm_y, yb)
 
-            delta_hybrid, _, _, _ = tracker.compute(xb, warm_mse)
-            y_hat, gate_probs, _, _ = model(xb, delta_hybrid, cfg.temperature)
+            # 2) hybrid delta
+            delta_hybrid, de, derr, _ = tracker.compute(xb, warm_mse)
+            delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
+
+            # 3) probe pass for explanation diagnosis
+            probe_y, probe_gate_probs, _, probe_expert_outputs = model(
+                xb, delta_hybrid, delta_err_tensor, cfg.temperature, hard=False
+            )
+
+            explanation_error, best_expert_gap = compute_explanation_signals(
+                y_true=yb,
+                y_hat=probe_y,
+                expert_outputs=probe_expert_outputs,
+                gate_probs=probe_gate_probs,
+            )
+
+            phi_signal = compute_phi_signal(
+                delta_env_scalar=de,
+                delta_err_scalar=derr,
+                explanation_error=explanation_error,
+                best_expert_gap=best_expert_gap,
+                phi_scale_env=cfg.phi_scale_env,
+                phi_scale_err=cfg.phi_scale_err,
+                phi_scale_explain=cfg.phi_scale_explain,
+                phi_scale_gap=cfg.phi_scale_gap,
+            )
+
+            # 4) PolicyNet decision
+            policy_input = build_policy_input(xb, delta_hybrid, delta_err_tensor, phi_signal)
+            stay_switch_probs, target_probs, mode_probs = model.policy(policy_input)
+
+            temp_now = compute_adaptive_temperature(
+                phi_signal=phi_signal,
+                temp_stable=cfg.temp_stable,
+                temp_transition=cfg.temp_transition,
+            )
+            hard_mode = bool(cfg.use_hard_switch and (mode_probs[:, 1].mean().item() > 0.5))
+
+            # 5) final routed pass with policy mixing
+            y_hat, gate_probs, _, expert_outputs_eval = model(
+                xb, delta_hybrid, delta_err_tensor, temp_now, hard=False
+            )
+
+            effective_mix = cfg.policy_mix_weight * float(stay_switch_probs[:, 1].mean().item())
+            target_idx = torch.argmax(target_probs.mean(dim=0), dim=-1)
+            target_onehot_hard = F.one_hot(
+                target_idx,
+                num_classes=cfg.num_experts
+            ).float().unsqueeze(0).expand(xb.size(0), -1)
+
+            target_onehot_ste = (target_onehot_hard - gate_probs).detach() + gate_probs
+
+            mixed_routing = (1.0 - effective_mix) * gate_probs + effective_mix * target_onehot_ste
+
+            if hard_mode:
+                top1_r = mixed_routing.argmax(dim=-1)
+                final_routing = F.one_hot(top1_r, num_classes=cfg.num_experts).float()
+            else:
+                final_routing = mixed_routing
+
+            y_hat = (final_routing.unsqueeze(-1) * expert_outputs_eval).sum(dim=1)
+            gate_probs = final_routing
 
             all_y.append(y_hat)
             all_gate_probs.append(gate_probs)
@@ -729,6 +1050,7 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         output_dim=cfg.output_dim,
         num_experts=cfg.num_experts,
         gate_hidden_dim=cfg.gate_hidden_dim,
+        policy_hidden_dim=cfg.policy_hidden_dim,
     ).to(cfg.device)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
@@ -739,6 +1061,7 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         "train_dogma_losses": [],
         "train_nomad_bonus": [],
         "train_diversity_losses": [],
+        "train_load_balance_losses": [],
         "train_sep_losses": [],
         "train_cons_losses": [],
         "train_mean_gate_distance": [],
@@ -753,6 +1076,10 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         "test_switch_latency": [],
         "test_transition_entropy": [],
         "test_stable_entropy": [],
+        "train_phi_rewards": [],
+        "train_policy_stay_loss": [],
+        "train_policy_target_loss": [],
+        "train_policy_mode_loss": [],
     }
 
     for epoch in range(cfg.epochs):
@@ -767,47 +1094,157 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         )
         tracker.reset()
 
+        dwell_reg = DwellTimeRegularizer(
+            tau_k_min=cfg.tau_k_min,
+            penalty=cfg.tau_k_penalty
+        )
+        dwell_reg.reset()
+
         epoch_total = 0.0
         epoch_mse = 0.0
+        epoch_phi = 0.0
         epoch_dogma = 0.0
         epoch_nomad = 0.0
         epoch_diversity = 0.0
         epoch_sep = 0.0
         epoch_cons = 0.0
+        epoch_load = 0.0
         epoch_entropy = 0.0
+        epoch_policy_stay = 0.0
+        epoch_policy_target = 0.0
+        epoch_policy_mode = 0.0
         n_batches = 0
 
         for xb, yb, rb in iterate_sequence_minibatches(X_train, Y_train, R_train, cfg.phase_batch_size):
             optimizer.zero_grad()
 
+            # warm pass: delta_err=0, delta_hybrid=0 (no grad)
             with torch.no_grad():
                 zero_delta = torch.zeros((xb.size(0), 1), device=cfg.device)
-                warm_y, _, _, _ = model(xb, zero_delta, cfg.temperature)
+                warm_y, _, _, _ = model(xb, zero_delta, zero_delta, cfg.temperature)
                 warm_mse = F.mse_loss(warm_y, yb)
 
+            # hybrid delta (detached scalars)
             delta_hybrid, de, derr, dh = tracker.compute(xb, warm_mse)
-            y_hat, gate_probs, _, expert_outputs = model(xb, delta_hybrid, cfg.temperature)
+            delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
 
+            # explanation signals (for phi_signal + loss)
+            with torch.no_grad():
+                probe_y, probe_gate_probs, _, probe_expert_outputs = model(
+                    xb, delta_hybrid, delta_err_tensor, cfg.temperature, hard=False
+                )
+            explanation_error, best_expert_gap = compute_explanation_signals(
+                y_true=yb,
+                y_hat=probe_y,
+                expert_outputs=probe_expert_outputs,
+                gate_probs=probe_gate_probs,
+            )
+
+            # phi_signal
+            phi_signal = compute_phi_signal(
+                delta_env_scalar=de,
+                delta_err_scalar=derr,
+                explanation_error=explanation_error,
+                best_expert_gap=best_expert_gap,
+                phi_scale_env=cfg.phi_scale_env,
+                phi_scale_err=cfg.phi_scale_err,
+                phi_scale_explain=cfg.phi_scale_explain,
+                phi_scale_gap=cfg.phi_scale_gap,
+            )
+
+            # PolicyNet forward
+            policy_input = build_policy_input(xb, delta_hybrid, delta_err_tensor, phi_signal)
+            stay_switch_probs, target_probs, mode_probs = model.policy(policy_input)
+
+            # teacher targets (heuristic supervision)
+            switch_label, target_expert_label, mode_label = build_policy_targets(
+                y_true=yb,
+                expert_outputs=probe_expert_outputs,
+                phi_signal=phi_signal,
+                switch_threshold=cfg.policy_switch_threshold,
+            )
+
+            # adaptive temperature + hard-switch (policy mode head 사용)
+            temp_now = compute_adaptive_temperature(
+                phi_signal=phi_signal,
+                temp_stable=cfg.temp_stable,
+                temp_transition=cfg.temp_transition,
+            )
+            hard_mode = cfg.use_hard_switch and (mode_probs[:, 1].mean().item() > 0.5)
+
+            # main forward pass (with grad)
+            y_hat, gate_probs, _, expert_outputs = model(
+                xb, delta_hybrid, delta_err_tensor, temp_now, hard=False
+            )
+
+            # PolicyNet target expert를 gate_probs에 약하게 합성
+            # mix_weight: stable→0에 가깝게, transition→cfg.policy_mix_weight
+            effective_mix = cfg.policy_mix_weight * float(stay_switch_probs[:, 1].mean().item())
+            target_idx = torch.argmax(target_probs.mean(dim=0), dim=-1)
+            target_onehot_hard = F.one_hot(
+                target_idx,
+                num_classes=cfg.num_experts
+            ).float().unsqueeze(0).expand(xb.size(0), -1)
+
+            target_onehot_ste = (target_onehot_hard - gate_probs).detach() + gate_probs
+
+            mixed_routing = (1.0 - effective_mix) * gate_probs + effective_mix * target_onehot_ste
+
+            if hard_mode:
+                top1 = mixed_routing.argmax(dim=-1)
+                final_routing = F.one_hot(top1, num_classes=cfg.num_experts).float()
+            else:
+                final_routing = mixed_routing
+
+            y_hat = (final_routing.unsqueeze(-1) * expert_outputs).sum(dim=1)
+
+            # --- losses ---
             mse_loss = F.mse_loss(y_hat, yb)
-            dogma_pen = compute_dogma_penalty(gate_probs)
-            nomad_bonus = compute_nomad_bonus(gate_probs)
-            diversity_loss = compute_diversity_loss(expert_outputs)
+
+            _, gap_loss = compute_explanation_signals(
+                y_true=yb,
+                y_hat=y_hat,
+                expert_outputs=expert_outputs,
+                gate_probs=final_routing,
+            )
+            conditional_gap_loss = phi_signal.detach() * gap_loss
+
+            dogma_pen = compute_dogma_penalty(final_routing)
+            nomad_bonus = compute_nomad_bonus(final_routing)
 
             _, sep_loss, cons_loss, _, _ = compute_regime_gate_stats(
-                gate_probs=gate_probs,
+                gate_probs=final_routing,
                 regime_ids=rb,
                 num_regimes=3,
             )
 
-            entropy_val = gate_entropy(gate_probs).mean()
+            entropy_val = gate_entropy(final_routing).mean()
+            load_balance_loss = compute_load_balancing_loss(final_routing)
+            dwell_bonus = dwell_reg.compute(final_routing)
+            diversity_loss = compute_diversity_loss(expert_outputs)
+
+            # policy supervision losses
+            stay_target   = torch.full((xb.size(0),), switch_label,                    dtype=torch.long, device=cfg.device)
+            target_target = torch.full((xb.size(0),), int(target_expert_label.item()), dtype=torch.long, device=cfg.device)
+            mode_target   = torch.full((xb.size(0),), mode_label,                      dtype=torch.long, device=cfg.device)
+
+            stay_loss   = F.nll_loss(torch.log(stay_switch_probs + 1e-8), stay_target)
+            target_loss = F.nll_loss(torch.log(target_probs      + 1e-8), target_target)
+            mode_loss   = F.nll_loss(torch.log(mode_probs        + 1e-8), mode_target)
 
             total_loss = (
                 mse_loss
+                + cfg.beta_phi * conditional_gap_loss
                 + cfg.alpha_dogma * dogma_pen
                 - cfg.beta_nomad * nomad_bonus
                 + cfg.gamma_diversity * diversity_loss
                 + cfg.lambda_sep * sep_loss
                 + cfg.lambda_cons * cons_loss
+                + cfg.lambda_load * load_balance_loss
+                + cfg.policy_weight_stay   * stay_loss
+                + cfg.policy_weight_target * target_loss
+                + cfg.policy_weight_mode   * mode_loss
+                - dwell_bonus
             )
 
             total_loss.backward()
@@ -815,12 +1252,17 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
 
             epoch_total += total_loss.item()
             epoch_mse += mse_loss.item()
+            epoch_phi += conditional_gap_loss.item()
             epoch_dogma += dogma_pen.item()
             epoch_nomad += nomad_bonus.item()
             epoch_diversity += diversity_loss.item()
             epoch_sep += sep_loss.item()
             epoch_cons += cons_loss.item()
+            epoch_load += load_balance_loss.item()
             epoch_entropy += entropy_val.item()
+            epoch_policy_stay   += stay_loss.item()
+            epoch_policy_target += target_loss.item()
+            epoch_policy_mode   += mode_loss.item()
             n_batches += 1
 
             logs["delta_env"].append(de)
@@ -830,12 +1272,17 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
 
         logs["train_total_losses"].append(epoch_total / max(n_batches, 1))
         logs["train_mse_losses"].append(epoch_mse / max(n_batches, 1))
+        logs["train_phi_rewards"].append(epoch_phi / max(n_batches, 1))
         logs["train_dogma_losses"].append(epoch_dogma / max(n_batches, 1))
         logs["train_nomad_bonus"].append(epoch_nomad / max(n_batches, 1))
         logs["train_diversity_losses"].append(epoch_diversity / max(n_batches, 1))
         logs["train_sep_losses"].append(epoch_sep / max(n_batches, 1))
         logs["train_cons_losses"].append(epoch_cons / max(n_batches, 1))
         logs["train_entropy"].append(epoch_entropy / max(n_batches, 1))
+        logs["train_load_balance_losses"].append(epoch_load / max(n_batches, 1))
+        logs["train_policy_stay_loss"].append(epoch_policy_stay   / max(n_batches, 1))
+        logs["train_policy_target_loss"].append(epoch_policy_target / max(n_batches, 1))
+        logs["train_policy_mode_loss"].append(epoch_policy_mode   / max(n_batches, 1))
 
         _, _, _, train_gate_dist_full, _, _, _, _, _ = evaluate_nomadic_static_full(
             model, X_train, Y_train, R_train, cfg

@@ -27,9 +27,34 @@ loss:
   gamma_diversity: 0.08
   lambda_sep: 0.08
   lambda_cons: 0.03
+  lambda_load: 0.03
+  tau_k_min: 3
+  tau_k_penalty: 0.05
 
 delta:
   ema_decay: 0.80
   err_baseline_momentum: 0.85
   w_env: 1.0
   w_err: 2.0
+
+switching:
+  phi_scale_env: 1.0
+  phi_scale_err: 1.5
+  phi_scale_explain: 1.5
+  phi_scale_gap: 0.8
+
+  temp_stable: 0.35
+  temp_transition: 0.90
+
+  use_hard_switch: true
+  phi_hard_threshold: 0.30
+
+  beta_phi: 0.02
+
+policy:
+  policy_hidden_dim: 64
+  policy_mix_weight: 0.25
+  policy_weight_stay: 0.20
+  policy_weight_target: 0.20
+  policy_weight_mode: 0.10
+  policy_switch_threshold: 0.50
