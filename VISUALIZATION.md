@@ -8,20 +8,6 @@ This section describes recommended plots for analyzing Nomadic Intelligence beha
 
 **Plot:**
 
-import matplotlib.pyplot as plt
-
-def plot_expert_timeline(expert_indices):
-    plt.figure()
-
-    plt.plot(expert_indices)
-    plt.xlabel("Time step")
-    plt.ylabel("Expert Index")
-    plt.title("Expert Switching Timeline")
-
-    plt.tight_layout()
-    plt.savefig("figure_expert_timeline.png")
-    plt.close()
-
 * X-axis: time step
 * Y-axis: selected expert (Top-1)
 
@@ -40,18 +26,6 @@ def plot_expert_timeline(expert_indices):
 
 **Plot:**
 
-def plot_entropy(entropy_values):
-    plt.figure()
-
-    plt.plot(entropy_values)
-    plt.xlabel("Time step")
-    plt.ylabel("Entropy")
-    plt.title("Gate Entropy Over Time")
-
-    plt.tight_layout()
-    plt.savefig("figure_entropy.png")
-    plt.close()
-
 * X-axis: time
 * Y-axis: gate entropy
 
@@ -69,18 +43,6 @@ def plot_entropy(entropy_values):
 
 **Plot:**
 
-def plot_dwell_histogram(dwell_times):
-    plt.figure()
-
-    plt.hist(dwell_times, bins=30)
-    plt.xlabel("Dwell Time")
-    plt.ylabel("Frequency")
-    plt.title("Dwell Time Distribution")
-
-    plt.tight_layout()
-    plt.savefig("figure_dwell.png")
-    plt.close()
-
 * Histogram of dwell durations
 
 **Purpose:**
@@ -95,18 +57,6 @@ def plot_dwell_histogram(dwell_times):
 ## 4. Optional: φ vs Switching
 
 **Plot:**
-
-def plot_phi_vs_switch(phi_values, switch_flags):
-    plt.figure()
-
-    plt.scatter(phi_values, switch_flags)
-    plt.xlabel("Phi")
-    plt.ylabel("Switch (0/1)")
-    plt.title("Phi vs Switching Behavior")
-
-    plt.tight_layout()
-    plt.savefig("figure_phi_switch.png")
-    plt.close()
 
 * X-axis: φ
 * Y-axis: switching probability
