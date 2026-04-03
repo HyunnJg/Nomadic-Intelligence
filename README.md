@@ -5,7 +5,7 @@
 ### A Non-Dogmatic AI Architecture
 
 [![Status: Conceptual & Prototype](https://img.shields.io/badge/Status-Conceptual%20%26%20Prototype-orange)](#-status)
-[![License: Open Concept](https://img.shields.io/badge/License-Open_Concept-blue)](#-license)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue)](#-license)
 
 ---
 
@@ -13,7 +13,17 @@
 
 ![Nomadic vs Dogmatic](assets/thumbnail.png)
 
-This project explores a simple question:
+Most AI systems are built to converge — to find the best answer and stay there.
+
+This project asks a different question:
+
+> What if the ability to **transition effectively between structures** matters more than finding the optimal one?
+
+**Nomadic Intelligence** is a prototype architecture that treats change ($\Delta x$) as an energy source rather than an error to minimize, and models intelligence as a controlled process of moving between multiple cognitive regimes — rather than converging to a single solution.
+
+A minimal working prototype already demonstrates the core claim: in a 3-regime non-stationary environment, the Nomadic model achieves **~58% of Fixed baseline error** (Seq MSE: 0.239 vs 0.412), with expert specialization emerging without supervision — purely from the $\Delta x$ signal.
+
+📄 *Paper in preparation. Link will appear here upon submission.*
 
 ---
 
@@ -69,8 +79,8 @@ In such settings, rigidity becomes a liability.
 
 This project explores the hypothesis that:
 
-> Intelligence may be better understood as  
-> the ability to *transition effectively*,  
+> Intelligence may be better understood as
+> the ability to *transition effectively*,
 > rather than to *remain optimal*.
 
 ---
@@ -251,17 +261,6 @@ Avoiding both:
 
 ---
 
-## 🚀 Why This Matters
-
-This approach aims to:
-
-- Reduce AI brittleness
-- Improve adaptability in real-world environments
-- Prevent over-optimization toward a single objective
-- Enable more robust and flexible intelligence
-
----
-
 ## 📌 Positioning
 
 This concept is related to:
@@ -277,7 +276,6 @@ But extends them by introducing:
 - **Anti-dogmatism** as an explicit optimization target
 
 ---
-
 
 ## 🧪 Proof of Concept: Experimental Results
 
@@ -296,45 +294,72 @@ But extends them by introducing:
 
 ---
 
-### Key Result: Sequence MSE
+### Development History: From Failure Modes to Solutions
 
-The primary metric is **Sequence MSE** — performance when the model receives data in phase-transition order, with access to temporal $\Delta x$ signals. This is the condition Nomadic Intelligence is designed for.
+This section documents not just the final results, but **how the architecture evolved** — which failure modes appeared, how they were diagnosed, and what solved them.
 
-**Multi-seed results (CUDA, 3 seeds):**
+**Stage 1 — Base (no regularization)**
 
-| Model | Seed | Seq MSE (Ep 200) | Fixed MSE (Ep 200) | Switch Latency (Ep 200) | Mean Dwell Time |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| Fixed (baseline) | 42 | — | 0.4139 | — | — |
-| Fixed (baseline) | 123 | — | 0.4031 | — | — |
-| Fixed (baseline) | 456 | — | 0.4195 | — | — |
-| Nomadic | 42 | 0.2399 | — | 0.056 🚨 | 2.82 |
-| Nomadic | 123 | 0.2584 | — | 1.611 ✅ | 2.33 |
-| Nomadic | 456 | 0.2521 | — | 0.278 ⚠️ | 4.21 |
+| Seed | Seq MSE | Switch Latency | Status |
+| :--- | :--- | :--- | :--- |
+| 42 | 0.2399 | 0.056 | 🚨 Latency collapsed |
+| 123 | 0.2584 | 1.611 | ✅ Stable |
+| 456 | 0.2521 | 0.278 | ⚠️ Borderline |
 
-**Summary across 3 seeds:**
-- Nomadic Seq MSE: **0.250 ± 0.010**
-- Fixed MSE: **0.412 ± 0.008**
-- Nomadic outperforms Fixed baseline consistently: **~61% of baseline error**
+Switch Latency collapse is not just an engineering failure — it is an observable instance of **Homeomorphic Identity breaking down**. The gate ceased to have a consistent transformation law in response to $\Delta x$.
 
-The core claim holds across all three seeds. The Nomadic model significantly outperforms the Fixed baseline under phase-transition conditions — without exception.
+**Stage 2 — + Load Balancing** (`λ_load = 0.03`)
 
-> **Note on Static MSE:** Static evaluation removes temporal context, forcing the model to predict without knowing which regime it's in. This is not the target condition for this architecture. Static MSE is included as a diagnostic, not a success criterion.
+| Seed | Seq MSE | Switch Latency | Change |
+| :--- | :--- | :--- | :--- |
+| 42 | 0.2726 | 2.583 ✅ | Latency recovered |
+| 123 | 0.3097 | 0.194 🚨 | Still collapsing |
+| 456 | 0.2342 | 3.694 ✅ | Stable |
+
+Hub dominance reduced, but Seed 123 remained unstable — Load Balancing addresses spatial collapse, not temporal fixation.
+
+**Stage 3 — + τₖ Lower Bound** (`τ_k_min = 3`, `τ_k_penalty = 0.05`)
+
+| Seed | Seq MSE | Switch Latency | Change |
+| :--- | :--- | :--- | :--- |
+| 42 | **0.2149** | 2.750 ✅ | Best result |
+| 123 | **0.2623** | 1.056 ✅ | Collapse resolved |
+| 456 | 0.2386 | 2.194 ✅ | Stable |
+
+All three seeds stable. The τₖ Lower Bound addressed what Load Balancing could not — initialization-sensitive temporal fixation.
+
+---
+
+### Final Results: 3-Seed Summary
+
+| Model | Seed | Seq MSE | Fixed MSE | Switch Latency | Stable Entropy | Transition Entropy |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Fixed | 42 | — | 0.4139 | — | — | — |
+| Fixed | 123 | — | 0.4031 | — | — | — |
+| Fixed | 456 | — | 0.4195 | — | — | — |
+| Nomadic | 42 | **0.2149** | — | 2.750 | 1.029 | 1.067 |
+| Nomadic | 123 | **0.2623** | — | 1.056 | 0.991 | 1.074 |
+| Nomadic | 456 | 0.2386 | — | 2.194 | 1.036 | 1.081 |
+
+**Nomadic Seq MSE: 0.239 ± 0.020**
+**Fixed MSE: 0.412 ± 0.008**
+**Performance: ~58% of Fixed baseline error — consistent across all seeds**
+
+> **Note on Static MSE:** Static evaluation removes temporal context. This is not the target condition. Static MSE is included as a diagnostic only.
 
 ---
 
 ### Attractor Specialization
 
-The gate learned to assign different experts to different regimes **without explicit regime labels** — purely from the $\Delta x$ signal and the Topological Loss.
+The gate learned regime-specialist routing **without explicit regime labels** — purely from the $\Delta x$ signal.
 
-**Regime–Expert alignment (Top-1 selection ratio, Seed 123 — healthiest run):**
+**Regime–Expert alignment (Seed 123):**
 
 | Regime | Expert 0 | Expert 1 | Expert 2 |
 | :--- | :--- | :--- | :--- |
-| A ($y = x_1 + x_2$) | 0.042 | **0.905** | 0.054 |
-| B ($y = x_1 - x_2$) | **0.400** | 0.122 | 0.479 |
-| C ($y = -x_1 + 0.5x_2$) | 0.014 | **0.828** | 0.159 |
-
-Regime A and C both activate Expert 1 — both are additive structures. Regime B distributes across Expert 0 and 2, handling the subtractive pattern differently. The system discovered structural similarity between regimes without supervision.
+| A ($y = x_1 + x_2$) | **0.672** | 0.328 | 0.000 |
+| B ($y = x_1 - x_2$) | 0.075 | 0.348 | **0.578** |
+| C ($y = -x_1 + 0.5x_2$) | 0.019 | **0.927** | 0.054 |
 
 ---
 
@@ -344,47 +369,29 @@ Regime A and C both activate Expert 1 — both are additive structures. Regime B
 
 | Seed | Stable Entropy | Transition Entropy | Δ |
 | :--- | :--- | :--- | :--- |
-| 42 | 0.937 | 1.043 | +0.106 |
-| 123 | 0.985 | 1.045 | +0.060 |
-| 456 | 0.885 | 1.041 | +0.156 |
+| 42 | 1.029 | 1.067 | +0.038 |
+| 123 | 0.991 | 1.074 | +0.083 |
+| 456 | 1.036 | 1.081 | +0.045 |
 
-When the environment is in a transition phase, gate entropy rises — the system explores expert combinations more freely. During stable phases, entropy drops as one expert dominates. This is the computational signature of Strategic Dwell Time ($\tau_k$), and it holds regardless of initialization.
-
----
-
-### Switch Latency — The Critical Failure Mode
-
-Switch Latency variance across seeds is the most significant finding of the multi-seed experiment:
-
-| Seed | Switch Latency | Status |
-| :--- | :--- | :--- |
-| 42 | 0.056 | 🚨 Collapsed — gate stopped switching |
-| 123 | 1.611 | ✅ Stable — nomadic behavior maintained |
-| 456 | 0.278 | ⚠️ Borderline — partial degradation |
-
-This variance is not a hardware artifact. It reflects **initialization sensitivity** — the same architecture produces qualitatively different long-term behavior depending on weight initialization. Under the topological framing, Switch Latency collapse is not just an engineering failure: it is an observable instance of **Homeomorphic Identity breaking down**. The gate ceases to have a consistent transformation law in response to $\Delta x$.
-
-Making this transition explicit, measurable, and preventable is the primary open engineering problem.
+Gate entropy rises during phase transitions and falls during stable phases — the computational signature of Strategic Dwell Time ($\tau_k$).
 
 ---
 
-### Known Improvement Vectors
+### Remaining Open Problems
 
-| Problem | Observable symptom | Possible direction |
+| Problem | Status | Next direction |
 | :--- | :--- | :--- |
-| Switch Latency collapse | Seed 42: latency → 0.056 | Explicit $\tau_k$ lower bound, anti-fixation penalty |
-| Expert hub dominance | Expert 1 dominant across A and C | Load-balancing loss, anti-collapse regularization |
-| $\Delta x$ signal drift | Raw delta grows unbounded | KL divergence or Wasserstein distance estimate |
-| Initialization sensitivity | Latency variance 0.056~1.611 across seeds | Better weight init, explicit $\tau_k$ floor |
-| Static generalization gap | Static MSE 5–7× Seq MSE | Partially context-free routing as secondary objective |
-
-**The baseline is working. The failure modes are visible across multiple seeds. The improvement vectors are clear.** See [Contributing](./CONTRIBUTING.md).
+| Switch Latency collapse | ✅ Resolved via τₖ Lower Bound | — |
+| Expert hub dominance | ✅ Reduced via Load Balancing | Fine-tuning |
+| $\Delta x$ signal drift | 🔧 Active | KL divergence / Wasserstein distance |
+| Static generalization gap | 🔧 Known tradeoff | Context-free routing as secondary objective |
+| Φ (Will to Resonance) formalization | 🔬 Next target | Measurable identity preservation metric |
+| Meaningful vs random transition | 🔬 Next target | Δx-correlated switching metric |
 
 ---
 
 ## ❓ Open Questions
 
-This architecture raises problems we haven't solved yet.
 These are **open invitations** for criticism, extension, and implementation:
 
 - How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
@@ -420,6 +427,22 @@ Start with the [Open Questions](#-open-questions) above, or open an Issue to sta
 
 ---
 
+## 📚 Document Map
+
+| Document | Role |
+| :--- | :--- |
+| `README.md` | Project overview (you are here) |
+| `Philosophy_En.md` / `Philosophy_Kr.md` | Philosophical foundations and ethical implications |
+| `Theory_and_Axioms.md` | Formal axioms, reward structure, related frameworks |
+| `Example.md` | Pseudocode walkthrough of core behavior |
+| `EXPERIMENT.md` | Experiment setup and metrics |
+| `ABLATION.md` | Component-wise ablation results |
+| `VISUALIZATION.md` | Recommended plots and their interpretation |
+| `CONCEPT_MAPPING.md` | Theory-to-implementation mapping |
+| `CONTRIBUTING.md` | How to contribute |
+
+---
+
 ## 📎 Status
 
 **Conceptual / Prototype Stage**
@@ -438,5 +461,4 @@ not a fully implemented system.
 
 ## 📜 License
 
-MIT License. See [LICENSE.txt](./LICENSE.txt).
-
+MIT License. See [LICENSE](./LICENSE).
