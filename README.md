@@ -129,7 +129,7 @@ Critique, extensions, and reinterpretations are all encouraged.
 > AI should not converge to a single solution.
 > It should move between multiple structures depending on the situation.
 
-![Nomadic vs Dogmatic](assets/compare.png)
+![Nomadic vs Dogmatic](assets/Compare.png)
 
 ---
 
