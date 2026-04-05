@@ -129,23 +129,7 @@ Critique, extensions, and reinterpretations are all encouraged.
 > AI should not converge to a single solution.
 > It should move between multiple structures depending on the situation.
 
-```mermaid
-graph LR
-    subgraph Dogmatic_AI ["Dogmatic AI (Rigid)"]
-        A((Fixed Objective)) --> B[Static Strategy]
-        B --> C{Delta x Surge!}
-        C -->|Failure| D[Structural Collapse]
-    end
-
-    subgraph Nomadic_Intelligence ["Nomadic Intelligence (Fluid)"]
-        E((Attractor A)) -- "Delta x" --> F((Attractor B))
-        F -- "Delta x" --> G((Attractor C))
-        G -- "tau_k check" --> E
-        E -.-> H[Homeomorphic Identity]
-        F -.-> H
-        G -.-> H
-    end
-```
+![Nomadic vs Dogmatic](assets/compare.png)
 
 ---
 
