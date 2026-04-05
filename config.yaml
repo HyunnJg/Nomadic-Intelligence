@@ -1,7 +1,7 @@
 runtime:
   seed: 42
   save_dir: outputs_transition
-  device: auto   # auto / cpu / cuda
+  device: auto
 
 training:
   epochs: 220
@@ -31,6 +31,12 @@ loss:
   tau_k_min: 3
   tau_k_penalty: 0.05
 
+  use_dynamic_tau: true
+  tau_min: 2.0
+  tau_max: 8.0
+  tau_var_scale: 6.0
+  tau_var_window: 8
+
 delta:
   ema_decay: 0.80
   err_baseline_momentum: 0.85
@@ -48,7 +54,6 @@ switching:
 
   use_hard_switch: true
   phi_hard_threshold: 0.30
-
   beta_phi: 0.02
 
 policy:

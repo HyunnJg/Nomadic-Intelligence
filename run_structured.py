@@ -1,6 +1,7 @@
 import os
 import argparse
 import random
+from collections import deque
 from dataclasses import dataclass
 from typing import Dict, Tuple, List
 
@@ -76,6 +77,13 @@ class Config:
     lambda_load: float = 0.03
     tau_k_min: int = 3
     tau_k_penalty: float = 0.05
+
+    # dynamic dwell / fixation (environment-aware tau)
+    use_dynamic_tau: bool = True
+    tau_min: float = 2.0
+    tau_max: float = 8.0
+    tau_var_scale: float = 6.0
+    tau_var_window: int = 8
 
     # phi / switching
     phi_scale_env: float = 1.0
@@ -153,6 +161,12 @@ def build_config_from_yaml(yaml_dict: dict) -> Config:
         lambda_load=loss.get("lambda_load", 0.03),
         tau_k_min=loss.get("tau_k_min", 3),
         tau_k_penalty=loss.get("tau_k_penalty", 0.05),
+
+        use_dynamic_tau=loss.get("use_dynamic_tau", True),
+        tau_min=loss.get("tau_min", 2.0),
+        tau_max=loss.get("tau_max", 8.0),
+        tau_var_scale=loss.get("tau_var_scale", 6.0),
+        tau_var_window=loss.get("tau_var_window", 8),
 
         ema_decay=delta.get("ema_decay", 0.80),
         err_baseline_momentum=delta.get("err_baseline_momentum", 0.85),
@@ -343,18 +357,33 @@ class GateNet(nn.Module):
 
 class PolicyNet(nn.Module):
     """
-    Meta decision-maker: runs on top of GateNet, controls routing direction.
+    Meta decision-maker: Full Hybrid Intelligence v1.
 
-    Inputs: x_summary(input_dim) + delta_hybrid(1) + delta_err(1) + phi_signal(1)
+    Inputs:
+      x_summary(input_dim)
+      + delta_hybrid(1)
+      + delta_err(1)
+      + phi_signal(1)
+      + sigma2_delta_scaled(1)   -- tanh-scaled env volatility
+      + dynamic_tau_scaled(1)    -- tanh-scaled dwell horizon
+
+    Total input dim = input_dim + 5
+
     Outputs:
-      stay_switch_probs  [B, 2]  — stay(0) / switch(1)
-      target_probs       [B, E]  — which expert to prefer
-      mode_probs         [B, 2]  — soft(0) / hard(1)
+      stay_switch_probs  [B, 2]  -- stay(0) / switch(1)
+      target_probs       [B, E]  -- which expert to prefer
+      mode_probs         [B, 2]  -- soft(0) / hard(1)
+
+    PolicyNet now has direct visibility into:
+      - how volatile the environment is (sigma2_delta)
+      - how much fixation is currently allowed (dynamic_tau)
+    This enables meta-level learning of stay/switch strategy
+    rather than reacting to phi alone.
     """
     def __init__(self, input_dim: int, hidden_dim: int, num_experts: int):
         super().__init__()
         self.shared = nn.Sequential(
-            nn.Linear(input_dim + 3, hidden_dim),   # x_summary + delta_hybrid + delta_err + phi
+            nn.Linear(input_dim + 5, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
@@ -416,11 +445,13 @@ class NomadicMoE(nn.Module):
 
 class HybridDeltaTracker:
     """
-    Upgraded hybrid delta:
-      delta_env = input mean shift
-      delta_err = relu(err_ema - err_baseline)
-      raw_hybrid = w_env * delta_env + w_err * delta_err
+    Upgraded hybrid delta with environment-aware dynamic tau.
+      delta_env   = input mean shift
+      delta_err   = relu(err_ema - err_baseline)
+      raw_hybrid  = w_env * delta_env + w_err * delta_err
       delta_hybrid = tanh(raw_hybrid)
+      sigma2_delta = rolling variance of recent delta_env values
+      dynamic_tau  = tau_max → tau_min as sigma2_delta rises
     """
     def __init__(
         self,
@@ -429,6 +460,10 @@ class HybridDeltaTracker:
         w_env: float = 1.0,
         w_err: float = 2.0,
         device: str = "cpu",
+        tau_min: float = 2.0,
+        tau_max: float = 8.0,
+        tau_var_scale: float = 6.0,
+        tau_var_window: int = 8,
     ):
         self.ema_decay = ema_decay
         self.err_baseline_momentum = err_baseline_momentum
@@ -436,19 +471,32 @@ class HybridDeltaTracker:
         self.w_err = w_err
         self.device = device
 
+        self.tau_min = tau_min
+        self.tau_max = tau_max
+        self.tau_var_scale = tau_var_scale
+        self.tau_var_window = tau_var_window
+
         self.prev_x_mean = None
         self.err_ema = None
         self.err_baseline = None
+        self.recent_delta_env: deque = deque(maxlen=tau_var_window)
 
         self.delta_env_history = []
         self.delta_err_history = []
         self.delta_hybrid_raw_history = []
         self.delta_hybrid_history = []
+        self.sigma2_delta_history = []
+        self.dynamic_tau_history = []
 
     def reset(self):
         self.prev_x_mean = None
         self.err_ema = None
         self.err_baseline = None
+        self.recent_delta_env.clear()
+
+    def compute_dynamic_tau(self, sigma2_delta: float) -> float:
+        tau = self.tau_min + (self.tau_max - self.tau_min) / (1.0 + self.tau_var_scale * sigma2_delta)
+        return float(np.clip(tau, self.tau_min, self.tau_max))
 
     def compute(self, x: torch.Tensor, current_batch_mse: torch.Tensor):
         x_mean = x.mean(dim=0, keepdim=True)
@@ -477,17 +525,30 @@ class HybridDeltaTracker:
 
         self.prev_x_mean = x_mean.detach()
 
-        self.delta_env_history.append(float(delta_env_scalar.item()))
-        self.delta_err_history.append(float(delta_err_scalar.item()))
-        self.delta_hybrid_raw_history.append(float(raw_hybrid.item()))
-        self.delta_hybrid_history.append(float(delta_hybrid_scalar.item()))
+        delta_env_val   = float(delta_env_scalar.item())
+        delta_err_val   = float(delta_err_scalar.item())
+        delta_hybrid_val = float(delta_hybrid_scalar.item())
+        raw_hybrid_val  = float(raw_hybrid.item())
 
-        delta_hybrid = torch.full((x.size(0), 1), float(delta_hybrid_scalar.item()), device=self.device)
+        self.recent_delta_env.append(delta_env_val)
+        sigma2_delta = float(np.var(self.recent_delta_env)) if len(self.recent_delta_env) >= 2 else 0.0
+        dynamic_tau  = self.compute_dynamic_tau(sigma2_delta)
+
+        self.delta_env_history.append(delta_env_val)
+        self.delta_err_history.append(delta_err_val)
+        self.delta_hybrid_raw_history.append(raw_hybrid_val)
+        self.delta_hybrid_history.append(delta_hybrid_val)
+        self.sigma2_delta_history.append(sigma2_delta)
+        self.dynamic_tau_history.append(dynamic_tau)
+
+        delta_hybrid = torch.full((x.size(0), 1), delta_hybrid_val, device=self.device)
         return (
             delta_hybrid,
-            float(delta_env_scalar.item()),
-            float(delta_err_scalar.item()),
-            float(delta_hybrid_scalar.item()),
+            delta_env_val,
+            delta_err_val,
+            delta_hybrid_val,
+            sigma2_delta,
+            dynamic_tau,
         )
 
 
@@ -506,17 +567,31 @@ def compute_load_balancing_loss(gate_probs: torch.Tensor) -> torch.Tensor:
     return loss
 
 class DwellTimeRegularizer:
+    """
+    Environment-aware dwell time regularizer.
+
+    total_loss = ... - dwell_bonus  (dwell_bonus subtracted from loss)
+      dwell_bonus > 0  =>  loss decreases  =>  entropy INCREASES (nomadic pressure)
+      dwell_bonus < 0  =>  loss increases  =>  entropy DECREASES (fixation pressure)
+
+    stable  (dwell_count <= tau_capacity): return -penalty * entropy
+            -> loss increases -> entropy decreases -> fixation encouraged
+    transition (dwell_count > tau_capacity): return +excess * entropy
+            -> loss decreases -> entropy increases -> switching encouraged
+    """
     def __init__(self, tau_k_min: int = 3, penalty: float = 0.05):
         self.tau_k_min = tau_k_min
         self.penalty = penalty
         self.current_expert = None
         self.dwell_count = 0
+        self.last_tau_used = float(tau_k_min)
 
     def reset(self):
         self.current_expert = None
         self.dwell_count = 0
+        self.last_tau_used = float(self.tau_k_min)
 
-    def compute(self, gate_probs: torch.Tensor) -> torch.Tensor:
+    def compute(self, gate_probs: torch.Tensor, tau_dynamic: float = None) -> torch.Tensor:
         top1_counts = torch.bincount(
             gate_probs.argmax(dim=-1),
             minlength=gate_probs.size(-1)
@@ -532,13 +607,17 @@ class DwellTimeRegularizer:
         eps = 1e-8
         entropy = -(gate_probs * (gate_probs + eps).log()).sum(dim=-1).mean()
 
-        if self.dwell_count > self.tau_k_min:
-            excess = self.dwell_count - self.tau_k_min
+        tau_capacity = float(self.tau_k_min if tau_dynamic is None else tau_dynamic)
+        self.last_tau_used = tau_capacity
+
+        if self.dwell_count <= tau_capacity:
+            # stable: penalize entropy -> fixation
+            return -self.penalty * entropy
+        else:
+            # transition: reward entropy -> switching
+            excess = self.dwell_count - tau_capacity
             bonus_weight = min(float(excess) * self.penalty, self.penalty * 10)
             return bonus_weight * entropy
-
-        # 항상 gate_probs 연산 그래프에 연결된 텐서 반환 (0 * entropy = 0이지만 grad 경로 유지)
-        return 0.0 * entropy
 
 
 def compute_diversity_loss(expert_outputs: torch.Tensor) -> torch.Tensor:
@@ -645,35 +724,70 @@ def build_policy_input(
     delta_hybrid: torch.Tensor,
     delta_err_tensor: torch.Tensor,
     phi_signal: torch.Tensor,
+    sigma2_delta: float,
+    dynamic_tau: float,
 ) -> torch.Tensor:
     """
-    x_summary(input_dim) + delta_hybrid(1) + delta_err(1) + phi_signal(1)
-    모두 배치 전체에 broadcast해서 [B, input_dim+3] 반환.
+    Full hybrid policy input:
+      x_summary(input_dim) + delta_hybrid(1) + delta_err(1)
+      + phi_signal(1) + sigma2_delta_scaled(1) + dynamic_tau_scaled(1)
+
+    Scaling rationale (Gemini suggestion):
+      sigma2_delta range ~[0, 0.5], dynamic_tau range ~[2, 8]
+      Raw injection would let tau dominate. Apply tanh to normalize both
+      into a comparable range without losing directional information.
+        sigma2_scaled = tanh(sigma2_delta * 10)   -- amplify small values
+        tau_scaled    = tanh((dynamic_tau - tau_mid) / tau_mid)  -- center around mid
     """
     x_summary = xb.mean(dim=0, keepdim=True).expand(xb.size(0), -1)
     phi_tensor = torch.full((xb.size(0), 1), float(phi_signal.mean().item()), device=xb.device)
-    return torch.cat([x_summary, delta_hybrid, delta_err_tensor, phi_tensor], dim=-1)
+
+    sigma2_scaled = float(np.tanh(sigma2_delta * 10.0))
+    sigma2_tensor = torch.full((xb.size(0), 1), sigma2_scaled, device=xb.device)
+
+    tau_mid = 5.0
+    tau_scaled = float(np.tanh((dynamic_tau - tau_mid) / tau_mid))
+    tau_tensor = torch.full((xb.size(0), 1), tau_scaled, device=xb.device)
+
+    return torch.cat(
+        [x_summary, delta_hybrid, delta_err_tensor, phi_tensor, sigma2_tensor, tau_tensor],
+        dim=-1,
+    )
 
 
 def build_policy_targets(
     y_true: torch.Tensor,
     expert_outputs: torch.Tensor,
     phi_signal: torch.Tensor,
+    sigma2_delta: float,
+    dynamic_tau: float,
     switch_threshold: float,
+    tau_stay_threshold: float = 5.5,
+    sigma_switch_threshold: float = 0.05,
 ):
     """
-    Heuristic teacher signals — no RL required.
+    Hybrid heuristic teacher signals.
 
-    stay_switch: phi > threshold → switch(1), else stay(0)
-    target_expert: expert with lowest mean squared error on this batch
-    mode: phi > threshold → soft(0), else hard(1)
+    Switch decision:
+      switch if phi is high OR sigma2_delta is high (env volatile)
+      stay   if phi is low  AND dynamic_tau is high (env stable, fixation allowed)
+
+    Mode decision:
+      hard(1) = stable fixation is appropriate (can_fixate)
+      soft(0) = exploratory transition (otherwise)
+
+    Target expert:
+      expert with lowest mean squared error on this batch
     """
-    per_expert_sqerr = ((expert_outputs - y_true.unsqueeze(1)) ** 2).mean(dim=-1)  # [B, E]
+    per_expert_sqerr = ((expert_outputs - y_true.unsqueeze(1)) ** 2).mean(dim=-1)
     target_expert = per_expert_sqerr.mean(dim=0).argmin().long()
 
     phi_val = float(phi_signal.mean().item())
-    switch_label = 1 if phi_val > switch_threshold else 0
-    mode_label   = 0 if phi_val > switch_threshold else 1  # soft=0 when switching, hard=1 when stable
+    should_switch = (phi_val > switch_threshold) or (sigma2_delta > sigma_switch_threshold)
+    can_fixate    = (phi_val <= switch_threshold) and (dynamic_tau >= tau_stay_threshold)
+
+    switch_label = 1 if should_switch else 0
+    mode_label   = 1 if can_fixate else 0   # hard=1, soft=0
 
     return switch_label, target_expert, mode_label
 
@@ -870,6 +984,7 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
       - switch latency
       - dwell times
       - stepwise expert trajectory
+      - sigma2_delta / dynamic_tau trace
     """
     model.eval()
     tracker = HybridDeltaTracker(
@@ -878,6 +993,10 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
         w_env=cfg.w_env,
         w_err=cfg.w_err,
         device=cfg.device,
+        tau_min=cfg.tau_min,
+        tau_max=cfg.tau_max,
+        tau_var_scale=cfg.tau_var_scale,
+        tau_var_window=cfg.tau_var_window,
     )
     tracker.reset()
 
@@ -887,6 +1006,8 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
     batch_phase_tags = []
     batch_entropies = []
     batch_top1 = []
+    batch_sigma2_delta = []
+    batch_dynamic_tau = []
 
     with torch.no_grad():
         for batch_idx, (xb, yb, rb) in enumerate(iterate_sequence_minibatches(X, Y, R, cfg.phase_batch_size)):
@@ -897,8 +1018,8 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
             )
             warm_mse = F.mse_loss(warm_y, yb)
 
-            # 2) hybrid delta
-            delta_hybrid, de, derr, _ = tracker.compute(xb, warm_mse)
+            # 2) hybrid delta — unpack all 6 values
+            delta_hybrid, de, derr, _, sigma2_delta, dynamic_tau = tracker.compute(xb, warm_mse)
             delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
 
             # 3) probe pass for explanation diagnosis
@@ -924,8 +1045,15 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
                 phi_scale_gap=cfg.phi_scale_gap,
             )
 
-            # 4) PolicyNet decision
-            policy_input = build_policy_input(xb, delta_hybrid, delta_err_tensor, phi_signal)
+            # 4) PolicyNet decision — full hybrid input
+            policy_input = build_policy_input(
+                xb=xb,
+                delta_hybrid=delta_hybrid,
+                delta_err_tensor=delta_err_tensor,
+                phi_signal=phi_signal,
+                sigma2_delta=sigma2_delta,
+                dynamic_tau=dynamic_tau,
+            )
             stay_switch_probs, target_probs, mode_probs = model.policy(policy_input)
 
             temp_now = compute_adaptive_temperature(
@@ -933,7 +1061,15 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
                 temp_stable=cfg.temp_stable,
                 temp_transition=cfg.temp_transition,
             )
-            hard_mode = bool(cfg.use_hard_switch and (mode_probs[:, 1].mean().item() > 0.5))
+
+            # Fail-safe: force Soft when delta_hybrid is high
+            delta_hybrid_val_now = float(delta_hybrid.mean().item())
+            failsafe_soft = delta_hybrid_val_now > cfg.phi_hard_threshold
+            hard_mode = bool(
+                cfg.use_hard_switch
+                and (mode_probs[:, 1].mean().item() > 0.5)
+                and not failsafe_soft
+            )
 
             # 5) final routed pass with policy mixing
             y_hat, gate_probs, _, expert_outputs_eval = model(
@@ -976,6 +1112,9 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
             binc = torch.bincount(top1, minlength=cfg.num_experts).float()
             batch_top1.append(int(torch.argmax(binc).item()))
 
+            batch_sigma2_delta.append(sigma2_delta)
+            batch_dynamic_tau.append(dynamic_tau)
+
     Y_hat = torch.cat(all_y, dim=0)
     G = torch.cat(all_gate_probs, dim=0)
 
@@ -1006,6 +1145,9 @@ def evaluate_nomadic_sequence_dynamics(model: NomadicMoE, X: torch.Tensor, Y: to
         "stable_entropy_mean": float(np.mean(stable_entropy)) if len(stable_entropy) > 0 else float("nan"),
         "transition_entropy_mean": float(np.mean(transition_entropy)) if len(transition_entropy) > 0 else float("nan"),
         "regime_to_expert": regime_to_expert,
+        "sigma2_delta": batch_sigma2_delta,
+        "dynamic_tau": batch_dynamic_tau,
+        "mean_dynamic_tau": float(np.mean(batch_dynamic_tau)) if len(batch_dynamic_tau) > 0 else float("nan"),
     }
 
     return total_mse, usage, dynamics, Y_hat, G
@@ -1073,6 +1215,8 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         "delta_err": [],
         "delta_hybrid_raw": [],
         "delta_hybrid": [],
+        "sigma2_delta": [],
+        "dynamic_tau": [],
         "test_switch_latency": [],
         "test_transition_entropy": [],
         "test_stable_entropy": [],
@@ -1080,6 +1224,10 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         "train_policy_stay_loss": [],
         "train_policy_target_loss": [],
         "train_policy_mode_loss": [],
+        "train_policy_switch_rate": [],
+        "train_policy_hard_rate": [],
+        "train_sigma2_delta_mean": [],
+        "train_dynamic_tau_mean": [],
     }
 
     for epoch in range(cfg.epochs):
@@ -1091,6 +1239,10 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
             w_env=cfg.w_env,
             w_err=cfg.w_err,
             device=cfg.device,
+            tau_min=cfg.tau_min,
+            tau_max=cfg.tau_max,
+            tau_var_scale=cfg.tau_var_scale,
+            tau_var_window=cfg.tau_var_window,
         )
         tracker.reset()
 
@@ -1113,6 +1265,10 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         epoch_policy_stay = 0.0
         epoch_policy_target = 0.0
         epoch_policy_mode = 0.0
+        epoch_policy_switch_rate = 0.0
+        epoch_policy_hard_rate = 0.0
+        epoch_sigma2_delta = 0.0
+        epoch_dynamic_tau = 0.0
         n_batches = 0
 
         for xb, yb, rb in iterate_sequence_minibatches(X_train, Y_train, R_train, cfg.phase_batch_size):
@@ -1125,7 +1281,7 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
                 warm_mse = F.mse_loss(warm_y, yb)
 
             # hybrid delta (detached scalars)
-            delta_hybrid, de, derr, dh = tracker.compute(xb, warm_mse)
+            delta_hybrid, de, derr, dh, sigma2_delta, dynamic_tau = tracker.compute(xb, warm_mse)
             delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
 
             # explanation signals (for phi_signal + loss)
@@ -1153,14 +1309,23 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
             )
 
             # PolicyNet forward
-            policy_input = build_policy_input(xb, delta_hybrid, delta_err_tensor, phi_signal)
+            policy_input = build_policy_input(
+                xb=xb,
+                delta_hybrid=delta_hybrid,
+                delta_err_tensor=delta_err_tensor,
+                phi_signal=phi_signal,
+                sigma2_delta=sigma2_delta,
+                dynamic_tau=dynamic_tau,
+            )
             stay_switch_probs, target_probs, mode_probs = model.policy(policy_input)
 
-            # teacher targets (heuristic supervision)
+            # teacher targets (hybrid heuristic supervision)
             switch_label, target_expert_label, mode_label = build_policy_targets(
                 y_true=yb,
                 expert_outputs=probe_expert_outputs,
                 phi_signal=phi_signal,
+                sigma2_delta=sigma2_delta,
+                dynamic_tau=dynamic_tau,
                 switch_threshold=cfg.policy_switch_threshold,
             )
 
@@ -1170,7 +1335,15 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
                 temp_stable=cfg.temp_stable,
                 temp_transition=cfg.temp_transition,
             )
-            hard_mode = cfg.use_hard_switch and (mode_probs[:, 1].mean().item() > 0.5)
+            # Fail-safe: force Soft when delta_hybrid is high (volatile env)
+            # prevents PolicyNet Hard-lock during early training instability
+            delta_hybrid_val_now = float(delta_hybrid.mean().item())
+            failsafe_soft = delta_hybrid_val_now > cfg.phi_hard_threshold
+            hard_mode = bool(
+                cfg.use_hard_switch
+                and (mode_probs[:, 1].mean().item() > 0.5)
+                and not failsafe_soft
+            )
 
             # main forward pass (with grad)
             y_hat, gate_probs, _, expert_outputs = model(
@@ -1220,7 +1393,8 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
 
             entropy_val = gate_entropy(final_routing).mean()
             load_balance_loss = compute_load_balancing_loss(final_routing)
-            dwell_bonus = dwell_reg.compute(final_routing)
+            tau_for_dwell = dynamic_tau if cfg.use_dynamic_tau else float(cfg.tau_k_min)
+            dwell_bonus = dwell_reg.compute(final_routing, tau_dynamic=tau_for_dwell)
             diversity_loss = compute_diversity_loss(expert_outputs)
 
             # policy supervision losses
@@ -1263,12 +1437,18 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
             epoch_policy_stay   += stay_loss.item()
             epoch_policy_target += target_loss.item()
             epoch_policy_mode   += mode_loss.item()
+            epoch_policy_switch_rate += float(stay_switch_probs[:, 1].mean().item())
+            epoch_policy_hard_rate   += float(mode_probs[:, 1].mean().item())
+            epoch_sigma2_delta       += float(sigma2_delta)
+            epoch_dynamic_tau        += float(dynamic_tau)
             n_batches += 1
 
             logs["delta_env"].append(de)
             logs["delta_err"].append(derr)
             logs["delta_hybrid"].append(dh)
             logs["delta_hybrid_raw"].append(tracker.delta_hybrid_raw_history[-1])
+            logs["sigma2_delta"].append(sigma2_delta)
+            logs["dynamic_tau"].append(dynamic_tau)
 
         logs["train_total_losses"].append(epoch_total / max(n_batches, 1))
         logs["train_mse_losses"].append(epoch_mse / max(n_batches, 1))
@@ -1283,6 +1463,10 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
         logs["train_policy_stay_loss"].append(epoch_policy_stay   / max(n_batches, 1))
         logs["train_policy_target_loss"].append(epoch_policy_target / max(n_batches, 1))
         logs["train_policy_mode_loss"].append(epoch_policy_mode   / max(n_batches, 1))
+        logs["train_policy_switch_rate"].append(epoch_policy_switch_rate / max(n_batches, 1))
+        logs["train_policy_hard_rate"].append(epoch_policy_hard_rate     / max(n_batches, 1))
+        logs["train_sigma2_delta_mean"].append(epoch_sigma2_delta        / max(n_batches, 1))
+        logs["train_dynamic_tau_mean"].append(epoch_dynamic_tau          / max(n_batches, 1))
 
         _, _, _, train_gate_dist_full, _, _, _, _, _ = evaluate_nomadic_static_full(
             model, X_train, Y_train, R_train, cfg
@@ -1310,6 +1494,9 @@ def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test
                 f"Train MSE: {logs['train_mse_losses'][-1]:.4f} | "
                 f"Train GateDist(full): {logs['train_mean_gate_distance'][-1]:.4f} | "
                 f"Train Entropy: {logs['train_entropy'][-1]:.4f} | "
+                f"Policy SwitchRate: {logs['train_policy_switch_rate'][-1]:.4f} | "
+                f"Policy HardRate: {logs['train_policy_hard_rate'][-1]:.4f} | "
+                f"Mean Tau: {logs['train_dynamic_tau_mean'][-1]:.4f} | "
                 f"Test Static MSE: {test_mse_static:.4f} | "
                 f"Test Seq MSE: {test_mse_sequence:.4f} | "
                 f"Test Static GateDist: {test_gate_dist_static:.4f} | "
@@ -1548,6 +1735,53 @@ def plot_regime_expert_alignment(dynamics: dict, save_path: str):
     plt.close()
 
 
+def plot_dynamic_tau_trace(nomadic_logs: dict, save_path: str):
+    steps = np.arange(1, len(nomadic_logs["dynamic_tau"]) + 1)
+    fig, ax1 = plt.subplots(figsize=(8, 5))
+    color_sigma = "#5577aa"
+    color_tau   = "#cc6644"
+    ax1.set_xlabel("Batch Step")
+    ax1.set_ylabel("sigma2_delta", color=color_sigma)
+    ax1.plot(steps, nomadic_logs["sigma2_delta"], label="sigma2_delta",
+             color=color_sigma, alpha=0.8)
+    ax1.tick_params(axis="y", labelcolor=color_sigma)
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("dynamic_tau", color=color_tau)
+    ax2.plot(steps, nomadic_logs["dynamic_tau"], label="dynamic_tau",
+             color=color_tau, alpha=0.9)
+    ax2.tick_params(axis="y", labelcolor=color_tau)
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper right")
+    plt.title("Environment Volatility vs Dynamic Tau")
+    fig.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+
+
+def plot_policy_hybrid_signals(nomadic_logs: dict, save_path: str):
+    epochs = np.arange(1, len(nomadic_logs["train_policy_switch_rate"]) + 1)
+    fig, ax1 = plt.subplots(figsize=(8, 5))
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Rate (0-1)")
+    ax1.plot(epochs, nomadic_logs["train_policy_switch_rate"],
+             label="Policy Switch Rate", color="#5577aa")
+    ax1.plot(epochs, nomadic_logs["train_policy_hard_rate"],
+             label="Policy Hard Rate", color="#cc6644")
+    ax1.set_ylim(0, 1.05)
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("Mean Dynamic Tau")
+    ax2.plot(epochs, nomadic_logs["train_dynamic_tau_mean"],
+             label="Mean Dynamic Tau", color="#448844", linestyle="--", alpha=0.7)
+    lines1, labels1 = ax1.get_legend_handles_labels()
+    lines2, labels2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper right")
+    plt.title("Hybrid Policy Signals")
+    fig.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+
+
 # ============================================================
 # Reporting
 # ============================================================
@@ -1597,6 +1831,7 @@ def print_report(
     print(f"Regime -> Expert mapping: {dynamics['regime_to_expert']}")
     print(f"Mean switch latency: {dynamics['mean_switch_latency']:.4f}")
     print(f"Mean dwell time: {dynamics['mean_dwell_time']:.4f}")
+    print(f"Mean dynamic tau: {dynamics['mean_dynamic_tau']:.4f}")
     print(f"Stable-phase mean entropy: {dynamics['stable_entropy_mean']:.4f}")
     print(f"Transition-phase mean entropy: {dynamics['transition_entropy_mean']:.4f}")
 
@@ -1606,6 +1841,7 @@ def print_report(
     print("- Transition entropy > stable entropy suggests gate uncertainty rises during phase shifts.")
     print("- Shorter switch latency suggests faster nomadic response.")
     print("- Moderate dwell time suggests neither rigid fixation nor chaotic wandering.")
+    print("- Dynamic tau rises in stable phases (fixation allowed) and falls in volatile phases (nomadic pressure).")
     print("=" * 72 + "\n")
 
 
@@ -1723,6 +1959,14 @@ def main():
         dynamics,
         os.path.join(cfg.save_dir, "regime_expert_alignment.png"),
     )
+    plot_dynamic_tau_trace(
+        nomadic_logs,
+        os.path.join(cfg.save_dir, "dynamic_tau_trace.png"),
+    )
+    plot_policy_hybrid_signals(
+        nomadic_logs,
+        os.path.join(cfg.save_dir, "policy_hybrid_signals.png"),
+    )
 
     print_report(
         fixed_total_mse,
@@ -1752,6 +1996,8 @@ def main():
         "stable_vs_transition_entropy.png",
         "switch_latency_curve.png",
         "regime_expert_alignment.png",
+        "dynamic_tau_trace.png",
+        "policy_hybrid_signals.png",
     ]:
         print(" -", os.path.join(cfg.save_dir, fname))
 
