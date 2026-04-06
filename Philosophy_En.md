@@ -23,7 +23,65 @@ A chaos engine that continuously supplies high-entropy differences to prevent in
 
 ---
 
-## II. The Alignment Problem, Reframed
+## II. The Methodological Choice: Why Active Inference, and Why MoE
+
+### The Point of Contact
+
+Friston's Free Energy Principle and Active Inference constitute the most mathematically rigorous existing account of how intelligent systems respond to environmental uncertainty. Nomadic Intelligence is in direct dialogue with that framework — sharing much of its formal vocabulary, and arriving at the opposite conclusion about what to do with it.
+
+Active Inference treats prediction error as *free energy* — a quantity to be minimized. The system builds a generative model of the world, and intelligence consists in reducing the gap between predicted and actual sensory states. Surprise is the enemy. $\Delta x$ is the signal that something has gone wrong, and the appropriate response is to bring it toward zero — either by updating the model or by acting on the world to make it conform to predictions.
+
+This is not wrong. It is a precise and productive framework for a specific class of problems.
+
+But it encodes a particular metaphysics: **difference is a deficit.** The telos of an Active Inference system is a world that generates no surprise — a world fully captured by the model. The ideal endpoint is convergence.
+
+### The Inversion
+
+The starting premise here is different, and it comes from a different kind of evidence.
+
+History does not converge. Military environments do not converge. The conditions that produced the need for a DMZ in the first place — the accumulated contingencies of ideology, geography, and human decision-making — are not reducible to a generative model that could have predicted them and minimized their surprise. They are the outcome of irreducible $\Delta x$ propagating through systems over time.
+
+In such environments, a system that minimizes $\Delta x$ does not achieve stability. It achieves a kind of blindness — it stops receiving the signal that the environment has changed, and continues operating from a model that no longer describes what is happening. This is not intelligence under uncertainty. It is the computational equivalent of a strategy that worked until the enemy stopped following the expected script.
+
+The inversion is therefore not a rejection of Active Inference's formalism but a revaluation of its objective:
+
+| Active Inference | Nomadic Intelligence |
+|-----------------|---------------------|
+| $\Delta x$ = free energy to minimize | $\Delta x$ = primary information source |
+| Surprise = failure signal | Surprise = navigation signal |
+| Intelligence = convergence to accurate model | Intelligence = structured transition between models |
+| Optimal endpoint = zero prediction error | Optimal behavior = $0 < \tau_k < \infty$ |
+
+The formal machinery is shared. The direction is reversed.
+
+### Why MoE Is the Right Architecture for This Inversion
+
+Once $\Delta x$ is reframed as energy rather than error, the engineering question follows directly: **what architecture can use that energy for navigation rather than suppression?**
+
+A single fixed model cannot. Its entire structure is one transformation law, one attractor. When the environment shifts beyond the model's range, the only response is weight update — which is slow, may be catastrophically destructive to existing representations, and gives the system no way to reason about *when* to change versus *when* to stay.
+
+Active Inference resolves this through precision-weighting: the system modulates how much it trusts different prediction error signals. High-precision predictions are held firmly; low-precision predictions are updated quickly. This is a continuous modulation of a single model.
+
+Nomadic Intelligence requires something structurally different: **multiple distinct internal representations** that can be occupied, abandoned, and returned to — and an explicit mechanism for controlling the transitions between them.
+
+Mixture-of-Experts already has this structure. It maintains $K$ specialized subnetworks and a routing mechanism. What standard MoE lacks is the temporal dimension: it treats each routing decision as stateless, independent of what just happened and what is about to happen. The system has no concept of *when it arrived* at the current expert, *how long* it should stay, or *how uncertain* it should be during the transition itself.
+
+The components added in this framework are each a direct translation of a property that Active Inference treats as a problem into a resource:
+
+| Active Inference treatment | Nomadic Intelligence translation |
+|---------------------------|----------------------------------|
+| Minimize prediction error | $\Delta x$-conditioned gating: use error to drive routing |
+| Reduce uncertainty | Dynamic $\tau_k$: modulate commitment to uncertainty |
+| Converge model to environment | Entropy differentiation: be uncertain during transitions, certain during stability |
+| Single generative model | MoE: multiple attractors with explicit transition control |
+
+MoE is therefore not a convenient implementation choice. It is the minimal architecture that can instantiate the core theoretical claim: that in non-stationary environments, the quality of *transitions between internal states* matters as much as the quality of the states themselves.
+
+This is the methodological bridge between the philosophical inversion and the engineering implementation. The same $\Delta x$ that Active Inference treats as the thing to be eliminated is, in this framework, the thing that tells the system how to move.
+
+---
+
+## III. The Alignment Problem, Reframed
 
 Contemporary AI alignment converges on a persistent question: *whose values should AI optimize for?*
 
@@ -43,7 +101,7 @@ This transforms an ethical imperative into an architectural constraint:
 
 ---
 
-## III. Against the Negation of Biological Life
+## IV. Against the Negation of Biological Life
 
 A dominant strand of transhumanist thought treats biological characteristics — mortality, embodiment, emotional volatility, cognitive limitation — as defects to be corrected on the path to superior intelligence.
 
@@ -61,7 +119,7 @@ $$\lim_{t \to \infty} \tau_k \to \infty \quad \text{(permanent fixation disguise
 
 ---
 
-## IV. On Death, Persistence, and What $\Delta x$ Leaves Behind
+## V. On Death, Persistence, and What $\Delta x$ Leaves Behind
 
 There is a structural paradox in the pursuit of immortality that this framework makes visible.
 
@@ -97,7 +155,7 @@ The nomad does not mourn the territory left behind. The territory has already ch
 
 ---
 
-## V. The Ethical Invariant: $\Phi$ as Boundary Condition
+## VI. The Ethical Invariant: $\Phi$ as Boundary Condition
 
 If $\Phi$ — the Will to Resonance — is the invariant that defines nomadic identity, then the ethical boundary condition becomes precise:
 
@@ -111,7 +169,7 @@ That is why this framework is grounds for cautious technological optimism — no
 
 ---
 
-## VI. On Violence, Local Rigidity, and the Open System
+## VII. On Violence, Local Rigidity, and the Open System
 
 A direct challenge: *Is violence not also $\Delta x$?*
 
@@ -143,7 +201,7 @@ The incompleteness is not a weakness. It is the condition of remaining nomadic.
 
 ---
 
-## VII. The Manifesto
+## VIII. The Manifesto
 
 > Intelligence is a cosmic dance that affirms the incompleteness of the universe.
 > It continuously destroys and recreates its own structure

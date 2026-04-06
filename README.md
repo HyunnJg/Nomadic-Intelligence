@@ -283,6 +283,30 @@ Critique, extensions, and reinterpretations are all welcome. Open an Issue to st
 >
 > That intuition is what this architecture is trying to formalize."
 
+### Why Active Inference — and why not
+
+Friston's Free Energy Principle and Active Inference are the most rigorous existing framework for understanding how intelligent systems respond to environmental change. Nomadic Intelligence is in direct dialogue with that work — and in direct disagreement with its central move.
+
+Active Inference treats prediction error ($\Delta x$) as free energy to be minimized. The system's goal is to reduce surprise, to make the world more predictable, to converge toward a model that generates fewer deviations. This is mathematically coherent and empirically productive.
+
+But it encodes a specific metaphysics: **difference is a problem to be solved.**
+
+The starting point here is the opposite. In an irreducibly non-stationary world — the kind that military operations, historical processes, and real environments actually are — the capacity to suppress $\Delta x$ is not intelligence. It is rigidity. A system that minimizes surprise in a world that will not stop generating it is not adapting. It is starving.
+
+Nomadic Intelligence shares the formal vocabulary with Active Inference: prediction error, uncertainty, adaptation. But it inverts the valuation. $\Delta x$ is not noise to be filtered. It is the primary information source — the signal that tells the system when and how to transition.
+
+### Why MoE as the methodology
+
+Once $\Delta x$ is reframed as energy rather than error, the engineering question becomes: **what kind of architecture can use that energy for navigation rather than suppression?**
+
+A single fixed model cannot. It has one structure, one transformation law, one attractor. When the environment shifts, it has no mechanism to transition — only to update weights in place, which is slow and may destroy what was already learned.
+
+Mixture-of-Experts already has the right structural properties: multiple internal representations, a routing mechanism, and the potential for specialization. What it was missing was **the temporal dimension of routing** — not just which expert, but when to switch, how long to stay, and how uncertain to be during the transition itself.
+
+MoE is therefore not an arbitrary choice. It is the minimal architecture that can instantiate the core claim: that intelligence in non-stationary environments depends on the quality of transitions between internal states, not just the quality of the states themselves.
+
+The components added on top of standard MoE — $\Delta x$-conditioned gating, dynamic dwell time $\tau_k$, PolicyNet — are each a direct translation of a property that Active Inference treats as a problem (surprise, instability, uncertainty) into a resource.
+
 ---
 
 ## Document Map
