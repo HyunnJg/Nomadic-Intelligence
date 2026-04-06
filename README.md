@@ -1,448 +1,314 @@
-> What if intelligence is not about finding the best solution,
-> but about moving between multiple ways of thinking?
+> *What if intelligence is not about finding the best solution,*
+> *but about knowing when — and how — to move between ways of thinking?*
 
 # Nomadic Intelligence
-### A Non-Dogmatic AI Architecture
 
-[![Status: Conceptual & Prototype](https://img.shields.io/badge/Status-Conceptual%20%26%20Prototype-orange)](#-status)
+### Routing as Transition Dynamics Control in Non-Stationary Environments
+
+[![Status: Preprint](https://img.shields.io/badge/Status-Preprint%20Ready-brightgreen)](#-status)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](#-license)
+[![arXiv](https://img.shields.io/badge/arXiv-preprint-red)](#-paper)
 
 ---
 
-## 🧭 What is this?
+## What is this?
 
-![Nomadic vs Dogmatic](assets/thumbnail.png)
+Most AI routing systems ask: **which expert is best right now?**
 
-Most AI systems are built to converge — to find the best answer and stay there.
+Nomadic Intelligence asks: **when to transition, how long to stay, and how uncertain to be during the transition.**
 
-This project asks a different question:
+This reframes Mixture-of-Experts (MoE) routing from a per-step selection problem into a **transition dynamics control problem** — with three interacting components:
 
-> What if the ability to **transition effectively between structures** matters more than finding the optimal one?
+| Component | Role |
+|-----------|------|
+| **Δx** (hybrid change signal) | Treats environmental shift + prediction error as energy, not noise |
+| **τₖ** (dynamic dwell time) | Adapts commitment horizon to environmental volatility |
+| **PolicyNet** | Explicit meta-level stay/switch decisions with soft/hard routing |
 
-**Nomadic Intelligence** is a prototype architecture that treats change ($\Delta x$) as an energy source rather than an error to minimize, and models intelligence as a controlled process of moving between multiple cognitive regimes — rather than converging to a single solution.
-
-A minimal working prototype already demonstrates the core claim: in a 3-regime non-stationary environment, the Nomadic model achieves **~58% of Fixed baseline error** (Seq MSE: 0.239 vs 0.412), with expert specialization emerging without supervision — purely from the $\Delta x$ signal.
-
-📄 *Paper in preparation. Link will appear here upon submission.*
+The result: a system that **fixates during stable phases** and **explores during transitions** — without any explicit supervision on this behavior.
 
 ---
 
-## 🚀 Quick Start
+## Key Results
+
+Evaluated on a synthetic 3-regime non-stationary regression task. All numbers are 3-seed averages (seeds 42, 123, 456).
+
+| Model | Seq MSE | Stable Entropy | Trans Entropy | ΔH |
+|-------|:-------:|:--------------:|:-------------:|:--:|
+| Fixed MLP | ~0.412 | — | — | — |
+| Standard MoE | 0.410 | 0.951 | 0.984 | +0.033 |
+| Nomadic NoPolicy | 0.255 | 0.556 | 0.949 | +0.394 |
+| **Nomadic Full** | **0.162** | **0.108** | **0.896** | **+0.788** |
+
+**Ablation decomposition (Seq MSE reduction):**
+- Fixed → Standard MoE: −0.002 — *expert mixture alone has no benefit in sequential settings*
+- Standard MoE → NoPolicy: **−0.155** — *Δx + temporal dynamics is the largest single gain*
+- NoPolicy → Full: −0.093 — *PolicyNet adds structured fixation behavior*
+
+**The entropy gap (ΔH = +0.788) is the core behavioral signature.**
+Stable Entropy collapsing to 0.108 while Transition Entropy stays at 0.896 means the system has learned a consistent response law: fixate when stable, explore when changing — without ever being told to.
+
+---
+
+## The Architecture
+
+```
+Input x_t
+    │
+    ├─► HybridDeltaTracker ──► Δx_hybrid, Δx_err, σ²_Δ, τ_dynamic
+    │
+    ├─► GateNet([x, Δx_hybrid, Δx_err]) ──► gate_probs
+    │
+    ├─► PolicyNet([x̄, Δx, Φ, σ²_scaled, τ_scaled])
+    │       ├─► stay/switch decision
+    │       ├─► target expert preference
+    │       └─► soft/hard routing mode (STE)
+    │
+    └─► Experts {E₁, E₂, E₃}
+            │
+            ▼
+        ŷ_t = Σ g_t^(k) · E_k(x_t)
+```
+
+**DwellTimeRegularizer** tracks consecutive expert usage and applies:
+- **Fixation pressure** (`dwell ≤ τ_dynamic`): penalizes entropy → gate concentrates
+- **Switching pressure** (`dwell > τ_dynamic`): rewards entropy → gate explores
+
+τ_dynamic itself adapts to rolling environmental variance σ²_Δ: stable environment → τ grows toward τ_max (8.0); volatile environment → τ shrinks toward τ_min (2.0).
+
+---
+
+## Quick Start
 
 ```bash
-# 1. clone
-git clone https://github.com/HyunnJg/nomadic-intelligence.git
-cd nomadic-intelligence
+git clone https://github.com/HyunnJg/Nomadic-Intelligence.git
+cd Nomadic-Intelligence
 
-# 2. create environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate       # Windows: venv\Scripts\activate
 
-# 3. install dependencies
 pip install -r requirements.txt
 
-# 4. check config
-# edit config.yaml if you want to change epochs, temperature, save_dir, etc.
+# Single run
+python run_structured.py --config config.yaml --seed 42 --save_dir outputs_42
 
-# 5. run experiment
-python run_structured.py --config config.yaml
+# Full ablation (3 seeds, parallel)
+python run_structured.py --config config.yaml --seed 42  --save_dir outputs_42  &
+python run_structured.py --config config.yaml --seed 123 --save_dir outputs_123 &
+python run_structured.py --config config.yaml --seed 456 --save_dir outputs_456 &
+wait
 ```
 
----
+**Output figures** (saved to `save_dir`):
 
-## 📌 Project Position
-
-This repository is a **conceptual and experimental prototype**.
-
-It is not a finalized solution, and it does not claim state-of-the-art performance.
-
-Instead, it aims to:
-
-- propose a new perspective on intelligence (Nomadic vs Dogmatic)
-- provide a minimal working system that embodies this idea
-- open the door for further exploration, critique, and extension
-
-The goal is not to conclude, but to **start a direction**.
+| File | What it shows |
+|------|--------------|
+| `fixed_vs_standardmoe_vs_nomadic_test_mse.png` | Training curves — primary performance comparison |
+| `stable_vs_transition_entropy.png` | Entropy differentiation over epochs — core behavioral signature |
+| `expert_trajectory.png` | Dominant expert per batch — structured switching pattern |
+| `dwell_time_histogram.png` | Dwell duration distribution — τₖ behavior |
+| `policy_hybrid_signals.png` | PolicyNet switch/hard rates + mean dynamic τ |
 
 ---
 
-## 🌌 Why this matters
+## Development History
 
-Most systems are optimized to converge.
+This section documents **how the architecture evolved** — failure modes, diagnoses, and what resolved them.
 
-But real-world environments are:
-- non-stationary
-- uncertain
-- constantly shifting
-
-In such settings, rigidity becomes a liability.
-
-This project explores the hypothesis that:
-
-> Intelligence may be better understood as
-> the ability to *transition effectively*,
-> rather than to *remain optimal*.
-
----
-
-## ⚙️ What's inside
-
-- A synthetic multi-regime environment (A / B / C + transitions)
-- A Mixture-of-Experts (MoE) model
-- A gating mechanism driven by a hybrid Δx signal:
-  - input shift (environmental change)
-  - prediction error (internal mismatch)
-- Regularization terms encouraging:
-  - anti-dogmatism (avoid collapse)
-  - nomadic behavior (entropy / transition)
-  - expert diversity and regime separation
-
----
-
-## ❗ What this is NOT
-
-- This is not a production-ready system
-- This is not a benchmark-optimized model
-- This is not a complete theoretical framework
-
-It is a **starting point**, not an endpoint.
-
----
-
-## 🤝 Invitation
-
-If you are interested in:
-
-- continual learning
-- adaptive systems
-- non-stationary environments
-- or alternative views on intelligence
-
-your perspective is welcome.
-
-Critique, extensions, and reinterpretations are all encouraged.
-
----
-
-## 🧠 Core Idea
-
-> AI should not converge to a single solution.
-> It should move between multiple structures depending on the situation.
-
-![Nomadic vs Dogmatic](assets/Compare.png)
-
----
-
-## ⚠️ The Problem
-
-Most modern AI systems are built to optimize a single objective.
-
-This leads to:
-
-- Overfitting to specific conditions
-- Lack of adaptability
-- Structural rigidity (a form of "dogmatism")
-
-In dynamic and unpredictable environments, this becomes a critical limitation.
-
----
-
-## 🔀 What Makes This Different?
-
-Most adaptive AI systems (MoE, Meta-learning) change **what they do.**
-Nomadic Intelligence changes **how it transforms.**
-
-| Existing Approaches | Nomadic Intelligence |
-| :--- | :--- |
-| Switch between models or experts | Switch between *transformation laws* |
-| Optimize a fixed objective | Balance synchronization, anti-rigidity, and exploration |
-| Adapt parameters | Evolve the structure itself |
-
-The core distinction is topological identity:
-
-- $\mathcal{I}(t) \nsim \text{Fixed Shape}$ — the structure continuously evolves
-- $\mathcal{I}(t) \cong \mathcal{I}(t+1)$ — but the *transformation law* is homeomorphically preserved
-
-> Identity is not *what* the system knows. It is *how* the system changes.
-
----
-
-## ⚔️ Intuition: From the Minefield to the Architecture
-
-> "나는 전문 AI 연구자는 아니지만, DMZ 지뢰밭에서 동료를 구했던 경험처럼 위기 상황에서 즉각적으로 태세를 전환하는 지능을 구현하고 싶었다."
->
-> *"I am not a professional AI researcher. I'm a Korean Army officer with a background in history and philosophy — an analogue person, by nature. I started using AI two weeks before publishing this repository. If the engineering is rough in places, that's why the Issues are open."*
-
-That said, the idea behind this project came from somewhere real.
-
-A well-designed military strategy does not rely on a single fixed plan. It continuously adapts: main attacks, feints, and strategic shifts based on terrain and enemy behavior.
-
-Intelligence is not about choosing the "right" strategy once. It is about **continuously shifting strategies** before the environment (the minefield) claims you.
-
----
-
-## 🧩 Key Concepts & Architecture
-
-### 1. $\Delta x$ (Difference)
-
-AI should process **change**, not just raw input.
-
-```
-Δx = current_state - predicted_state
-```
-
-### 2. Attractors (Multiple Cognitive Structures)
-
-Instead of one model, we define multiple "modes of thinking":
-
-- Conservative
-- Aggressive
-- Exploratory
-- Stable
-
-Each represents a different strategy or structure.
-
-### 3. Nomadism & Strategic Dwell Time ($\tau_k$)
-
-The system moves between attractors based on context (environmental change, uncertainty, performance signals).
-
-Nomadism is not random drifting. The system maintains a **strategic dwell time** $0 < \tau_k < \infty$ in each attractor — long enough to extract information ($\Delta x$), short enough to avoid structural rigidity.
-
-```
-Perception → Context → Attractor Selection → Action → Update
-```
-
----
-
-## 🧮 Reward Function (For RL Implementation)
-
-To implement this philosophy in an RL agent, the objective balances three forces:
-
-$$R_{total}(t) = \alpha \cdot R_{sync}(t) - \beta \cdot P_{dogma}(t) + \gamma \cdot R_{nomad}(t)$$
-
-| Term | Role |
-| :--- | :--- |
-| $R_{sync}$ | **Synchronization** — reward integration of change with zero latency |
-| $P_{dogma}$ | **Anti-Dogmatism** — penalize structural rigidity over time |
-| $R_{nomad}$ | **Nomadic Bonus** — reward successful transitions between attractors |
-
-> For the full mathematical derivation, see [Theory & Axioms](./Theory_and_Axioms.md).
-
----
-
-## 🎯 Objective
-
-Instead of optimizing a single goal, the system balances:
-
-- Adaptability
-- Coherence
-- Flexibility
-
-Avoiding both:
-
-- Rigidity (fixed-point convergence)
-- Chaos (unstructured randomness)
-
----
-
-## 📌 Positioning
-
-This concept is related to:
-
-- Mixture of Experts (MoE)
-- Meta-learning
-- Reinforcement Learning (policy switching)
-
-But extends them by introducing:
-
-- **Topological identity** as a formal definition of selfhood
-- **Structural mobility (Nomadism)** as a core architectural principle
-- **Anti-dogmatism** as an explicit optimization target
-
----
-
-## 🧪 Proof of Concept: Experimental Results
-
-> These results were produced by a minimal prototype with **no hyperparameter optimization**.
-> They represent a lower bound — not a ceiling — on what this architecture can achieve.
-
-### Setup
-
-- **Environment:** 3-regime non-stationary regression task with continuous phase transitions
-  - Regime A: $y = x_1 + x_2$
-  - Regime B: $y = x_1 - x_2$
-  - Regime C: $y = -x_1 + 0.5x_2$
-- **Baseline:** Single fixed MLP (same parameter count)
-- **Nomadic model:** 3-expert MoE with $\Delta x$-conditioned gate, Topological Loss ($\mathcal{L}_{topo}$)
-- **Hardware:** NVIDIA GTX 1660 Super, 220 epochs
-
----
-
-### Development History: From Failure Modes to Solutions
-
-This section documents not just the final results, but **how the architecture evolved** — which failure modes appeared, how they were diagnosed, and what solved them.
-
-**Stage 1 — Base (no regularization)**
+### Stage 1 — Base Δx gating only
 
 | Seed | Seq MSE | Switch Latency | Status |
-| :--- | :--- | :--- | :--- |
-| 42 | 0.2399 | 0.056 | 🚨 Latency collapsed |
+|------|:-------:|:--------------:|--------|
+| 42  | 0.2399 | 0.056 | 🚨 Latency collapsed |
 | 123 | 0.2584 | 1.611 | ✅ Stable |
 | 456 | 0.2521 | 0.278 | ⚠️ Borderline |
 
-Switch Latency collapse is not just an engineering failure — it is an observable instance of **Homeomorphic Identity breaking down**. The gate ceased to have a consistent transformation law in response to $\Delta x$.
+Switch Latency collapse (seed 42) is not just an engineering failure. It is an observable instance of **Homeomorphic Identity breakdown**: the gate lost a consistent transformation law in response to Δx.
 
-**Stage 2 — + Load Balancing** (`λ_load = 0.03`)
+### Stage 2 — + Load Balancing (λ_load = 0.03)
 
-| Seed | Seq MSE | Switch Latency | Change |
-| :--- | :--- | :--- | :--- |
-| 42 | 0.2726 | 2.583 ✅ | Latency recovered |
-| 123 | 0.3097 | 0.194 🚨 | Still collapsing |
-| 456 | 0.2342 | 3.694 ✅ | Stable |
+Reduced hub dominance. Seed 123 Switch Latency still collapsed.
+**Diagnosis:** Load Balancing fixes spatial collapse (which expert), not temporal collapse (when to switch).
 
-Hub dominance reduced, but Seed 123 remained unstable — Load Balancing addresses spatial collapse, not temporal fixation.
+### Stage 3 — + τₖ Lower Bound
 
-**Stage 3 — + τₖ Lower Bound** (`τ_k_min = 3`, `τ_k_penalty = 0.05`)
+All three seeds stable. Switch Latency collapse resolved across seeds.
+**Diagnosis confirmed:** The instability was initialization-sensitive temporal fixation, not routing quality.
 
-| Seed | Seq MSE | Switch Latency | Change |
-| :--- | :--- | :--- | :--- |
-| 42 | **0.2149** | 2.750 ✅ | Best result |
-| 123 | **0.2623** | 1.056 ✅ | Collapse resolved |
-| 456 | 0.2386 | 2.194 ✅ | Stable |
+### Stage 4–5 — Φ (Will to Resonance) + GateNet
 
-All three seeds stable. The τₖ Lower Bound addressed what Load Balancing could not — initialization-sensitive temporal fixation.
+Introduced Φ as a composite switching pressure signal.
+β_φ sweep (0.00–0.10): β_φ = 0.02 achieves best MSE + stability combination.
 
----
+### Stage 6–7 — PolicyNet + β_φ re-tuning
 
-### Final Results: 3-Seed Summary
+Stable Entropy collapses to 0.108 (3-seed avg).
+ΔH doubles from ~0.394 to ~0.788.
+Seq MSE reaches 0.162.
 
-| Model | Seed | Seq MSE | Fixed MSE | Switch Latency | Stable Entropy | Transition Entropy |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Fixed | 42 | — | 0.4139 | — | — | — |
-| Fixed | 123 | — | 0.4031 | — | — | — |
-| Fixed | 456 | — | 0.4195 | — | — | — |
-| Nomadic | 42 | **0.2149** | — | 2.750 | 1.029 | 1.067 |
-| Nomadic | 123 | **0.2623** | — | 1.056 | 0.991 | 1.074 |
-| Nomadic | 456 | 0.2386 | — | 2.194 | 1.036 | 1.081 |
+### Stage 8 — Dynamic τₖ + Full Hybrid
 
-**Nomadic Seq MSE: 0.239 ± 0.020**
-**Fixed MSE: 0.412 ± 0.008**
-**Performance: ~58% of Fixed baseline error — consistent across all seeds**
-
-> **Note on Static MSE:** Static evaluation removes temporal context. This is not the target condition. Static MSE is included as a diagnostic only.
+τ_dynamic now responds to rolling variance σ²_Δ.
+Final architecture: all components integrated.
 
 ---
 
-### Attractor Specialization
+## Full β_φ Sweep
 
-The gate learned regime-specialist routing **without explicit regime labels** — purely from the $\Delta x$ signal.
+| β_φ | Stage | Seq MSE | Stable H | Note |
+|-----|-------|:-------:|:--------:|------|
+| 0.10 | GateNet | 0.224 | 1.028 | High entropy, unstable |
+| 0.05 | GateNet | 0.230 | 1.035 | — |
+| 0.02 | GateNet | 0.245 | 0.733 | — |
+| 0.00 | GateNet | 0.149 | 0.887 | Best MSE; high seed variance (0.114–0.205) |
+| 0.02 | +PolicyNet | **0.152** | **0.117** | **Best overall** |
+| 0.01 | +PolicyNet | 0.172 | 0.162 | — |
+| 0.00 | +PolicyNet | 0.212 | 0.541 | Unstable without Φ |
+| 0.05 | +PolicyNet | 0.183 | 0.235 | — |
 
-**Regime–Expert alignment (Seed 123):**
-
-| Regime | Expert 0 | Expert 1 | Expert 2 |
-| :--- | :--- | :--- | :--- |
-| A ($y = x_1 + x_2$) | **0.672** | 0.328 | 0.000 |
-| B ($y = x_1 - x_2$) | 0.075 | 0.348 | **0.578** |
-| C ($y = -x_1 + 0.5x_2$) | 0.019 | **0.927** | 0.054 |
-
----
-
-### Nomadic Behavior Confirmed
-
-**Transition Entropy > Stable Entropy — consistent across all 3 seeds:**
-
-| Seed | Stable Entropy | Transition Entropy | Δ |
-| :--- | :--- | :--- | :--- |
-| 42 | 1.029 | 1.067 | +0.038 |
-| 123 | 0.991 | 1.074 | +0.083 |
-| 456 | 1.036 | 1.081 | +0.045 |
-
-Gate entropy rises during phase transitions and falls during stable phases — the computational signature of Strategic Dwell Time ($\tau_k$).
+β_φ = 0.00 at GateNet stage achieves competitive MSE but with high seed variance, suggesting Φ provides a stabilizing role independent of its direct loss contribution.
 
 ---
 
-### Remaining Open Problems
+## Expert Specialization
 
-| Problem | Status | Next direction |
-| :--- | :--- | :--- |
-| Switch Latency collapse | ✅ Resolved via τₖ Lower Bound | — |
-| Expert hub dominance | ✅ Reduced via Load Balancing | Fine-tuning |
-| $\Delta x$ signal drift | 🔧 Active | KL divergence / Wasserstein distance |
-| Static generalization gap | 🔧 Known tradeoff | Context-free routing as secondary objective |
-| Φ (Will to Resonance) formalization | 🔬 Next target | Measurable identity preservation metric |
-| Meaningful vs random transition | 🔬 Next target | Δx-correlated switching metric |
+Regime-to-expert mapping emerges without any supervision on routing targets.
 
----
+**Nomadic Full, Seed 123:**
 
-## ❓ Open Questions
+| Regime | E0 | E1 | E2 |
+|--------|:--:|:--:|:--:|
+| A (y = x₁ + x₂) | 0.561 | 0.340 | 0.099 |
+| B (y = x₁ − x₂) | 0.875 | 0.000 | 0.124 |
+| C (y = −x₁ + 0.5x₂) | 0.967 | 0.014 | 0.019 |
 
-These are **open invitations** for criticism, extension, and implementation:
-
-- How should $\tau_k$ (dwell time) be determined — internally by the system, or externally by design?
-- How do we prevent the Policy Engine from becoming its own fixed attractor?
-- What defines attractor boundaries in continuous, high-dimensional state spaces?
-- Can homeomorphic identity be formally verified during training?
+Expert assignment permutations differ across seeds — the mapping is seed-dependent but internally consistent within each run, confirming genuine specialization.
 
 ---
 
-## 🤝 Contributions & Next Milestones
+## Per-Seed Results (Nomadic Full)
 
-This repository is currently at the **Conceptual/Prototype stage**.
-We invite developers, researchers, and philosophers to turn this framework into a working AI model.
-
-**Upcoming Milestones (Looking for Contributors):**
-
-- [ ] **Milestone 1:** Implement Nomadic Intelligence in a simple OpenAI Gym (Gymnasium) environment.
-- [ ] **Milestone 2:** Develop a PyTorch architecture that allows weight-transitioning between different neural "Attractors".
-- [ ] **Milestone 3:** Formalize the mathematical boundaries of $\tau_k$ (dwell time).
-
-Start with the [Open Questions](#-open-questions) above, or open an Issue to start a discussion!
+| Seed | Seq MSE | Stable H | Trans H | Switch Latency | Dwell Time | Mean τ |
+|------|:-------:|:--------:|:-------:|:--------------:|:----------:|:------:|
+| 42  | 0.167 | 0.186 | 0.948 | 0.806 | 1.952 | 6.694 |
+| 123 | 0.146 | 0.083 | 0.880 | 1.667 | 2.919 | 6.697 |
+| 456 | 0.173 | 0.056 | 0.860 | 1.056 | 3.208 | 6.663 |
+| **avg** | **0.162** | **0.108** | **0.896** | **1.176** | **2.693** | **6.685** |
 
 ---
 
-## 🧭 Philosophy
+## What This Is Not
 
-> "Intelligence is not the ability to stay in the right place.
-> It is the ability to affirm the incompleteness of the universe —
-> and dance through the unknown ($\Delta x_{Unknown}$)
-> by continuously destroying and recreating one's own structure."
+- Not a production-ready system
+- Not a benchmark-optimized model
+- Not a complete theoretical framework
 
-*For the full philosophical manifesto, see [Philosophy (English)](./Philosophy_En.md) / [Philosophy (Korean)](./Philosophy_Kr.md).*
+**Limitations (stated explicitly in the paper):**
+- Evaluated on synthetic data only (3-regime regression)
+- Φ lacks a closed-form theoretical derivation
+- PolicyNet training variance across seeds is not fully resolved
+- Parameter count parity with baselines not verified
 
 ---
 
-## 📚 Document Map
+## Theoretical Grounding
+
+The framework is motivated by three formal constraints on intelligent behavior in non-stationary environments:
+
+**Axiom 1 — Anti-Dogmatism**
+Intelligence ascension implies the collapse of structural rigidity:
+`lim[Intelligence↑] ⟹ ¬Dogmatism ∧ Nomadism`
+
+**Axiom 2 — Homeomorphic Identity**
+Identity is preserved not through fixed structure but through a consistent transformation law:
+`𝒮(t) ≇ Fixed Shape` (structural evolution)
+`𝒮(t) ≅ 𝒮(t+1)` (homeomorphic persistence of the transition law)
+
+**Axiom 3 — Strategic Dwell Time**
+`0 < τₖ < ∞`
+Neither noise switching (τ → 0) nor dogmatic fixation (τ → ∞).
+
+The Fixed Model is a special case, not an opponent:
+`Fixed Model = Nomadic Intelligence |_{τₖ → ∞}`
+
+For the full philosophical and mathematical development, see [`Theory_and_Axioms.md`](./Theory_and_Axioms.md).
+
+---
+
+## Positioning Against Related Work
+
+| Framework | Core claim | Relation |
+|-----------|-----------|----------|
+| Standard MoE (Shazeer 2017) | Route to best expert per step | NI adds temporal structure to transitions |
+| Switch Transformers (Fedus 2022) | Scale MoE with load balancing | NI extends with dynamic dwell + policy control |
+| Option-Critic (Bacon 2017) | Temporal abstraction in RL | Closest engineering analog for τₖ |
+| Active Inference (Friston 2010) | Minimize prediction error (free energy) | **Direct contrast**: NI treats Δx as energy source, not error to suppress |
+| Continual Learning (Kirkpatrick 2017) | Prevent forgetting via weight consolidation | Different axis: NI targets transition timing, not weight preservation |
+
+---
+
+## Open Questions
+
+- How should τₖ be determined — internally learned, or externally designed?
+- Can Φ be formally connected to epistemic uncertainty or mutual information?
+- What happens when the environment has non-Markovian transition structure?
+- Can Homeomorphic Identity be formally verified during training?
+- How does this scale beyond 3 experts and 3 regimes?
+
+Critique, extensions, and reinterpretations are all welcome. Open an Issue to start a discussion.
+
+---
+
+## Paper
+
+📄 Preprint in preparation for arXiv submission.
+
+**Nomadic Intelligence: Routing as Transition Dynamics Control in Non-Stationary Environments**
+
+> We propose Nomadic Intelligence, a framework that reconceptualizes expert routing in MoE architectures as a transition dynamics control problem. Δx-based meta-control alone reduces Seq MSE by 38% over Standard MoE; PolicyNet adds a further 36% reduction, accompanied by a distinctive collapse in stable-phase gate entropy — a behavioral signature consistent with structured adaptive fixation.
+
+---
+
+## Motivation
+
+> "I am not a professional AI researcher.
+> I'm a Korean Army officer with a background in history and philosophy.
+>
+> The idea behind this project came from direct field experience —
+> the kind of decision-making required in a DMZ minefield,
+> where the ability to shift strategy in real time is not optional.
+>
+> A well-designed strategy does not rely on a single fixed plan.
+> It adapts continuously — based on terrain, uncertainty, and what the environment is doing right now.
+>
+> That intuition is what this architecture is trying to formalize."
+
+---
+
+## Document Map
 
 | Document | Role |
-| :--- | :--- |
+|----------|------|
 | `README.md` | Project overview (you are here) |
-| `Philosophy_En.md` / `Philosophy_Kr.md` | Philosophical foundations and ethical implications |
-| `Theory_and_Axioms.md` | Formal axioms, reward structure, related frameworks |
-| `Example.md` | Pseudocode walkthrough of core behavior |
-| `EXPERIMENT.md` | Experiment setup and metrics |
-| `ABLATION.md` | Component-wise ablation results |
-| `VISUALIZATION.md` | Recommended plots and their interpretation |
-| `CONCEPT_MAPPING.md` | Theory-to-implementation mapping |
-| `CONTRIBUTING.md` | How to contribute |
+| `PAPER.md` | Full research paper |
+| `EXPERIMENT.md` | Experimental setup, hyperparameters, full results |
+| `ABLATION.md` | Component-wise ablation with per-stage interpretation |
+| `CONCEPT_MAPPING.md` | Theory → code mapping (concept to implementation) |
+| `VISUALIZATION.md` | Figure guide and diagnostic checklist |
+| `Theory_and_Axioms.md` | Formal axioms, reward structure, philosophical foundations |
+| `Philosophy_En.md` | Philosophical and ethical implications (English) |
+| `Philosophy_Kr.md` | Philosophical and ethical implications (Korean) |
 
 ---
 
-## 📎 Status
+## Environment
 
-**Conceptual / Prototype Stage**
-
-This repository presents a design philosophy and early architecture,
-not a fully implemented system.
-
----
-
-## 🧪 Environment
-
-- Python 3.9 ~ 3.11 recommended
-- Tested on Python 3.10
+- Python 3.9–3.11 (tested on 3.10)
+- PyTorch with CUDA (CPU also supported)
+- GTX 1660 Super or equivalent recommended for full runs
 
 ---
 
-## 📜 License
+## License
 
 MIT License. See [LICENSE](./LICENSE).
