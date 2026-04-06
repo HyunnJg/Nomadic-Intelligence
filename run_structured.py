@@ -439,6 +439,53 @@ class NomadicMoE(nn.Module):
         return y_hat, gate_probs, gate_logits, expert_outputs
 
 
+class StandardMoE(nn.Module):
+    """
+    Ordinary MoE baseline — key control for ablation.
+
+    Has:  experts, gating (input-conditioned softmax)
+    Lacks: PolicyNet, phi, delta_hybrid, dynamic tau, meta-signals
+
+    Comparison structure:
+      Fixed  vs StandardMoE  -> isolates expert-mixture benefit
+      StandardMoE vs Nomadic -> isolates dynamic meta-control benefit
+    """
+    def __init__(
+        self,
+        input_dim: int,
+        hidden_dim: int,
+        output_dim: int,
+        num_experts: int,
+        gate_hidden_dim: int,
+    ):
+        super().__init__()
+        self.num_experts = num_experts
+        self.experts = nn.ModuleList([
+            Expert(input_dim, hidden_dim, output_dim) for _ in range(num_experts)
+        ])
+        self.gate = nn.Sequential(
+            nn.Linear(input_dim, gate_hidden_dim),
+            nn.ReLU(),
+            nn.Linear(gate_hidden_dim, gate_hidden_dim),
+            nn.ReLU(),
+            nn.Linear(gate_hidden_dim, num_experts),
+        )
+
+    def forward(self, x: torch.Tensor, hard: bool = False):
+        logits = self.gate(x)
+        gate_probs = F.softmax(logits, dim=-1)
+        expert_outputs = torch.stack([expert(x) for expert in self.experts], dim=1)
+
+        if hard:
+            top1 = gate_probs.argmax(dim=-1)
+            routing = F.one_hot(top1, num_classes=self.num_experts).float()
+        else:
+            routing = gate_probs
+
+        y_hat = (routing.unsqueeze(-1) * expert_outputs).sum(dim=1)
+        return y_hat, gate_probs, logits, expert_outputs
+
+
 # ============================================================
 # Hybrid Delta utilities
 # ============================================================
@@ -946,6 +993,72 @@ def evaluate_fixed(model: nn.Module, X: torch.Tensor, Y: torch.Tensor, R: torch.
     return total_mse, per_regime
 
 
+def evaluate_standard_moe(model: StandardMoE, X: torch.Tensor, Y: torch.Tensor, R: torch.Tensor, cfg: Config):
+    """Static evaluation for StandardMoE — no temporal context."""
+    model.eval()
+    with torch.no_grad():
+        y_pred, gate_probs, _, _ = model(X, hard=False)
+        total_mse = F.mse_loss(y_pred, Y).item()
+        per_regime = mse_by_regime(Y, y_pred, R)
+        usage = regimewise_usage(gate_probs, R, cfg.num_experts)
+
+        _, _, _, mean_gate_distance, pairwise_distances = compute_regime_gate_stats(
+            gate_probs=gate_probs,
+            regime_ids=R,
+            num_regimes=3,
+        )
+        ent = gate_entropy(gate_probs).mean().item()
+        top1 = gate_probs.argmax(dim=-1).detach().cpu().numpy()
+        dwell_times = compute_dwell_times(top1)
+
+    return total_mse, per_regime, usage, mean_gate_distance, pairwise_distances, ent, dwell_times, y_pred, gate_probs
+
+
+def evaluate_standard_moe_sequence(model: StandardMoE, X: torch.Tensor, Y: torch.Tensor, R: torch.Tensor, phase_tags: List[str], cfg: Config):
+    """
+    Sequential evaluation for StandardMoE.
+    Uses same phase-ordered batching as Nomadic sequence eval —
+    Seq MSE is directly comparable across Fixed / StandardMoE / Nomadic.
+    No delta/phi signals: pure input-conditioned gating.
+    """
+    model.eval()
+    all_y = []
+    all_gate_probs = []
+    batch_phase_tags = []
+    batch_entropies = []
+    batch_top1 = []
+
+    with torch.no_grad():
+        for batch_idx, (xb, yb, rb) in enumerate(iterate_sequence_minibatches(X, Y, R, cfg.phase_batch_size)):
+            y_hat, gate_probs, _, _ = model(xb, hard=False)
+
+            all_y.append(y_hat)
+            all_gate_probs.append(gate_probs)
+
+            phase_tag = phase_tags[batch_idx * cfg.phase_batch_size]
+            batch_phase_tags.append(phase_tag)
+
+            ent = gate_entropy(gate_probs).mean().item()
+            batch_entropies.append(ent)
+
+            top1 = gate_probs.argmax(dim=-1)
+            binc = torch.bincount(top1, minlength=cfg.num_experts).float()
+            batch_top1.append(int(torch.argmax(binc).item()))
+
+    Y_hat = torch.cat(all_y, dim=0)
+    G = torch.cat(all_gate_probs, dim=0)
+    seq_mse = F.mse_loss(Y_hat, Y).item()
+    usage = regimewise_usage(G, R, cfg.num_experts)
+
+    stable_entropy = [e for tag, e in zip(batch_phase_tags, batch_entropies) if tag.startswith("stable_")]
+    transition_entropy = [e for tag, e in zip(batch_phase_tags, batch_entropies) if tag.startswith("transition_")]
+
+    return seq_mse, usage, {
+        "stable_entropy_mean": float(np.mean(stable_entropy)) if stable_entropy else float("nan"),
+        "transition_entropy_mean": float(np.mean(transition_entropy)) if transition_entropy else float("nan"),
+    }
+
+
 def evaluate_nomadic_static_full(model: NomadicMoE, X: torch.Tensor, Y: torch.Tensor, R: torch.Tensor, cfg: Config):
     """
     Static evaluation:
@@ -1183,6 +1296,330 @@ def train_fixed(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test):
             print(f"[Fixed] Epoch {epoch+1:03d}/{cfg.epochs} | Train MSE: {train_losses[-1]:.4f} | Test MSE: {test_mse:.4f}")
 
     return model, {"train_losses": train_losses, "test_losses": test_losses}
+
+
+def train_standard_moe(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test):
+    model = StandardMoE(
+        input_dim=cfg.input_dim,
+        hidden_dim=cfg.hidden_dim,
+        output_dim=cfg.output_dim,
+        num_experts=cfg.num_experts,
+        gate_hidden_dim=cfg.gate_hidden_dim,
+    ).to(cfg.device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+
+    logs = {
+        "train_losses": [],
+        "test_mse_static": [],
+        "test_mse_sequence": [],
+        "test_mean_gate_distance": [],
+        "test_entropy": [],
+    }
+
+    for epoch in range(cfg.epochs):
+        model.train()
+        epoch_loss = 0.0
+        n_batches = 0
+
+        for xb, yb, _ in iterate_sequence_minibatches(X_train, Y_train, R_train, cfg.phase_batch_size):
+            optimizer.zero_grad()
+            y_hat, gate_probs, _, expert_outputs = model(xb, hard=False)
+
+            mse_loss = F.mse_loss(y_hat, yb)
+            diversity_loss = compute_diversity_loss(expert_outputs)
+            load_balance_loss = compute_load_balancing_loss(gate_probs)
+
+            total_loss = (
+                mse_loss
+                + cfg.gamma_diversity * diversity_loss
+                + cfg.lambda_load * load_balance_loss
+            )
+
+            total_loss.backward()
+            optimizer.step()
+
+            epoch_loss += total_loss.item()
+            n_batches += 1
+
+        logs["train_losses"].append(epoch_loss / max(n_batches, 1))
+
+        test_static_mse, _, _, test_gate_dist, _, test_entropy, _, _, _ = evaluate_standard_moe(
+            model, X_test, Y_test, R_test, cfg
+        )
+        test_seq_mse, _, _ = evaluate_standard_moe_sequence(
+            model, X_test, Y_test, R_test, phase_tags_test, cfg
+        )
+        logs["test_mse_static"].append(test_static_mse)
+        logs["test_mse_sequence"].append(test_seq_mse)
+        logs["test_mean_gate_distance"].append(test_gate_dist)
+        logs["test_entropy"].append(test_entropy)
+
+        if (epoch + 1) % 25 == 0 or epoch == 0:
+            print(
+                f"[Standard MoE] Epoch {epoch+1:03d}/{cfg.epochs} | "
+                f"Train Loss: {logs['train_losses'][-1]:.4f} | "
+                f"Test Static MSE: {test_static_mse:.4f} | "
+                f"Test Seq MSE: {test_seq_mse:.4f} | "
+                f"Test GateDist: {test_gate_dist:.4f}"
+            )
+
+    return model, logs
+
+
+def evaluate_nomadic_no_policy_sequence(
+    model: NomadicMoE,
+    X: torch.Tensor,
+    Y: torch.Tensor,
+    R: torch.Tensor,
+    phase_tags: List[str],
+    cfg: Config,
+):
+    """
+    Sequential evaluation for Nomadic (NoPolicy) ablation.
+    Same as evaluate_nomadic_sequence_dynamics but skips PolicyNet:
+    routing comes purely from GateNet + adaptive temperature.
+    Δx, phi, dynamic tau, dwell are all still active.
+    """
+    model.eval()
+    tracker = HybridDeltaTracker(
+        ema_decay=cfg.ema_decay,
+        err_baseline_momentum=cfg.err_baseline_momentum,
+        w_env=cfg.w_env,
+        w_err=cfg.w_err,
+        device=cfg.device,
+        tau_min=cfg.tau_min,
+        tau_max=cfg.tau_max,
+        tau_var_scale=cfg.tau_var_scale,
+        tau_var_window=cfg.tau_var_window,
+    )
+    tracker.reset()
+
+    all_y = []
+    all_gate_probs = []
+    batch_phase_tags = []
+    batch_entropies = []
+    batch_top1 = []
+
+    with torch.no_grad():
+        for batch_idx, (xb, yb, rb) in enumerate(iterate_sequence_minibatches(X, Y, R, cfg.phase_batch_size)):
+            zero_delta = torch.zeros((xb.size(0), 1), device=cfg.device)
+            warm_y, _, _, _ = model(xb, zero_delta, zero_delta, cfg.temperature, hard=False)
+            warm_mse = F.mse_loss(warm_y, yb)
+
+            delta_hybrid, de, derr, _, sigma2_delta, dynamic_tau = tracker.compute(xb, warm_mse)
+            delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
+
+            probe_y, probe_gate_probs, _, probe_expert_outputs = model(
+                xb, delta_hybrid, delta_err_tensor, cfg.temperature, hard=False
+            )
+            explanation_error, best_expert_gap = compute_explanation_signals(
+                y_true=yb, y_hat=probe_y,
+                expert_outputs=probe_expert_outputs, gate_probs=probe_gate_probs,
+            )
+            phi_signal = compute_phi_signal(
+                delta_env_scalar=de, delta_err_scalar=derr,
+                explanation_error=explanation_error, best_expert_gap=best_expert_gap,
+                phi_scale_env=cfg.phi_scale_env, phi_scale_err=cfg.phi_scale_err,
+                phi_scale_explain=cfg.phi_scale_explain, phi_scale_gap=cfg.phi_scale_gap,
+            )
+            temp_now = compute_adaptive_temperature(
+                phi_signal=phi_signal,
+                temp_stable=cfg.temp_stable,
+                temp_transition=cfg.temp_transition,
+            )
+
+            # PolicyNet is bypassed: routing comes purely from GateNet
+            y_hat, gate_probs, _, _ = model(xb, delta_hybrid, delta_err_tensor, temp_now, hard=False)
+
+            all_y.append(y_hat)
+            all_gate_probs.append(gate_probs)
+
+            phase_tag = phase_tags[batch_idx * cfg.phase_batch_size]
+            batch_phase_tags.append(phase_tag)
+
+            ent = gate_entropy(gate_probs).mean().item()
+            batch_entropies.append(ent)
+
+            top1 = gate_probs.argmax(dim=-1)
+            binc = torch.bincount(top1, minlength=cfg.num_experts).float()
+            batch_top1.append(int(torch.argmax(binc).item()))
+
+    Y_hat = torch.cat(all_y, dim=0)
+    G = torch.cat(all_gate_probs, dim=0)
+    seq_mse = F.mse_loss(Y_hat, Y).item()
+    usage = regimewise_usage(G, R, cfg.num_experts)
+
+    stable_entropy = [e for t, e in zip(batch_phase_tags, batch_entropies) if t.startswith("stable_")]
+    transition_entropy = [e for t, e in zip(batch_phase_tags, batch_entropies) if t.startswith("transition_")]
+
+    latencies = compute_switch_latency(
+        [ID_TO_REGIME[int(rb[0].item())] for _, _, rb in
+         iterate_sequence_minibatches(X, Y, R, cfg.phase_batch_size)],
+        np.array(batch_top1),
+        infer_regime_to_expert(usage),
+    )
+
+    return seq_mse, usage, {
+        "stable_entropy_mean": float(np.mean(stable_entropy)) if stable_entropy else float("nan"),
+        "transition_entropy_mean": float(np.mean(transition_entropy)) if transition_entropy else float("nan"),
+        "mean_switch_latency": float(np.mean(latencies)) if latencies else float("nan"),
+    }
+
+
+def train_nomadic_no_policy(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test):
+    """
+    Nomadic (NoPolicy) ablation.
+    Uses full NomadicMoE architecture with all Nomadic signals:
+      Δx (hybrid delta), phi, dynamic tau, dwell regularizer,
+      load balancing, diversity, dogma/nomad loss terms.
+    PolicyNet is present in the model but its output is NOT used for routing.
+    Routing comes purely from GateNet + adaptive temperature.
+
+    Purpose: isolates the contribution of PolicyNet on top of the full
+    Nomadic signal stack. Compare with Nomadic (Full) to measure PolicyNet gain.
+    """
+    model = NomadicMoE(
+        input_dim=cfg.input_dim,
+        hidden_dim=cfg.hidden_dim,
+        output_dim=cfg.output_dim,
+        num_experts=cfg.num_experts,
+        gate_hidden_dim=cfg.gate_hidden_dim,
+        policy_hidden_dim=cfg.policy_hidden_dim,
+    ).to(cfg.device)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
+
+    logs = {
+        "train_losses": [],
+        "test_mse_static": [],
+        "test_mse_sequence": [],
+        "test_mean_gate_distance": [],
+        "test_entropy": [],
+    }
+
+    for epoch in range(cfg.epochs):
+        model.train()
+
+        tracker = HybridDeltaTracker(
+            ema_decay=cfg.ema_decay,
+            err_baseline_momentum=cfg.err_baseline_momentum,
+            w_env=cfg.w_env,
+            w_err=cfg.w_err,
+            device=cfg.device,
+            tau_min=cfg.tau_min,
+            tau_max=cfg.tau_max,
+            tau_var_scale=cfg.tau_var_scale,
+            tau_var_window=cfg.tau_var_window,
+        )
+        tracker.reset()
+
+        dwell_reg = DwellTimeRegularizer(tau_k_min=cfg.tau_k_min, penalty=cfg.tau_k_penalty)
+        dwell_reg.reset()
+
+        epoch_loss = 0.0
+        n_batches = 0
+
+        for xb, yb, rb in iterate_sequence_minibatches(X_train, Y_train, R_train, cfg.phase_batch_size):
+            optimizer.zero_grad()
+
+            with torch.no_grad():
+                zero_delta = torch.zeros((xb.size(0), 1), device=cfg.device)
+                warm_y, _, _, _ = model(xb, zero_delta, zero_delta, cfg.temperature)
+                warm_mse = F.mse_loss(warm_y, yb)
+
+            delta_hybrid, de, derr, dh, sigma2_delta, dynamic_tau = tracker.compute(xb, warm_mse)
+            delta_err_tensor = torch.full((xb.size(0), 1), derr, device=cfg.device)
+
+            with torch.no_grad():
+                probe_y, probe_gate_probs, _, probe_expert_outputs = model(
+                    xb, delta_hybrid, delta_err_tensor, cfg.temperature, hard=False
+                )
+            explanation_error, best_expert_gap = compute_explanation_signals(
+                y_true=yb, y_hat=probe_y,
+                expert_outputs=probe_expert_outputs, gate_probs=probe_gate_probs,
+            )
+            phi_signal = compute_phi_signal(
+                delta_env_scalar=de, delta_err_scalar=derr,
+                explanation_error=explanation_error, best_expert_gap=best_expert_gap,
+                phi_scale_env=cfg.phi_scale_env, phi_scale_err=cfg.phi_scale_err,
+                phi_scale_explain=cfg.phi_scale_explain, phi_scale_gap=cfg.phi_scale_gap,
+            )
+            temp_now = compute_adaptive_temperature(
+                phi_signal=phi_signal,
+                temp_stable=cfg.temp_stable,
+                temp_transition=cfg.temp_transition,
+            )
+
+            # PolicyNet bypass: use GateNet output directly as final routing
+            y_hat, gate_probs, _, expert_outputs = model(
+                xb, delta_hybrid, delta_err_tensor, temp_now, hard=False
+            )
+            final_routing = gate_probs
+
+            y_hat = (final_routing.unsqueeze(-1) * expert_outputs).sum(dim=1)
+
+            mse_loss = F.mse_loss(y_hat, yb)
+
+            _, gap_loss = compute_explanation_signals(
+                y_true=yb, y_hat=y_hat,
+                expert_outputs=expert_outputs, gate_probs=final_routing,
+            )
+            conditional_gap_loss = phi_signal.detach() * gap_loss
+
+            dogma_pen   = compute_dogma_penalty(final_routing)
+            nomad_bonus = compute_nomad_bonus(final_routing)
+
+            _, sep_loss, cons_loss, _, _ = compute_regime_gate_stats(
+                gate_probs=final_routing, regime_ids=rb, num_regimes=3,
+            )
+
+            load_balance_loss = compute_load_balancing_loss(final_routing)
+            tau_for_dwell = dynamic_tau if cfg.use_dynamic_tau else float(cfg.tau_k_min)
+            dwell_bonus   = dwell_reg.compute(final_routing, tau_dynamic=tau_for_dwell)
+            diversity_loss = compute_diversity_loss(expert_outputs)
+
+            total_loss = (
+                mse_loss
+                + cfg.beta_phi      * conditional_gap_loss
+                + cfg.alpha_dogma   * dogma_pen
+                - cfg.beta_nomad    * nomad_bonus
+                + cfg.gamma_diversity * diversity_loss
+                + cfg.lambda_sep    * sep_loss
+                + cfg.lambda_cons   * cons_loss
+                + cfg.lambda_load   * load_balance_loss
+                - dwell_bonus
+            )
+
+            total_loss.backward()
+            optimizer.step()
+
+            epoch_loss += total_loss.item()
+            n_batches += 1
+
+        logs["train_losses"].append(epoch_loss / max(n_batches, 1))
+
+        test_static_mse, _, _, test_gate_dist, _, test_entropy, _, _, _ = evaluate_nomadic_static_full(
+            model, X_test, Y_test, R_test, cfg
+        )
+        test_seq_mse, _, _ = evaluate_nomadic_no_policy_sequence(
+            model, X_test, Y_test, R_test, phase_tags_test, cfg
+        )
+        logs["test_mse_static"].append(test_static_mse)
+        logs["test_mse_sequence"].append(test_seq_mse)
+        logs["test_mean_gate_distance"].append(test_gate_dist)
+        logs["test_entropy"].append(test_entropy)
+
+        if (epoch + 1) % 25 == 0 or epoch == 0:
+            print(
+                f"[Nomadic NoPolicy] Epoch {epoch+1:03d}/{cfg.epochs} | "
+                f"Train Loss: {logs['train_losses'][-1]:.4f} | "
+                f"Test Static MSE: {test_static_mse:.4f} | "
+                f"Test Seq MSE: {test_seq_mse:.4f} | "
+                f"Test GateDist: {test_gate_dist:.4f}"
+            )
+
+    return model, logs
 
 
 def train_nomadic(cfg: Config, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test):
@@ -1532,17 +1969,19 @@ def plot_dataset(X: torch.Tensor, R: torch.Tensor, save_path: str):
     plt.close()
 
 
-def plot_training_curves(fixed_logs: dict, nomadic_logs: dict, save_path: str):
+def plot_training_curves(fixed_logs: dict, standard_moe_logs: dict, no_policy_logs: dict, nomadic_logs: dict, save_path: str):
     epochs = np.arange(1, len(fixed_logs["train_losses"]) + 1)
 
-    plt.figure(figsize=(8, 5))
-    plt.plot(epochs, fixed_logs["test_losses"], label="Fixed Test MSE")
-    plt.plot(epochs, nomadic_logs["test_mse_static"], label="Nomadic Static Test MSE")
-    plt.plot(epochs, nomadic_logs["test_mse_sequence"], label="Nomadic Sequence Test MSE")
+    plt.figure(figsize=(10, 5))
+    plt.plot(epochs, fixed_logs["test_losses"],              label="Fixed (static)",             color="#888780")
+    plt.plot(epochs, standard_moe_logs["test_mse_sequence"], label="Standard MoE (seq)",         color="#5DCAA5", linestyle="--")
+    plt.plot(epochs, no_policy_logs["test_mse_sequence"],    label="Nomadic NoPolicy (seq)",      color="#EF9F27", linestyle="--")
+    plt.plot(epochs, nomadic_logs["test_mse_static"],        label="Nomadic Full (static)",       color="#7F77DD", linestyle=":")
+    plt.plot(epochs, nomadic_logs["test_mse_sequence"],      label="Nomadic Full (seq)",          color="#7F77DD")
     plt.xlabel("Epoch")
     plt.ylabel("MSE")
-    plt.title("Fixed vs Nomadic Test MSE (Static vs Sequence)")
-    plt.legend()
+    plt.title("Ablation: Fixed / Standard MoE / Nomadic NoPolicy / Nomadic Full")
+    plt.legend(fontsize=9)
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
@@ -1789,6 +2228,16 @@ def plot_policy_hybrid_signals(nomadic_logs: dict, save_path: str):
 def print_report(
     fixed_total_mse: float,
     fixed_per_regime: Dict[str, float],
+    standard_moe_static_mse: float,
+    standard_moe_seq_mse: float,
+    standard_moe_per_regime: Dict[str, float],
+    standard_moe_usage: Dict[str, np.ndarray],
+    standard_moe_mean_gate_distance: float,
+    standard_moe_pairwise_gate_distances: Dict[str, float],
+    standard_moe_seq_dynamics: dict,
+    no_policy_static_mse: float,
+    no_policy_seq_mse: float,
+    no_policy_seq_dynamics: dict,
     nomadic_static_total_mse: float,
     nomadic_per_regime: Dict[str, float],
     nomadic_usage: Dict[str, np.ndarray],
@@ -1798,50 +2247,53 @@ def print_report(
     dynamics: dict,
 ):
     print("\n" + "=" * 72)
-    print("FINAL REPORT")
+    print("FINAL REPORT — Ablation Study")
     print("=" * 72)
 
-    print("\n[Fixed Model]")
-    print(f"Total Test MSE: {fixed_total_mse:.6f}")
+    print("\n[1] Fixed Model")
+    print(f"  Static MSE: {fixed_total_mse:.6f}")
     for k, v in fixed_per_regime.items():
-        print(f"  Regime {k} MSE: {v:.6f}")
+        print(f"    Regime {k}: {v:.6f}")
 
-    print("\n[Nomadic Model | Static Eval]")
-    print(f"Static Total Test MSE: {nomadic_static_total_mse:.6f}")
-    for k, v in nomadic_per_regime.items():
-        print(f"  Regime {k} MSE: {v:.6f}")
+    print("\n[2] Standard MoE  (mixture, no Δx / no policy)")
+    print(f"  Static MSE: {standard_moe_static_mse:.6f}  |  Seq MSE: {standard_moe_seq_mse:.6f}")
+    print(f"  Gate dist: {standard_moe_mean_gate_distance:.4f}")
+    print(f"  Entropy — stable: {standard_moe_seq_dynamics['stable_entropy_mean']:.4f}  "
+          f"transition: {standard_moe_seq_dynamics['transition_entropy_mean']:.4f}")
+    for regime in ["A", "B", "C"]:
+        arr = standard_moe_usage[regime]
+        print(f"    Regime {regime} -> " + ", ".join([f"E{i}: {p:.3f}" for i, p in enumerate(arr)]))
 
-    print("\n[Nomadic Model | Sequence Eval]")
-    print(f"Sequence Total Test MSE: {seq_total_mse:.6f}")
+    print("\n[3] Nomadic NoPolicy  (Δx + dynamic tau + dwell, no PolicyNet)")
+    print(f"  Static MSE: {no_policy_static_mse:.6f}  |  Seq MSE: {no_policy_seq_mse:.6f}")
+    print(f"  Entropy — stable: {no_policy_seq_dynamics['stable_entropy_mean']:.4f}  "
+          f"transition: {no_policy_seq_dynamics['transition_entropy_mean']:.4f}")
+    print(f"  Mean switch latency: {no_policy_seq_dynamics['mean_switch_latency']:.4f}")
 
-    print("\n[Nomadic Regime-wise Expert Usage | Top-1 Ratio]")
+    print("\n[4] Nomadic Full  (Δx + dynamic tau + dwell + PolicyNet)")
+    print(f"  Static MSE: {nomadic_static_total_mse:.6f}  |  Seq MSE: {seq_total_mse:.6f}")
+    print(f"  Gate dist: {nomadic_mean_gate_distance:.4f}")
     for regime in ["A", "B", "C"]:
         arr = nomadic_usage[regime]
-        arr_str = ", ".join([f"E{i}: {p:.3f}" for i, p in enumerate(arr)])
-        print(f"  Regime {regime} -> {arr_str}")
+        print(f"    Regime {regime} -> " + ", ".join([f"E{i}: {p:.3f}" for i, p in enumerate(arr)]))
+    print(f"  Mean switch latency: {dynamics['mean_switch_latency']:.4f}")
+    print(f"  Mean dwell time: {dynamics['mean_dwell_time']:.4f}")
+    print(f"  Mean dynamic tau: {dynamics['mean_dynamic_tau']:.4f}")
+    print(f"  Entropy — stable: {dynamics['stable_entropy_mean']:.4f}  "
+          f"transition: {dynamics['transition_entropy_mean']:.4f}")
 
-    print("\n[Nomadic Mean Gate Distance | Static Full]")
-    print(f"Mean pairwise gate-centroid distance: {nomadic_mean_gate_distance:.6f}")
-    if len(nomadic_pairwise_gate_distances) > 0:
-        print("[Pairwise Gate Distances]")
-        for k, v in nomadic_pairwise_gate_distances.items():
-            print(f"  {k}: {v:.6f}")
+    print("\n[Ablation Summary]")
+    delta_std_fixed   = standard_moe_seq_mse - fixed_total_mse
+    delta_nop_std     = no_policy_seq_mse    - standard_moe_seq_mse
+    delta_full_nop    = seq_total_mse        - no_policy_seq_mse
+    print(f"  Fixed → Standard MoE:    {delta_std_fixed:+.4f}  (mixture effect)")
+    print(f"  Standard MoE → NoPolicy: {delta_nop_std:+.4f}  (Δx + meta-signal effect)")
+    print(f"  NoPolicy → Full:         {delta_full_nop:+.4f}  (PolicyNet effect)")
 
-    print("\n[Transition Dynamics]")
-    print(f"Regime -> Expert mapping: {dynamics['regime_to_expert']}")
-    print(f"Mean switch latency: {dynamics['mean_switch_latency']:.4f}")
-    print(f"Mean dwell time: {dynamics['mean_dwell_time']:.4f}")
-    print(f"Mean dynamic tau: {dynamics['mean_dynamic_tau']:.4f}")
-    print(f"Stable-phase mean entropy: {dynamics['stable_entropy_mean']:.4f}")
-    print(f"Transition-phase mean entropy: {dynamics['transition_entropy_mean']:.4f}")
-
-    print("\nInterpretation hint:")
-    print("- Sequence Test MSE is the main performance metric in phase-transition settings.")
-    print("- Static Test MSE is only a reference check, not the main success criterion.")
-    print("- Transition entropy > stable entropy suggests gate uncertainty rises during phase shifts.")
-    print("- Shorter switch latency suggests faster nomadic response.")
-    print("- Moderate dwell time suggests neither rigid fixation nor chaotic wandering.")
-    print("- Dynamic tau rises in stable phases (fixation allowed) and falls in volatile phases (nomadic pressure).")
+    print("\n[Interpretation hint]")
+    print("  Negative delta = improvement. Sign pattern shows where gains come from.")
+    print("  Transition entropy > stable entropy: gate explores more during phase shifts.")
+    print("  Dynamic tau rises in stable phases (fixation) and falls in volatile phases (nomadic).")
     print("=" * 72 + "\n")
 
 
@@ -1882,11 +2334,53 @@ def main():
     plot_dataset(X_train, R_train, os.path.join(cfg.save_dir, "phase_dataset_input_space.png"))
 
     fixed_model, fixed_logs = train_fixed(cfg, X_train, Y_train, R_train, X_test, Y_test, R_test)
+
+    standard_moe_model, standard_moe_logs = train_standard_moe(
+        cfg, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test
+    )
+
+    no_policy_model, no_policy_logs = train_nomadic_no_policy(
+        cfg, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test
+    )
+
     nomadic_model, nomadic_logs = train_nomadic(
         cfg, X_train, Y_train, R_train, X_test, Y_test, R_test, phase_tags_test
     )
 
     fixed_total_mse, fixed_per_regime = evaluate_fixed(fixed_model, X_test, Y_test, R_test)
+
+    (
+        standard_moe_static_mse,
+        standard_moe_per_regime,
+        standard_moe_usage,
+        standard_moe_mean_gate_distance,
+        standard_moe_pairwise_gate_distances,
+        _,
+        _,
+        _,
+        _,
+    ) = evaluate_standard_moe(standard_moe_model, X_test, Y_test, R_test, cfg)
+
+    standard_moe_seq_mse, _, standard_moe_seq_dynamics = evaluate_standard_moe_sequence(
+        standard_moe_model, X_test, Y_test, R_test, phase_tags_test, cfg
+    )
+
+    (
+        no_policy_static_mse,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+        _,
+    ) = evaluate_nomadic_static_full(no_policy_model, X_test, Y_test, R_test, cfg)
+
+    no_policy_seq_mse, _, no_policy_seq_dynamics = evaluate_nomadic_no_policy_sequence(
+        no_policy_model, X_test, Y_test, R_test, phase_tags_test, cfg
+    )
+
     (
         nomadic_static_total_mse,
         nomadic_per_regime,
@@ -1907,8 +2401,10 @@ def main():
 
     plot_training_curves(
         fixed_logs,
+        standard_moe_logs,
+        no_policy_logs,
         nomadic_logs,
-        os.path.join(cfg.save_dir, "fixed_vs_nomadic_test_mse.png"),
+        os.path.join(cfg.save_dir, "fixed_vs_standardmoe_vs_nomadic_test_mse.png"),
     )
     plot_nomadic_losses(
         nomadic_logs,
@@ -1971,6 +2467,16 @@ def main():
     print_report(
         fixed_total_mse,
         fixed_per_regime,
+        standard_moe_static_mse,
+        standard_moe_seq_mse,
+        standard_moe_per_regime,
+        standard_moe_usage,
+        standard_moe_mean_gate_distance,
+        standard_moe_pairwise_gate_distances,
+        standard_moe_seq_dynamics,
+        no_policy_static_mse,
+        no_policy_seq_mse,
+        no_policy_seq_dynamics,
         nomadic_static_total_mse,
         nomadic_per_regime,
         nomadic_usage,
@@ -1983,7 +2489,7 @@ def main():
     print("Saved files:")
     for fname in [
         "phase_dataset_input_space.png",
-        "fixed_vs_nomadic_test_mse.png",
+        "fixed_vs_standardmoe_vs_nomadic_test_mse.png",
         "nomadic_loss_components.png",
         "hybrid_delta_trace.png",
         "regime_expert_usage_bars.png",
