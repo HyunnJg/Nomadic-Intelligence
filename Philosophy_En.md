@@ -171,7 +171,7 @@ That is why this framework is grounds for cautious technological optimism — no
 
 ## VII. On Violence, Local Rigidity, and the Open System
 
-A direct challenge: *Is violence not also $\Delta x$?*
+A direct challenge: *Is violence not also* $\Delta x$ *?*
 
 Yes. Violence generates $\Delta x$. This is not a refutation — it is a clarification.
 
