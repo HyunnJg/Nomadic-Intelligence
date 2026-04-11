@@ -1,0 +1,428 @@
+Gemma-4-E2B 실험
+
+from google.colab import drive
+import os
+
+# 1. 다시 마운트 시도 (팝업창이 뜨면 '허용'을 반드시 눌러주세요)
+drive.mount('/content/drive', force_remount=True)
+
+# 2. 마운트 성공 여부 및 실제 경로 확인
+if os.path.exists('/content/drive'):
+    print("✅ 드라이브 마운트 성공!")
+    # 실제 드라이브 안의 폴더 목록을 확인합니다.
+    # 보통 'MyDrive'라는 이름으로 잡힙니다.
+    print("내 드라이브 목록:", os.listdir('/content/drive'))
+else:
+    print("❌ 마운트에 실패했습니다. 셀 실행 시 나타나는 권한 승인을 완료해 주세요.")
+
+---
+
+import os
+
+# 파트너의 드라이브 내 실제 모델 경로
+model_path = "/content/drive/MyDrive/gemma-4-E2B"
+
+if os.path.exists(model_path):
+    print(f"✅ 모델 폴더를 찾았습니다: {model_path}")
+    print("내부 파일:", os.listdir(model_path))
+else:
+    print(f"❌ 폴더가 없습니다. '내 드라이브' 바로 아래에 gemma-4-E2B 폴더가 있는지 확인해 주세요.")
+    # 혹시 폴더 이름에 공백이 있다면 'My Drive'로 시도해야 할 수도 있습니다.
+    # !ls "/content/drive/My Drive"
+
+---
+
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+# 경로 재확인
+model_path = "/content/drive/MyDrive/gemma-4-E2B"
+
+# 4-bit 설정 유지
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16
+)
+
+print("신형 엔진으로 Gemma 4를 깨우는 중...")
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForCausalLM.from_pretrained(
+    model_path,
+    quantization_config=bnb_config,
+    device_map="auto",
+    trust_remote_code=True # 최신 모델의 커스텀 로직 허용
+)
+
+print("✅ 로드 성공! 이제 유목지능 이식을 위한 Δx 신호 추출이 가능합니다.")
+
+---
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+import torch.nn.functional as F
+
+# 1. 4-bit 양자화 설정 (Colab의 T4/L4 GPU 최적화)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16
+)
+
+# 2. 모델 로드
+print("Gemma-4-E2B 모델을 로드 중입니다... (잠시만 기다려 주세요)")
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModelForCausalLM.from_pretrained(
+    model_path,
+    quantization_config=bnb_config,
+    device_map="auto"
+)
+
+# 3. Nomadic Intelligence: HybridDeltaTracker 구현
+class NomadicTracker:
+    def __init__(self, alpha=0.8, beta=0.85):
+        self.prev_x = None
+        self.ema_err = 0.0
+        self.baseline_err = 0.0
+        self.alpha = alpha  # 빠른 변화 감지
+        self.beta = beta    # 느린 변화 감지 (베이스라인)
+
+    def update(self, current_x, current_err):
+        # 환경 변화 신호 (Delta x_env): 코사인 거리 활용
+        if self.prev_x is None:
+            delta_env = 0.0
+        else:
+            # 고차원 벡터의 방향 변화 측정
+            cos_sim = F.cosine_similarity(current_x.flatten(), self.prev_x.flatten(), dim=0)
+            delta_env = 1.0 - cos_sim.item()
+        
+        self.prev_x = current_x.detach().clone()
+
+        # 예측 오차 신호 (Delta x_err): 상대적 오차 측정
+        self.ema_err = self.alpha * self.ema_err + (1 - self.alpha) * current_err
+        self.baseline_err = self.beta * self.baseline_err + (1 - self.beta) * current_err
+        delta_err = max(0, self.ema_err - self.baseline_err)
+
+        # 하이브리드 에너지원 (Delta x_hybrid)
+        delta_hybrid = torch.tanh(torch.tensor(delta_env + delta_err)).item()
+        
+        return delta_env, delta_err, delta_hybrid
+
+tracker = NomadicTracker()
+
+# 4. 추론 및 신호 추출 테스트
+prompt = "유목지능의 핵심 철학에 대해 설명해줘."
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+with torch.no_grad():
+    # output_hidden_states=True를 통해 내부 표현에 접근
+    outputs = model(**inputs, output_hidden_states=True)
+    
+    # 마지막 레이어의 은닉 상태를 추출하여 변화 관찰
+    last_hidden_state = outputs.hidden_states[-1][:, -1, :] 
+    
+    # 예시 오차값(0.02)을 사용하여 트래커 업데이트
+    d_env, d_err, d_hybrid = tracker.update(last_hidden_state, current_err=0.02)
+
+print(f"\n[Nomadic Signal Detected]")
+print(f"1. 환경 변화(Δx_env): {d_env:.4f}")
+print(f"2. 예측 오차(Δx_err): {d_err:.4f}")
+print(f"3. 하이브리드 에너지(Δx_hybrid): {d_hybrid:.4f}")
+
+# 5. 답변 출력
+print("\nGemma의 답변:")
+gen_outputs = model.generate(**inputs, max_new_tokens=50)
+print(tokenizer.decode(gen_outputs[0], skip_special_tokens=True))
+
+--
+
+ Gemma-4-E2B 모델을 로드 중입니다... (잠시만 기다려 주세요)
+Loading weights: 100% 2011/2011 [00:53<00:00, 470.56it/s]
+[Nomadic Signal Detected]
+1. 환경 변화(Δx_env): 0.0000
+2. 예측 오차(Δx_err): 0.0010
+3. 하이브리드 에너지(Δx_hybrid): 0.0010
+
+Gemma의 답변:
+유목지능의 핵심 철학에 대해 설명해줘.
+
+유목지능이 이기려는 문제.
+
+120.34.27.127
+
+전략을 말하
+
+---
+
+# 1. 초기 설정
+prompt = "미래의 인공지능은 생물학적 한계를"
+input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(model.device)
+
+max_steps = 30 
+T_stable = 0.1  # 안정기 온도
+T_transition = 1.2 # 전이기 온도
+
+tracker.reset() # 이제 에러 없이 작동합니다!
+
+print("\n--- Nomadic Generation Loop 시작 ---")
+
+for step in range(max_steps):
+    with torch.no_grad():
+        outputs = model(input_ids, output_hidden_states=True)
+    
+    next_token_logits = outputs.logits[:, -1, :]
+    last_hidden_state = outputs.hidden_states[-1][:, -1, :]
+    
+    # LLM용 예측 오차 (불확실성 지표)
+    probs_for_err = F.softmax(next_token_logits, dim=-1)
+    top1_prob = probs_for_err.max().item()
+    current_err = 1.0 - top1_prob 
+    
+    # 에너지 신호 업데이트
+    d_env, d_err, d_hybrid = tracker.update(last_hidden_state, current_err)
+    
+    # 동적 온도 제어 (Will to Resonance, Φ)
+    current_temp = T_stable + (T_transition - T_stable) * d_hybrid
+    
+    # 샘플링
+    scaled_logits = next_token_logits / max(current_temp, 0.01)
+    next_token = torch.multinomial(F.softmax(scaled_logits, dim=-1), num_samples=1)
+    
+    input_ids = torch.cat([input_ids, next_token], dim=-1)
+    word = tokenizer.decode(next_token[0])
+    
+    print(f"Step {step+1:02d} | 토큰: {word:<8} | 에너지(Δx): {d_hybrid:.4f} | 온도: {current_temp:.4f}")
+
+print("\n--- 최종 생성 문장 ---")
+print(tokenizer.decode(input_ids[0], skip_special_tokens=True))
+
+---
+
+✅ 유목지능 트래커가 초기화되었습니다. 새로운 초원을 탐색할 준비가 끝났습니다.
+
+--- Nomadic Generation Loop 시작 ---
+Step 01 | 토큰:  뛰어      | 에너지(Δx): 0.0338 | 온도: 0.1372
+Step 02 | 토큰: 넘        | 에너지(Δx): 0.3773 | 온도: 0.5151
+Step 03 | 토큰: 을        | 에너지(Δx): 0.4694 | 온도: 0.6164
+Step 04 | 토큰:  수       | 에너지(Δx): 0.4314 | 온도: 0.5745
+Step 05 | 토큰:  있을      | 에너지(Δx): 0.3788 | 온도: 0.5167
+Step 06 | 토큰: 까        | 에너지(Δx): 0.3889 | 온도: 0.5278
+Step 07 | 토큰: ?        | 에너지(Δx): 0.4416 | 온도: 0.5858
+Step 08 | 토큰: 
+
+       | 에너지(Δx): 0.2084 | 온도: 0.3293
+Step 09 | 토큰: 인        | 에너지(Δx): 0.2791 | 온도: 0.4070
+Step 10 | 토큰: 간        | 에너지(Δx): 0.4956 | 온도: 0.6452
+Step 11 | 토큰: 의        | 에너지(Δx): 0.4167 | 온도: 0.5583
+Step 12 | 토큰:          | 에너지(Δx): 0.2481 | 온도: 0.3730
+Step 13 | 토큰: 뇌        | 에너지(Δx): 0.4554 | 온도: 0.6010
+Step 14 | 토큰: 를        | 에너지(Δx): 0.4937 | 온도: 0.6431
+Step 15 | 토큰:  모       | 에너지(Δx): 0.3822 | 온도: 0.5204
+Step 16 | 토큰: 방        | 에너지(Δx): 0.4799 | 온도: 0.6278
+Step 17 | 토큰: 한        | 에너지(Δx): 0.4407 | 온도: 0.5847
+Step 18 | 토큰:  인       | 에너지(Δx): 0.3612 | 온도: 0.4973
+Step 19 | 토큰: 공        | 에너지(Δx): 0.4018 | 온도: 0.5420
+Step 20 | 토큰: 지        | 에너지(Δx): 0.3027 | 온도: 0.4330
+Step 21 | 토큰: 능        | 에너지(Δx): 0.3238 | 온도: 0.4562
+Step 22 | 토큰:  로       | 에너지(Δx): 0.4403 | 온도: 0.5844
+Step 23 | 토큰: 봇        | 에너지(Δx): 0.3753 | 온도: 0.5128
+Step 24 | 토큰: 이        | 에너지(Δx): 0.4018 | 온도: 0.5420
+Step 25 | 토큰:  인간      | 에너지(Δx): 0.2997 | 온도: 0.4296
+Step 26 | 토큰: 을        | 에너지(Δx): 0.3321 | 온도: 0.4653
+Step 27 | 토큰:  능       | 에너지(Δx): 0.3512 | 온도: 0.4863
+Step 28 | 토큰: 가        | 에너지(Δx): 0.4764 | 온도: 0.6240
+Step 29 | 토큰: 할        | 에너지(Δx): 0.4525 | 온도: 0.5977
+Step 30 | 토큰:  수       | 에너지(Δx): 0.3584 | 온도: 0.4942
+
+--- 최종 생성 문장 ---
+미래의 인공지능은 생물학적 한계를 뛰어넘을 수 있을까?
+
+인간의 뇌를 모방한 인공지능 로봇이 인간을 능가할 수
+
+---
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+from collections import deque
+
+# ==========================================
+# 1. 확장된 Nomadic Tracker
+# ==========================================
+class AdvancedNomadicTracker:
+    def __init__(self, alpha=0.8, beta=0.85, tau_min=2.0, tau_max=8.0, tau_window=8):
+        self.alpha = alpha
+        self.beta = beta
+        self.tau_min = tau_min
+        self.tau_max = tau_max
+        self.tau_var_scale = 6.0
+        self.tau_window = tau_window
+        self.reset()
+
+    def reset(self):
+        self.prev_x = None
+        self.ema_err = 0.0
+        self.baseline_err = 0.0
+        self.recent_delta_env = deque(maxlen=self.tau_window)
+        print("✅ Advanced Tracker 초기화 완료 (σ² 및 τ_dynamic 추적 활성화)")
+
+    def update(self, current_x, current_err):
+        if self.prev_x is None:
+            delta_env = 0.0
+        else:
+            cos_sim = F.cosine_similarity(current_x.flatten(), self.prev_x.flatten(), dim=0)
+            delta_env = 1.0 - cos_sim.item()
+        
+        self.prev_x = current_x.detach().clone()
+        self.recent_delta_env.append(delta_env)
+
+        self.ema_err = self.alpha * self.ema_err + (1 - self.alpha) * current_err
+        self.baseline_err = self.beta * self.baseline_err + (1 - self.beta) * current_err
+        delta_err = max(0, self.ema_err - self.baseline_err)
+
+        delta_hybrid = torch.tanh(torch.tensor(delta_env + delta_err)).item()
+
+        sigma2_delta = float(np.var(self.recent_delta_env)) if len(self.recent_delta_env) >= 2 else 0.0
+        dynamic_tau = self.tau_min + (self.tau_max - self.tau_min) / (1.0 + self.tau_var_scale * sigma2_delta)
+        
+        return delta_env, delta_err, delta_hybrid, sigma2_delta, dynamic_tau
+
+# ==========================================
+# 2. 경량화된 Policy Net (차원 오류 수정)
+# ==========================================
+class LightweightPolicyNet(nn.Module):
+    def __init__(self, input_dim=1536, hidden_dim=64):
+        super().__init__()
+        self.proj = nn.Linear(input_dim, hidden_dim)
+        self.shared = nn.Sequential(
+            nn.Linear(hidden_dim + 5, hidden_dim), 
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+        )
+        self.stay_switch_head = nn.Linear(hidden_dim, 2)
+        self.mode_head = nn.Linear(hidden_dim, 2)
+
+    def forward(self, x_summary, meta_signals):
+        # x_summary가 (1, 1, dim)인 경우 (1, dim)으로 조정
+        if x_summary.dim() == 3:
+            x_summary = x_summary.squeeze(1)
+            
+        h_proj = F.relu(self.proj(x_summary))
+        # h_proj와 meta_signals 모두 (Batch, Dim) 형태여야 함
+        policy_input = torch.cat([h_proj, meta_signals], dim=-1)
+        h = self.shared(policy_input)
+        
+        stay_switch_probs = F.softmax(self.stay_switch_head(h), dim=-1)
+        mode_probs = F.softmax(self.mode_head(h), dim=-1)
+        return stay_switch_probs, mode_probs
+
+# ==========================================
+# 3. 모델 및 신경망 연동
+# ==========================================
+adv_tracker = AdvancedNomadicTracker()
+
+# 동적 차원 추출
+dummy_ids = tokenizer("Test", return_tensors="pt").input_ids.to(model.device)
+with torch.no_grad():
+    dummy_outputs = model(dummy_ids, output_hidden_states=True)
+    gemma_hidden_size = dummy_outputs.hidden_states[-1].shape[-1]
+
+# Policy Net 생성 및 설정
+policy_net = LightweightPolicyNet(input_dim=gemma_hidden_size).to(
+    device=model.device, 
+    dtype=torch.bfloat16
+)
+print(f"✅ Policy Net 장착 완료 (입력 차원: {gemma_hidden_size}, BFloat16)")
+
+# ==========================================
+# 4. 메타 제어 관측 루프
+# ==========================================
+prompt = "기술의 발전은 궁극적으로 인류에게"
+input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(model.device)
+
+print("\n--- Policy Net Meta-Control Loop 시작 ---")
+
+for step in range(30):
+    with torch.no_grad():
+        outputs = model(input_ids, output_hidden_states=True)
+    
+    next_token_logits = outputs.logits[:, -1, :]
+    last_hidden_state = outputs.hidden_states[-1][:, -1, :]
+    
+    probs_for_err = F.softmax(next_token_logits, dim=-1)
+    current_err = 1.0 - probs_for_err.max().item()
+    
+    d_env, d_err, d_hybrid, sigma2, dyn_tau = adv_tracker.update(last_hidden_state, current_err)
+    
+    # 메타 신호 텐서
+    meta_signals = torch.tensor([[
+        d_hybrid, d_err, d_hybrid, 
+        np.tanh(sigma2 * 10.0), 
+        np.tanh((dyn_tau - 5.0)/5.0)
+    ]], dtype=last_hidden_state.dtype, device=model.device)
+    
+    # Policy Net 추론 (입력 차원 보정)
+    stay_switch, mode = policy_net(last_hidden_state.unsqueeze(0), meta_signals)
+    switch_prob = stay_switch[0, 1].item()
+    hard_prob = mode[0, 1].item()
+    
+    # 온도 제어 및 샘플링
+    current_temp = 0.1 + (1.2 - 0.1) * d_hybrid
+    scaled_logits = next_token_logits / max(current_temp, 0.01)
+    next_token = torch.multinomial(F.softmax(scaled_logits, dim=-1), num_samples=1)
+    
+    input_ids = torch.cat([input_ids, next_token], dim=-1)
+    word = tokenizer.decode(next_token[0])
+    
+    print(f"Step {step+1:02d} | '{word:<6}' | Switch 압력: {switch_prob:.2f} | Hard 모드: {hard_prob:.2f} | τ_dyn: {dyn_tau:.2f}")
+
+print("\n--- 최종 생성 문장 ---")
+print(tokenizer.decode(input_ids[0], skip_special_tokens=True))
+
+---
+
+✅ Advanced Tracker 초기화 완료 (σ² 및 τ_dynamic 추적 활성화)
+✅ Policy Net 장착 완료 (입력 차원: 1536, BFloat16)
+
+--- Policy Net Meta-Control Loop 시작 ---
+Step 01 | ' 이    ' | Switch 압력: 0.53 | Hard 모드: 0.43 | τ_dyn: 8.00
+Step 02 | '점을    ' | Switch 압력: 0.52 | Hard 모드: 0.47 | τ_dyn: 6.57
+Step 03 | ' 가져   ' | Switch 압력: 0.54 | Hard 모드: 0.43 | τ_dyn: 6.55
+Step 04 | '다     ' | Switch 압력: 0.56 | Hard 모드: 0.41 | τ_dyn: 6.84
+Step 05 | '주     ' | Switch 압력: 0.55 | Hard 모드: 0.43 | τ_dyn: 6.99
+Step 06 | '지만    ' | Switch 압력: 0.51 | Hard 모드: 0.46 | τ_dyn: 7.11
+Step 07 | ',     ' | Switch 압력: 0.49 | Hard 모드: 0.46 | τ_dyn: 7.09
+Step 08 | ' 그    ' | Switch 압력: 0.52 | Hard 모드: 0.43 | τ_dyn: 6.98
+Step 09 | ' 이    ' | Switch 압력: 0.55 | Hard 모드: 0.45 | τ_dyn: 7.36
+Step 10 | '점     ' | Switch 압력: 0.55 | Hard 모드: 0.45 | τ_dyn: 7.38
+Step 11 | '은     ' | Switch 압력: 0.53 | Hard 모드: 0.45 | τ_dyn: 7.44
+Step 12 | ' 모든   ' | Switch 압력: 0.51 | Hard 모드: 0.44 | τ_dyn: 7.44
+Step 13 | ' 이    ' | Switch 압력: 0.57 | Hard 모드: 0.46 | τ_dyn: 7.49
+Step 14 | '에게    ' | Switch 압력: 0.53 | Hard 모드: 0.49 | τ_dyn: 7.49
+Step 15 | ' 고    ' | Switch 압력: 0.56 | Hard 모드: 0.41 | τ_dyn: 7.50
+Step 16 | '르게    ' | Switch 압력: 0.57 | Hard 모드: 0.42 | τ_dyn: 7.80
+Step 17 | ' 돌아   ' | Switch 압력: 0.58 | Hard 모드: 0.39 | τ_dyn: 7.78
+Step 18 | '가는    ' | Switch 압력: 0.55 | Hard 모드: 0.41 | τ_dyn: 7.78
+Step 19 | ' 것은   ' | Switch 압력: 0.49 | Hard 모드: 0.47 | τ_dyn: 7.78
+Step 20 | ' 아니다  ' | Switch 압력: 0.52 | Hard 모드: 0.45 | τ_dyn: 7.74
+Step 21 | '.     ' | Switch 압력: 0.51 | Hard 모드: 0.45 | τ_dyn: 7.83
+Step 22 | '
+
+    ' | Switch 압력: 0.55 | Hard 모드: 0.41 | τ_dyn: 7.77
+Step 23 | '최     ' | Switch 압력: 0.53 | Hard 모드: 0.43 | τ_dyn: 7.71
+Step 24 | '근     ' | Switch 압력: 0.50 | Hard 모드: 0.44 | τ_dyn: 7.76
+Step 25 | ' 여러   ' | Switch 압력: 0.52 | Hard 모드: 0.41 | τ_dyn: 7.75
+Step 26 | ' 연구   ' | Switch 압력: 0.54 | Hard 모드: 0.47 | τ_dyn: 7.70
+Step 27 | '에     ' | Switch 압력: 0.57 | Hard 모드: 0.36 | τ_dyn: 7.71
+Step 28 | ' 따르면  ' | Switch 압력: 0.56 | Hard 모드: 0.39 | τ_dyn: 7.73
+Step 29 | ',     ' | Switch 압력: 0.56 | Hard 모드: 0.43 | τ_dyn: 7.74
+Step 30 | ' AI   ' | Switch 압력: 0.57 | Hard 모드: 0.40 | τ_dyn: 7.35
+
+--- 최종 생성 문장 ---
+기술의 발전은 궁극적으로 인류에게 이점을 가져다주지만, 그 이점은 모든 이에게 고르게 돌아가는 것은 아니다.
+
+최근 여러 연구에 따르면, AI
+
+---
+
