@@ -414,9 +414,3 @@ Code implementation and manuscript drafting were assisted by AI-based tools. All
 12. Kudugunta, S., Huang, Y., Bapna, A., Krikun, M., Lepikhin, D., Luong, M. T., & Firat, O. (2021). *Beyond Distillation: Task-level Mixture-of-Experts for Efficient Inference.* EMNLP 2021.
 
 13. Lewandowski, A., Tanaka, H., Botvinick, M., & Stachenfeld, K. (2023). *Directions of Curvature as an Explanation for Loss of Plasticity.* arXiv:2312.00246. *(cited for loss of plasticity under non-stationary distributions)*
-
-4. Friston, K. (2010). *The free-energy principle: a unified brain theory?* Nature Reviews Neuroscience, 11(2), 127–138.
-
-5. Kirkpatrick, J., Pascanu, R., et al. (2017). *Overcoming catastrophic forgetting in neural networks.* PNAS, 114(13), 3521–3526.
-
-6. Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System Technical Journal, 27(3), 379–423.
