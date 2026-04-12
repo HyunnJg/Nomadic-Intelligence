@@ -238,7 +238,7 @@ The β_φ parameter scales Φ's contribution to the gating objective. We swept �
 | 0.00 | +PolicyNet | 0.212 | 0.541 | Unstable without Φ signal |
 | 0.05 | +PolicyNet | 0.183 | 0.235 | — |
 
-β_φ = 0.02 with PolicyNet achieves the best combination of Seq MSE and stable fixation consistency. β_φ = 0.00 with GateNet achieves competitive Seq MSE but at the cost of higher seed variance (0.114–0.205 range), suggesting Φ provides a stabilizing role even when its direct contribution to loss is small.
+β_φ = 0.02 with PolicyNet achieves the best combination of Seq MSE and stable fixation consistency. β_φ = 0.00 with GateNet achieves the lowest raw Seq MSE (0.149) but at the cost of higher seed variance (0.114–0.205 range). Without Φ contributing to the gating objective, the gate has no explicit switching pressure signal and relies entirely on input features to infer regime changes; this makes performance sensitive to initialization and less consistent across runs. The role of β_φ is therefore not primarily to minimize MSE, but to stabilize convergence by providing a consistent switching pressure signal throughout training. A setting that achieves competitive MSE with lower variance (β_φ = 0.02 + PolicyNet, 0.152 avg, 0.143–0.163 range) is preferred for reproducibility.
 
 ### 4.3 Emergent Expert Specialization
 
@@ -283,9 +283,11 @@ Sharing patterns differ by seed but are internally consistent within each run, i
 
 **Entropy differentiation is reduced but preserved.** ΔH drops from +0.788 (3-regime) to +0.437 (4-regime), reflecting the harder task. The direction (transition H > stable H) is maintained across all seeds, confirming that structured switching behavior does not collapse under underprovisioning. Stable Entropy rises from 0.108 to 0.454, indicating that complete fixation is harder when experts must be shared — consistent with the limitations noted in §5.3.
 
-### 4.5 LLM Preliminary: Signal Transfer to Gemma-4-E2B
+### 4.5 Preliminary: Signal Transfer to Gemma-4-E2B (Future Work Direction)
 
-To assess whether the Nomadic Intelligence signal layer generalizes beyond synthetic MoE settings, we conducted a series of preliminary experiments transplanting the core components onto Gemma-4-E2B (2B parameters, 4-bit NF4 quantization, Colab T4). The hidden state of the final token at each generation step serves as `current_x`, and model uncertainty (1 − top1 probability) serves as `current_err`. All Nomadic components operate as a lightweight wrapper with no architectural modification to the base model.
+The experiments in §4.1–4.4 establish Nomadic Intelligence's behavior in a controlled synthetic setting. A natural next question is whether the core signal layer generalizes to large-scale autoregressive models—a direction we treat here as a **preliminary proof-of-concept, not a performance claim**. The experiments in this section and §4.6 are exploratory: they ask whether the Nomadic signal components can be transplanted onto an existing LLM and produce behaviorally interpretable outputs. Rigorous benchmarking, ground-truth phase labeling, and parameter-matched comparisons are deferred to future work.
+
+We transplanted the core components onto Gemma-4-E2B (2B parameters, 4-bit NF4 quantization, Colab T4). The hidden state of the final token at each generation step serves as `current_x`, and model uncertainty (1 − top1 probability) serves as `current_err`. All Nomadic components operate as a lightweight wrapper with no architectural modification to the base model.
 
 **Signal extraction.** HybridDeltaTracker captures token-level semantic transitions in real time. During generation of "미래의 인공지능은 생물학적 한계를...", Δx_hybrid rises from 0.034 to 0.464 at Step 2 — the hidden representation shifts substantially at the moment of semantic transition. Dynamic τₖ responds immediately: τ drops from 8.00 to 6.46 and recovers toward ~7.9 as generation stabilizes, consistent with design behavior in synthetic experiments.
 
@@ -319,11 +321,11 @@ DynamicTemp and Nomadic Full both reduce entropy substantially relative to Vanil
 
 On Distinct-2 and Repetition Rate, Vanilla scores more favorably due to its higher fixed temperature. However, qualitative inspection reveals that Vanilla frequently enters repetition loops (e.g., cycling the same question phrase), whereas DynamicTemp and Nomadic Full produce more coherent content at the cost of lower lexical diversity. These metrics should be interpreted with this caveat.
 
-**Limitations.** PolicyNet switch probability saturates near 1.0 for both stable and transition contexts after training, indicating that stay/switch discrimination remains incomplete under the current heuristic teacher signal and training data size. Expert switching follows Δx thresholds rather than learned routing decisions, and the benchmark uses heuristic prompt categorization without ground-truth phase labels. These results are preliminary and should be interpreted as a proof-of-concept demonstration that Nomadic signal components transfer to LLM settings, not as a rigorous performance comparison.
+**Limitations and scope.** Several constraints prevent treating these results as anything beyond a directional signal. PolicyNet switch probability saturates near 1.0 for both stable and transition contexts after training, indicating that stay/switch discrimination remains incomplete under the current heuristic teacher signal and small training set. Expert switching follows Δx thresholds rather than learned routing decisions. The benchmark uses heuristic prompt categorization with no ground-truth phase labels, making it impossible to verify whether the three prompt categories correspond to genuine distributional regimes in the LLM's representation space. No parameter-matched or compute-matched baseline exists. These experiments should be read as demonstrating that Nomadic signal components are mechanically transplantable and produce interpretable entropy dynamics in an LLM context — not as evidence that they improve LLM performance. The question of whether Nomadic routing yields measurable generation quality improvements over well-tuned baselines at scale is left as a primary direction for future work.
 
-### 4.6 Collapse and Degeneration Behavior
+### 4.6 Collapse and Degeneration Behavior (LLM Experiment, continued from §4.5)
 
-While entropy reduction improves stability, it can also induce degeneration in autoregressive generation, commonly observed as repetition loops or low-diversity outputs. We therefore analyze the trade-off between stability and degeneration across Vanilla, DynamicTemp, and Nomadic Full models.
+The LLM experiment in §4.5 measured entropy differentiation; we now examine the complementary failure mode. While entropy reduction improves generation stability, it can also induce degeneration in autoregressive generation, commonly observed as repetition loops or low-diversity outputs. We therefore analyze the trade-off between stability and degeneration across the same three models (Vanilla, DynamicTemp, Nomadic Full) evaluated in §4.5.
 
 DynamicTemp-only control significantly reduces entropy (Table 5), but frequently collapses into low-diversity patterns. This is reflected in elevated repetition rates and reduced distinct-n scores, indicating that aggressive entropy suppression leads to over-confident token selection without sufficient contextual grounding.
 
@@ -392,6 +394,26 @@ Code implementation and manuscript drafting were assisted by AI-based tools. All
 2. Fedus, W., Zoph, B., & Shazeer, N. (2022). *Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity.* JMLR, 23(120), 1–39.
 
 3. Bacon, P. L., Harb, J., & Precup, D. (2017). *The Option-Critic Architecture.* AAAI 2017.
+
+4. Friston, K. (2010). *The free-energy principle: a unified brain theory?* Nature Reviews Neuroscience, 11(2), 127–138.
+
+5. Kirkpatrick, J., Pascanu, R., et al. (2017). *Overcoming catastrophic forgetting in neural networks.* PNAS, 114(13), 3521–3526.
+
+6. Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System Technical Journal, 27(3), 379–423.
+
+7. Jiang, A. Q., Sablayrolles, A., Roux, A., Mensch, A., Savary, B., Bamford, C., ... & El Sayed, W. (2024). *Mixtral of Experts.* arXiv:2401.04088.
+
+8. Zhou, Y., Lei, T., Liu, H., Du, N., Huang, Y., Zhao, V., ... & Laudon, J. (2022). *Mixture-of-Experts with Expert Choice Routing.* NeurIPS 2022.
+
+9. Zenke, F., Poole, B., & Ganguli, S. (2017). *Continual Learning Through Synaptic Intelligence.* ICML 2017.
+
+10. Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., ... & Chen, W. (2022). *LoRA: Low-Rank Adaptation of Large Language Models.* ICLR 2022.
+
+11. Roller, S., Dinan, E., Goyal, N., Ju, D., Williamson, M., Liu, Y., ... & Weston, J. (2021). *Recipes for Building an Open-Domain Chatbot.* EACL 2021. *(cited for temperature-based entropy control in autoregressive generation)*
+
+12. Kudugunta, S., Huang, Y., Bapna, A., Krikun, M., Lepikhin, D., Luong, M. T., & Firat, O. (2021). *Beyond Distillation: Task-level Mixture-of-Experts for Efficient Inference.* EMNLP 2021.
+
+13. Lewandowski, A., Tanaka, H., Botvinick, M., & Stachenfeld, K. (2023). *Directions of Curvature as an Explanation for Loss of Plasticity.* arXiv:2312.00246. *(cited for loss of plasticity under non-stationary distributions)*
 
 4. Friston, K. (2010). *The free-energy principle: a unified brain theory?* Nature Reviews Neuroscience, 11(2), 127–138.
 
