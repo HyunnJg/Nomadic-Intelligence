@@ -184,7 +184,7 @@ Entropy differentiation is the key behavioral signature of structured switching:
 | Device | CUDA (GTX 1660 Super) |
 | Seeds | 42, 123, 456 |
 
-All seeds use identical hyperparameters. Sequence data is never shuffled; temporal order is preserved throughout training and evaluation.
+All seeds use identical hyperparameters. Sequence data is never shuffled; temporal order is preserved throughout training and evaluation. All experiments were run using `config_extended.yaml` as the hyperparameter source; the YAML file takes precedence over code-level defaults where values differ (notably β_φ = 0.02 as reported in §4.2).
 
 ---
 
@@ -238,7 +238,9 @@ The β_φ parameter scales Φ's contribution to the gating objective. We swept �
 | 0.00 | +PolicyNet | 0.212 | 0.541 | Unstable without Φ signal |
 | 0.05 | +PolicyNet | 0.183 | 0.235 | — |
 
-β_φ = 0.02 with PolicyNet achieves the best combination of Seq MSE and stable fixation consistency. β_φ = 0.00 with GateNet achieves the lowest raw Seq MSE (0.149) but at the cost of higher seed variance (0.114–0.205 range). Without Φ contributing to the gating objective, the gate has no explicit switching pressure signal and relies entirely on input features to infer regime changes; this makes performance sensitive to initialization and less consistent across runs. The role of β_φ is therefore not primarily to minimize MSE, but to stabilize convergence by providing a consistent switching pressure signal throughout training. A setting that achieves competitive MSE with lower variance (β_φ = 0.02 + PolicyNet, 0.152 avg, 0.143–0.163 range) is preferred for reproducibility.
+β_φ = 0.02 with PolicyNet achieves the best combination of Seq MSE and stable fixation consistency. β_φ = 0.00 with GateNet achieves the lowest raw Seq MSE (0.149) but at the cost of higher seed variance (0.114–0.205 range). Without Φ contributing to the gating objective, the gate has no explicit switching pressure signal and relies entirely on input features to infer regime changes; this makes performance sensitive to initialization and less consistent across runs. The role of β_φ is therefore not primarily to minimize MSE, but to stabilize convergence by providing a consistent switching pressure signal throughout training. A setting that achieves competitive MSE with lower variance (β_φ = 0.02 + PolicyNet, 0.152 avg, 0.121–0.182 range) is preferred for reproducibility.
+
+We additionally confirmed that the β_φ ≥ 0.02 stability floor holds after Dynamic τₖ is introduced: at β_φ = 0.00 and β_φ = 0.01, Static MSE collapses to 4.72 and 4.42 respectively in at least one seed, replicating the pre-PolicyNet instability pattern. Dynamic τₖ alone is insufficient to stabilize Static MSE without the Φ signal contribution.
 
 ### 4.3 Emergent Expert Specialization
 
@@ -258,7 +260,7 @@ The permutation of expert assignments varies across seeds—regime C maps to E2 
 
 ### 4.4 Robustness: 4 Regimes, 3 Experts, Random Order
 
-To test whether the framework generalizes beyond the original controlled setting, we conducted a robustness experiment with three simultaneous changes: (1) adding a fourth regime D (y = 0.5x₁ − x₂, center (−2.5, +2.5)), (2) fixing the number of experts at 3, creating an *underprovisioned* condition (regimes > experts), and (3) randomizing the regime order at each cycle. The same hyperparameters from the main experiment were used without adjustment.
+To test whether the framework generalizes beyond the original controlled setting, we conducted a robustness experiment with three simultaneous changes: (1) adding a fourth regime D (y = −x₁ − x₂, center (−2.5, +2.5)), (2) fixing the number of experts at 3, creating an *underprovisioned* condition (regimes > experts), and (3) randomizing the regime order at each cycle. The same hyperparameters from the main experiment were used without adjustment.
 
 **Table 3: Robustness test — 4 regimes / 3 experts (3-seed average)**
 
