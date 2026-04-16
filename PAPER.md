@@ -353,11 +353,11 @@ We conducted a comparative experiment to empirically evaluate alternative formul
 
 **Variants.** Four $\Phi$ formulations were compared against the EMA composite baseline:
 
-- **Phi\_EMA** (baseline): $\Phi = \tanh(s_{\text{env}} \cdot \Delta x^{\text{env}} + s_{\text{err}} \cdot \Delta x^{\text{err}} + s_{\text{exp}} \cdot \mathcal{L}_{\text{task}} + s_{\text{gap}} \cdot \text{gap}_t)$
-- **Phi\_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \| \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
-- **Phi\_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \| \bar{g}_{t-1}))$, asymmetric forward KL divergence
-- **Phi\_Switch**: $\Phi = \text{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as $\Phi$ (end-to-end)
-- **Phi\_JSD\_v2**: $\Phi = \tanh\!\left(s_{\text{div}} \cdot \text{std}_i[\text{JSD}(g_i \| \bar{g}_t)] + s_{\text{ema}} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \| \bar{g}_t)])\right)$, intra-batch routing heterogeneity
+- **Phi_EMA** (baseline): $\Phi = \tanh\!\left(s_{\mathrm{env}} \cdot \Delta x^{\mathrm{env}} + s_{\mathrm{err}} \cdot \Delta x^{\mathrm{err}} + s_{\mathrm{exp}} \cdot \mathcal{L}_{\mathrm{task}} + s_{\mathrm{gap}} \cdot \mathrm{gap}_t\right)$
+- **Phi_JSD**: $\Phi = \tanh\!\left(\alpha \cdot \mathrm{JSD}(\bar{g}_t \,\|\, \bar{g}_{t-1})\right)$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
+- **Phi_KL**: $\Phi = \tanh\!\left(\alpha \cdot \mathrm{KL}(\bar{g}_t \,\|\, \bar{g}_{t-1})\right)$, asymmetric forward KL divergence
+- **Phi_Switch**: $\Phi = p_t^{\mathrm{switch}}$, PolicyNet switch head output used directly as $\Phi$ (end-to-end)
+- **Phi_JSD_v2**: $\Phi = \tanh\!\left(s_{\mathrm{div}} \cdot \operatorname{std}_i\!\left[\mathrm{JSD}(g_i \,\|\, \bar{g}_t)\right] + s_{\mathrm{ema}} \cdot \mathrm{EMA}\!\left(\operatorname{mean}_i\!\left[\mathrm{JSD}(g_i \,\|\, \bar{g}_t)\right]\right)\right)$, intra-batch routing heterogeneity
 
 **Results.**
 
