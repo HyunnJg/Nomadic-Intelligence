@@ -353,11 +353,11 @@ We conducted a comparative experiment to empirically evaluate alternative formul
 
 **Variants.** Four $\Phi$ formulations were compared against the EMA composite baseline:
 
-- **Phi\_EMA** (baseline): $\Phi = \tanh(s_{\mathrm{env}} \cdot \Delta x^{\mathrm{env}} + s_{\mathrm{err}} \cdot \Delta x^{\mathrm{err}} + s_{\mathrm{exp}} \cdot \mathcal{L}_{\mathrm{task}} + s_{\mathrm{gap}} \cdot \mathrm{gap}_t)$
-- **Phi\_JSD**: $\Phi = \tanh(\alpha \cdot \mathrm{JSD}(\bar{g}_t \parallel \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
-- **Phi\_KL**: $\Phi = \tanh(\alpha \cdot \mathrm{KL}(\bar{g}_t \parallel \bar{g}_{t-1}))$, asymmetric forward KL divergence
-- **Phi\_Switch**: $\Phi = \mathrm{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as $\Phi$ (end-to-end)
-- **Phi\_JSD\_v2**: $\Phi = \tanh(s_{\mathrm{div}} \cdot \mathrm{std}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)] + s_{\mathrm{ema}} \cdot \mathrm{EMA}(\mathrm{mean}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)]))$, intra-batch routing heterogeneity
+- **Phi\_EMA** (baseline): $\Phi = \tanh(s_{\text{env}} \cdot \Delta x^{\text{env}} + s_{\text{err}} \cdot \Delta x^{\text{err}} + s_{\text{exp}} \cdot \mathcal{L}_{\text{task}} + s_{\text{gap}} \cdot \text{gap}_t)$
+- **Phi\_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \| \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
+- **Phi\_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \| \bar{g}_{t-1}))$, asymmetric forward KL divergence
+- **Phi\_Switch**: $\Phi = \text{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as $\Phi$ (end-to-end)
+- **Phi\_JSD\_v2**: $\Phi = \tanh\!\left(s_{\text{div}} \cdot \text{std}_i[\text{JSD}(g_i \| \bar{g}_t)] + s_{\text{ema}} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \| \bar{g}_t)])\right)$, intra-batch routing heterogeneity
 
 **Results.**
 
@@ -372,7 +372,7 @@ We conducted a comparative experiment to empirically evaluate alternative formul
 **Key findings.**
 Phi\_EMA achieves the highest ΔH (0.544) with near-zero variance (std=0.001) across seeds, and is the only variant to achieve sharp stable-phase fixation (Stable Entropy 0.324). Information-geometric variants (Phi\_JSD, Phi\_KL) achieve competitive or superior Seq MSE but fail to reproduce the entropy differentiation signature: their mean $\Phi$ values collapse to near-zero (0.031 and 0.050, respectively) because a fixated gate satisfies $\bar{g}_t \approx \bar{g}_{t-1}$, causing JSD/KL divergence — and thus $\Phi$ — to vanish precisely when the system is in the stable phase. This structural limitation prevents the Dwell Time Regularizer from receiving a sustained switching signal during fixation.
 
-Phi\_JSD\_v2 partially addresses this by computing per-sample routing heterogeneity $\mathrm{std}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)]$ rather than batch-mean divergence, maintaining a nonzero $\Phi$ signal (mean 0.456) even during fixation. ΔH improves to 0.444 with stable variance (std=0.048). However, ΔH remains below Phi\_EMA (0.544), because $\mathrm{std}_i[\mathrm{JSD}]$ measures task-agnostic routing noise rather than the task-aware explanation deficit captured by $\mathrm{gap}_t = \mathrm{ReLU}(\epsilon_{\mathrm{top1}} - \epsilon_{\mathrm{best}})$ in the EMA composite.
+Phi\_JSD\_v2 partially addresses this by computing per-sample routing heterogeneity $\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$ rather than batch-mean divergence, maintaining a nonzero $\Phi$ signal (mean 0.456) even during fixation. ΔH improves to 0.444 with stable variance (std=0.048). However, ΔH remains below Phi\_EMA (0.544), because $\text{std}_i[\text{JSD}]$ measures task-agnostic routing noise rather than the task-aware explanation deficit captured by $\text{gap}_t = \text{ReLU}(\epsilon_{\text{top1}} - \epsilon_{\text{best}})$ in the EMA composite.
 
 Phi\_Switch (end-to-end learned $\Phi$) collapses across seeds (Seq MSE 0.441 ± 0.181), with the PolicyNet switch head saturating at switch probability 1.0 within the first 25 epochs. This confirms the training instability noted in §5.3 and motivates the RL-based policy learning direction identified as future work.
 
