@@ -347,20 +347,17 @@ This supports our central claim: transition dynamics, not just selection confide
 
 Notably, Nomadic Full achieves this without increasing overall entropy relative to DynamicTemp, indicating that improved generation quality arises from temporal structure rather than higher stochasticity.
 
-### 4.7 Φ Variant Comparison
+### 4.7 $\Phi$ Variant Comparison
 
-We conducted a comparative experiment to empirically evaluate alternative formulations
-of Φ (switching pressure), addressing the partial theoretical grounding noted in §5.3.
-Four variants were evaluated across three seeds (42, 123, 456) on the same synthetic
-non-stationary regression task used in the main ablation (§4.1–4.3).
+We conducted a comparative experiment to empirically evaluate alternative formulations of $\Phi$ (switching pressure), addressing the partial theoretical grounding noted in §5.3. Four variants were evaluated across three seeds (42, 123, 456) on the same synthetic non-stationary regression task used in the main ablation (§4.1–4.3).
 
-**Variants.** Four Φ formulations were compared against the EMA composite baseline:
+**Variants.** Four $\Phi$ formulations were compared against the EMA composite baseline:
 
-- **Phi_EMA** (baseline): $\Phi = \tanh(s_{\text{env}} \cdot \Delta x^{\text{env}} + s_{\text{err}} \cdot \Delta x^{\text{err}} + s_{\text{exp}} \cdot \mathcal{L}_{\text{task}} + s_{\text{gap}} \cdot \text{gap}_t)$
-- **Phi_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \parallel \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
-- **Phi_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \parallel \bar{g}_{t-1}))$, asymmetric forward KL divergence
-- **Phi_Switch**: $\Phi = \text{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as Φ (end-to-end)
-- **Phi_JSD_v2**: $\Phi = \tanh(s_{\text{div}} \cdot \text{std}_i[\text{JSD}(g_i \parallel \bar{g}_t)] + s_{\text{ema}} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \parallel \bar{g}_t)]))$, intra-batch routing heterogeneity
+- **Phi\_EMA** (baseline): $\Phi = \tanh(s_{\mathrm{env}} \cdot \Delta x^{\mathrm{env}} + s_{\mathrm{err}} \cdot \Delta x^{\mathrm{err}} + s_{\mathrm{exp}} \cdot \mathcal{L}_{\mathrm{task}} + s_{\mathrm{gap}} \cdot \mathrm{gap}_t)$
+- **Phi\_JSD**: $\Phi = \tanh(\alpha \cdot \mathrm{JSD}(\bar{g}_t \parallel \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
+- **Phi\_KL**: $\Phi = \tanh(\alpha \cdot \mathrm{KL}(\bar{g}_t \parallel \bar{g}_{t-1}))$, asymmetric forward KL divergence
+- **Phi\_Switch**: $\Phi = \mathrm{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as $\Phi$ (end-to-end)
+- **Phi\_JSD\_v2**: $\Phi = \tanh(s_{\mathrm{div}} \cdot \mathrm{std}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)] + s_{\mathrm{ema}} \cdot \mathrm{EMA}(\mathrm{mean}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)]))$, intra-batch routing heterogeneity
 
 **Results.**
 
@@ -373,35 +370,13 @@ non-stationary regression task used in the main ablation (§4.1–4.3).
 | Phi_Switch | 0.441 ± 0.181 | 0.141 ± 0.048 | 0.813 | 1.204 |
 
 **Key findings.**
-Phi_EMA achieves the highest ΔH (0.544) with near-zero variance (std=0.001) across seeds,
-and is the only variant to achieve sharp stable-phase fixation (Stable Entropy 0.324).
-Information-geometric variants (Phi_JSD, Phi_KL) achieve competitive or superior Seq MSE
-but fail to reproduce the entropy differentiation signature: their mean Φ values collapse
-to near-zero (0.031 and 0.050, respectively) because a fixated gate satisfies
-$\bar{g}_t \approx \bar{g}_{t-1}$, causing JSD/KL divergence — and thus Φ — to vanish
-precisely when the system is in the stable phase. This structural limitation prevents the
-Dwell Time Regularizer from receiving a sustained switching signal during fixation.
+Phi\_EMA achieves the highest ΔH (0.544) with near-zero variance (std=0.001) across seeds, and is the only variant to achieve sharp stable-phase fixation (Stable Entropy 0.324). Information-geometric variants (Phi\_JSD, Phi\_KL) achieve competitive or superior Seq MSE but fail to reproduce the entropy differentiation signature: their mean $\Phi$ values collapse to near-zero (0.031 and 0.050, respectively) because a fixated gate satisfies $\bar{g}_t \approx \bar{g}_{t-1}$, causing JSD/KL divergence — and thus $\Phi$ — to vanish precisely when the system is in the stable phase. This structural limitation prevents the Dwell Time Regularizer from receiving a sustained switching signal during fixation.
 
-Phi_JSD_v2 partially addresses this by computing per-sample routing heterogeneity
-$\text{std}_i[\text{JSD}(g_i \parallel \bar{g}_t)]$ rather than batch-mean divergence,
-maintaining a nonzero Φ signal (mean 0.456) even during fixation. ΔH improves to 0.444
-with stable variance (std=0.048). However, ΔH remains below Phi_EMA (0.544), because
-$\text{std}_i[\text{JSD}]$ measures task-agnostic routing noise rather than the
-task-aware explanation deficit captured by $\text{gap}_t = \text{ReLU}(\epsilon_{\text{top1}} - \epsilon_{\text{best}})$
-in the EMA composite.
+Phi\_JSD\_v2 partially addresses this by computing per-sample routing heterogeneity $\mathrm{std}_i[\mathrm{JSD}(g_i \parallel \bar{g}_t)]$ rather than batch-mean divergence, maintaining a nonzero $\Phi$ signal (mean 0.456) even during fixation. ΔH improves to 0.444 with stable variance (std=0.048). However, ΔH remains below Phi\_EMA (0.544), because $\mathrm{std}_i[\mathrm{JSD}]$ measures task-agnostic routing noise rather than the task-aware explanation deficit captured by $\mathrm{gap}_t = \mathrm{ReLU}(\epsilon_{\mathrm{top1}} - \epsilon_{\mathrm{best}})$ in the EMA composite.
 
-Phi_Switch (end-to-end learned Φ) collapses across seeds (Seq MSE 0.441 ± 0.181),
-with the PolicyNet switch head saturating at switch probability 1.0 within the first
-25 epochs. This confirms the training instability noted in §5.3 and motivates the
-RL-based policy learning direction identified as future work.
+Phi\_Switch (end-to-end learned $\Phi$) collapses across seeds (Seq MSE 0.441 ± 0.181), with the PolicyNet switch head saturating at switch probability 1.0 within the first 25 epochs. This confirms the training instability noted in §5.3 and motivates the RL-based policy learning direction identified as future work.
 
-**Interpretation.** Phi_EMA's ΔH advantage is robust across three experimental iterations
-(v1–v3, with 3-pass probe structure). The experiment provides post-hoc empirical
-justification for the EMA composite design: the combination of environment change
-detection ($\Delta x^{\text{env}}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_{\text{task}}$)
-is necessary for sustained switching pressure during stable phases. Neither component alone
-suffices — pure information-geometric Φ lacks task awareness, while task-only signals
-lack environmental responsiveness.
+**Interpretation.** Phi\_EMA's ΔH advantage is robust across three experimental iterations (v1–v3, with 3-pass probe structure). The experiment provides post-hoc empirical justification for the EMA composite design: the combination of environment change detection ($\Delta x^{\mathrm{env}}$) and task-level explanation deficit ($\mathrm{gap}_t + \mathcal{L}_{\mathrm{task}}$) is necessary for sustained switching pressure during stable phases. Neither component alone suffices — pure information-geometric $\Phi$ lacks task awareness, while task-only signals lack environmental responsiveness.
 
 ### 4.8 Parameter-Matched Baseline
 
