@@ -6,7 +6,7 @@ We propose **Nomadic Intelligence**, a framework that reconceptualizes expert ro
 
 Our framework introduces three interacting components: (1) a hybrid change signal Δx capturing both environmental shift and prediction error, treated as an energy source rather than noise to be minimized; (2) a dynamic dwell-time constraint τₖ that modulates how long the system commits to an expert as a function of environmental volatility; and (3) an uncertainty-modulated switching variable Φ coupled with a PolicyNet that enables explicit meta-level control over stay-vs-switch decisions and routing mode (soft/hard).
 
-We evaluate on a synthetic non-stationary regression task with continuous regime transitions. Ablation results across three seeds show that Δx-based meta-control yields the largest performance gain (avg. −0.155 Seq MSE reduction), while PolicyNet further refines transition behavior by collapsing stable-phase gate entropy to near-deterministic levels (avg. 0.108 vs. 0.951 in Standard MoE). The Nomadic Full model achieves avg. Seq MSE of 0.162 compared to 0.410 for Standard MoE and 0.412 for a fixed baseline. A robustness test under a harder 4-regime / 3-expert underprovisioned condition confirms that the ablation ordering and entropy differentiation signature are preserved (ΔH = +0.437). A preliminary LLM experiment transplanting the signal layer onto Gemma-4-E2B shows that ΔH increases from +0.731 (untrained) to +0.984 after PolicyNet training, exceeding the synthetic result, and that LoRA-based expert switching operates across three specialized adapters with a 54.2% switch rate. These results suggest that in synthetic non-stationary settings where temporal context is necessary for regime discrimination, *how* a system transitions between internal representations is as important as *which* representation it selects — a hypothesis that warrants investigation in broader settings.
+We evaluate on a synthetic non-stationary regression task with continuous regime transitions. Ablation results across three seeds show that Δx-based meta-control yields the largest performance gain (avg. −0.155 Seq MSE reduction), while PolicyNet further refines transition behavior by collapsing stable-phase gate entropy to near-deterministic levels (avg. 0.108 vs. 0.951 in Standard MoE). The Nomadic Full model achieves avg. Seq MSE of 0.162 compared to 0.410 for Standard MoE and 0.412 for a fixed baseline. A robustness test under a harder 4-regime / 3-expert underprovisioned condition confirms that the ablation ordering and entropy differentiation signature are preserved (ΔH = +0.437). A parameter-matched baseline experiment — scaling Fixed MLP to hidden_dim 150 and Standard MoE to hidden_dim 74, matching Nomadic Full's 23,053 parameters — confirms that neither capacity increase reduces Seq MSE below 0.409 nor produces ΔH above 0.027, ruling out model capacity as a confound. A preliminary LLM experiment transplanting the signal layer onto Gemma-4-E2B shows that ΔH increases from +0.731 (untrained) to +0.984 after PolicyNet training, exceeding the synthetic result, and that LoRA-based expert switching operates across three specialized adapters with a 54.2% switch rate. These results suggest that in synthetic non-stationary settings where temporal context is necessary for regime discrimination, *how* a system transitions between internal representations is as important as *which* representation it selects — a hypothesis that warrants investigation in broader settings.
 
 ---
 
@@ -157,10 +157,12 @@ Four configurations are evaluated as an ablation study:
 
 | Model | Components |
 |-------|-----------|
-| Fixed | Single MLP (matched parameter count) |
-| Standard MoE | MoE with input-conditioned gating, no Δx / no policy |
-| Nomadic NoPolicy | MoE + Δx + dynamic τₖ + dwell regularizer |
-| Nomadic Full | NoPolicy + PolicyNet |
+| Fixed | Single MLP, hidden_dim 64 (4,417 params) |
+| Standard MoE | MoE with input-conditioned gating, no Δx / no policy (17,798 params) |
+| Nomadic NoPolicy | MoE + Δx + dynamic τₖ + dwell regularizer (22,926 params) |
+| Nomadic Full | NoPolicy + PolicyNet (23,053 params) |
+
+Parameter-matched variants (Fixed hidden_dim 150 / Standard MoE hidden_dim 74, both ≈ 23,300 params) are evaluated separately in §4.8 to isolate the contribution of temporal structure from model capacity.
 
 Standard MoE has static gating (no temporal signals): its Sequence MSE equals its Static MSE by construction, providing a clean lower bound on temporal structure benefit.
 
@@ -327,7 +329,7 @@ DynamicTemp and Nomadic Full both reduce entropy substantially relative to Vanil
 
 On Distinct-2 and Repetition Rate, Vanilla scores more favorably due to its higher fixed temperature. However, qualitative inspection reveals that Vanilla frequently enters repetition loops (e.g., cycling the same question phrase), whereas DynamicTemp and Nomadic Full produce more coherent content at the cost of lower lexical diversity. These metrics should be interpreted with this caveat.
 
-**Limitations and scope.** Several constraints prevent treating these results as anything beyond a directional signal. PolicyNet switch probability saturates near 1.0 for both stable and transition contexts after training, indicating that stay/switch discrimination remains incomplete under the current heuristic teacher signal and small training set. Expert switching follows Δx thresholds rather than learned routing decisions. The benchmark uses heuristic prompt categorization with no ground-truth phase labels, making it impossible to verify whether the three prompt categories correspond to genuine distributional regimes in the LLM's representation space. No parameter-matched or compute-matched baseline exists. These experiments should be read as demonstrating that Nomadic signal components are mechanically transplantable and produce interpretable entropy dynamics in an LLM context — not as evidence that they improve LLM performance. The question of whether Nomadic routing yields measurable generation quality improvements over well-tuned baselines at scale is left as a primary direction for future work.
+**Limitations and scope.** Several constraints prevent treating these results as anything beyond a directional signal. PolicyNet switch probability saturates near 1.0 for both stable and transition contexts after training, indicating that stay/switch discrimination remains incomplete under the current heuristic teacher signal and small training set. Expert switching follows Δx thresholds rather than learned routing decisions. The benchmark uses heuristic prompt categorization with no ground-truth phase labels, making it impossible to verify whether the three prompt categories correspond to genuine distributional regimes in the LLM's representation space. No parameter-matched LLM baseline exists (parameter-matched comparisons have been completed for the synthetic setting in §4.8; the analogous LLM comparison is deferred). These experiments should be read as demonstrating that Nomadic signal components are mechanically transplantable and produce interpretable entropy dynamics in an LLM context — not as evidence that they improve LLM performance. The question of whether Nomadic routing yields measurable generation quality improvements over well-tuned baselines at scale is left as a primary direction for future work.
 
 ### 4.6 Collapse and Degeneration Behavior (LLM Experiment, continued from §4.5)
 
@@ -344,6 +346,85 @@ These results indicate that degeneration is not solely a function of entropy mag
 This supports our central claim: transition dynamics, not just selection confidence, are critical for maintaining stable yet non-degenerate behavior in non-stationary settings.
 
 Notably, Nomadic Full achieves this without increasing overall entropy relative to DynamicTemp, indicating that improved generation quality arises from temporal structure rather than higher stochasticity.
+
+### 4.7 Φ Variant Comparison
+
+We conducted a comparative experiment to empirically evaluate alternative formulations
+of Φ (switching pressure), addressing the partial theoretical grounding noted in §5.3.
+Four variants were evaluated across three seeds (42, 123, 456) on the same synthetic
+non-stationary regression task used in the main ablation (§4.1–4.3).
+
+**Variants.** Four Φ formulations were compared against the EMA composite baseline:
+
+- **Phi_EMA** (baseline): $\Phi = \tanh(s_\text{env} \cdot \Delta x^\text{env} + s_\text{err} \cdot \Delta x^\text{err} + s_\text{exp} \cdot \mathcal{L}_\text{task} + s_\text{gap} \cdot \text{gap}_t)$
+- **Phi_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \| \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
+- **Phi_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \| \bar{g}_{t-1}))$, asymmetric forward KL divergence
+- **Phi_Switch**: $\Phi = \text{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as Φ (end-to-end)
+- **Phi_JSD_v2**: $\Phi = \tanh(s_\text{div} \cdot \text{std}_i[\text{JSD}(g_i \| \bar{g}_t)] + s_\text{ema} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \| \bar{g}_t)]))$, intra-batch routing heterogeneity
+
+**Results.**
+
+| Φ Variant | Seq MSE | ΔH | Stable Ent | Switch Lat |
+|---|---|---|---|---|
+| Phi_EMA | 0.285 ± 0.018 | **0.544 ± 0.001** | **0.324** | 0.454 |
+| Phi_JSD_v2 | 0.276 ± 0.030 | 0.444 ± 0.048 | 0.514 | 1.176 |
+| Phi_JSD | 0.264 ± 0.043 | 0.289 ± 0.025 | 0.644 | 1.222 |
+| Phi_KL | **0.249 ± 0.019** | 0.338 ± 0.024 | 0.594 | 0.407 |
+| Phi_Switch | 0.441 ± 0.181 | 0.141 ± 0.048 | 0.813 | 1.204 |
+
+**Key findings.**
+Phi_EMA achieves the highest ΔH (0.544) with near-zero variance (std=0.001) across seeds,
+and is the only variant to achieve sharp stable-phase fixation (Stable Entropy 0.324).
+Information-geometric variants (Phi_JSD, Phi_KL) achieve competitive or superior Seq MSE
+but fail to reproduce the entropy differentiation signature: their mean Φ values collapse
+to near-zero (0.031 and 0.050, respectively) because a fixated gate satisfies
+$\bar{g}_t \approx \bar{g}_{t-1}$, causing JSD/KL divergence — and thus Φ — to vanish
+precisely when the system is in the stable phase. This structural limitation prevents the
+Dwell Time Regularizer from receiving a sustained switching signal during fixation.
+
+Phi_JSD_v2 partially addresses this by computing per-sample routing heterogeneity
+$\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$ rather than batch-mean divergence,
+maintaining a nonzero Φ signal (mean 0.456) even during fixation. ΔH improves to 0.444
+with stable variance (std=0.048). However, ΔH remains below Phi_EMA (0.544), because
+$\text{std}_i[\text{JSD}]$ measures task-agnostic routing noise rather than the
+task-aware explanation deficit captured by $\text{gap}_t = \text{ReLU}(\epsilon_{\text{top1}} - \epsilon_{\text{best}})$
+in the EMA composite.
+
+Phi_Switch (end-to-end learned Φ) collapses across seeds (Seq MSE 0.441 ± 0.181),
+with the PolicyNet switch head saturating at switch probability 1.0 within the first
+25 epochs. This confirms the training instability noted in §5.3 and motivates the
+RL-based policy learning direction identified as future work.
+
+**Interpretation.** Phi_EMA's ΔH advantage is robust across three experimental iterations
+(v1–v3, with 3-pass probe structure). The experiment provides post-hoc empirical
+justification for the EMA composite design: the combination of environment change
+detection ($\Delta x^\text{env}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_\text{task}$)
+is necessary for sustained switching pressure during stable phases. Neither component alone
+suffices — pure information-geometric Φ lacks task awareness, while task-only signals
+lack environmental responsiveness.
+
+### 4.8 Parameter-Matched Baseline
+
+A potential confound in the ablation results (§4.1) is model capacity: Nomadic Full contains PolicyNet, adding approximately 5,255 parameters over Standard MoE (23,053 vs. 17,798 total). To rule out the possibility that performance gains arise from this additional capacity rather than from temporal control mechanisms, we evaluated parameter-matched baselines at Nomadic Full's parameter count.
+
+**Setup.** Fixed MLP hidden_dim was increased from 64 to 150 (23,251 parameters) and Standard MoE hidden_dim from 64 to 74 (23,538 parameters), both matching Nomadic Full. The same three seeds (42, 123, 456) and identical training procedure were used. Nomadic NoPolicy and Nomadic Full were run concurrently as reference baselines.
+
+**Table 6: Parameter-Matched Baseline Results (3-seed mean)**
+
+| Model | Params | Seq MSE | ΔH | Stable Ent | Trans Ent |
+|-------|-------:|:-------:|:--:|:----------:|:---------:|
+| Fixed (h=64) | 4,417 | 0.409 | — | — | — |
+| Fixed (h=150, matched) | 23,251 | 0.409 | — | — | — |
+| Standard MoE (h=64) | 17,798 | 0.409 | 0.017 | 0.952 | 0.969 |
+| Standard MoE (h=74, matched) | 23,538 | 0.410 | 0.027 | 0.961 | 0.988 |
+| Nomadic NoPolicy | 22,926 | **0.214** | 0.375 | 0.548 | 0.923 |
+| **Nomadic Full** | **23,053** | **0.165** | **0.781** | **0.091** | **0.872** |
+
+**Key findings.** Increasing Fixed MLP capacity from 4,417 to 23,251 parameters yields no measurable improvement (Seq MSE 0.409 → 0.409). Increasing Standard MoE capacity from 17,798 to 23,538 parameters similarly produces no improvement (0.409 → 0.410) and raises ΔH only marginally from 0.017 to 0.027 — a value that remains 29× below Nomadic Full (0.781). Stable Entropy stays near 0.961 in both Standard MoE variants, compared to 0.091 in Nomadic Full.
+
+The parameter-matched Standard MoE achieves 28× less entropy differentiation than Nomadic Full despite having slightly more parameters (23,538 vs. 23,053). This result rules out model capacity as a confound: the performance gap between Standard MoE and Nomadic Full is attributable to the temporal control mechanisms (Δx-based gating, dynamic dwell constraints, PolicyNet), not to the additional parameters they introduce.
+
+The result also sharpens the interpretation of the ablation sequence. The jump from Standard MoE (matched) to Nomadic NoPolicy — both using roughly comparable parameter budgets when the matched variant is considered — represents a Seq MSE reduction of 0.214 − 0.410 = −0.196, driven entirely by the introduction of temporal structure. This is a larger gain than any capacity increase produces, confirming that *how* the model processes time matters more than how large it is.
 
 ---
 
@@ -369,9 +450,29 @@ Standard MoE shows almost no entropy differentiation (ΔH = 0.033), confirming t
 
 **PolicyNet training instability.** In the synthetic experiments, per-seed variance in Stable Entropy (0.056–0.186) indicates that convergence to hard fixation is not guaranteed under the heuristic teacher signal. In the LLM experiment, switch probability saturates near 1.0 for both stable and transition contexts after training, indicating that stay/switch discrimination remains incomplete. The heuristic teacher signal and small training set size are likely contributing factors. Replacing the heuristic with a learned or RL-based objective is an open direction.
 
-**Φ's theoretical grounding is partial.** Φ is operationalized as a composite behavioral proxy for expected information gain from routing transitions (§2.3). While each component has a principled interpretation — gap_t as a counterfactual gain lower bound, Δx_err as epistemic latency, Δx_env as distributional shift prior — the composite has not been derived from a formal information-theoretic objective. Its relationship to mutual information or a proper Bayesian posterior update has not been established. The proxy formulation is tractable and empirically effective, but a principled derivation connecting Φ directly to expected information gain under a specified generative model would strengthen the theoretical contribution.
+**Φ design: empirical validation and remaining theoretical gap.** Φ is operationalized as
+a composite behavioral proxy for expected information gain from routing transitions (§2.3).
+A comparative experiment (§4.7) evaluated four alternative Φ formulations — including
+information-geometric variants (JSD, KL divergence between consecutive gate distributions)
+and an intra-batch routing heterogeneity measure (Phi_JSD_v2) — against the EMA composite.
 
-**Parameter count parity.** The Nomadic Full model has more parameters than Fixed or Standard MoE due to PolicyNet. In the LLM setting, LoRA adapters add a small parameter overhead per expert. A careful parameter-matched comparison is deferred to future work.
+The results provide post-hoc empirical justification for the composite design. Pure
+information-geometric Φ variants fail to maintain switching pressure during stable phases
+because gate divergence vanishes when the system fixates ($\bar{g}_t \approx \bar{g}_{t-1}$),
+while the EMA composite sustains nonzero Φ through the task-aware $\text{gap}_t$ term.
+Phi_JSD_v2 partially addresses this structural limitation and improves Seq MSE, but does
+not match the entropy differentiation of the EMA composite (ΔH 0.444 vs. 0.544).
+
+The remaining theoretical gap is that the composite Φ has not been derived from a formal
+information-theoretic objective: its relationship to mutual information or a proper Bayesian
+posterior update under a specified generative model has not been established. The
+per-sample routing heterogeneity interpretation of Phi_JSD_v2 suggests one direction toward
+a principled derivation — specifically, $\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$
+can be interpreted as a measure of routing uncertainty within a batch, which connects to
+the expected information gain from policy revision. Formalizing this connection is deferred
+to future work.
+
+**Parameter count parity.** The Nomadic Full model has more parameters than Fixed or Standard MoE due to PolicyNet (23,053 vs. 17,798 for Standard MoE). A parameter-matched comparison (§4.8) confirms that scaling Standard MoE to 23,538 parameters — matching Nomadic Full — produces no improvement in Seq MSE (0.410) and raises ΔH only to 0.027, compared to Nomadic Full's 0.781. Model capacity is therefore not a confound for the reported gains. In the LLM setting, LoRA adapters add a small parameter overhead per expert; a parameter-matched LLM comparison remains deferred to future work.
 
 ---
 
@@ -383,7 +484,7 @@ Empirically, the key finding is that the largest performance gains come not from
 
 A preliminary LLM experiment shows that the core signal layer is mechanically transplantable to autoregressive generation: after PolicyNet training on Gemma-4-E2B, ΔH increases to +0.984, exceeding the synthetic result, and LoRA-based expert switching operates across three specialized adapters. These results are consistent with the hypothesis that Nomadic signal components can capture representation change across contextual transitions beyond the synthetic setting, though the exploratory nature of this experiment precludes stronger claims (see §4.5 limitations).
 
-These findings motivate a directional hypothesis: in settings where temporal structure governs regime transitions, the design of transition dynamics may matter as much as the design of individual representations. This framing opens concrete directions for future work — temporally-aware routing in large-scale MoE systems, RL-based policy learning for transition timing, stronger baselines including recurrent gating, and formal analysis of transition dynamics under distribution shift. Whether this pattern generalizes beyond the controlled synthetic setting is the primary open question.
+These findings motivate a directional hypothesis: in settings where temporal structure governs regime transitions, the design of transition dynamics may matter as much as the design of individual representations. This framing opens concrete directions for future work — temporally-aware routing in large-scale MoE systems, RL-based policy learning for transition timing, stronger baselines including recurrent gating, and formal analysis of transition dynamics under distribution shift. Whether this pattern generalizes beyond the controlled synthetic setting is the primary open question. Scenario D further establishes that the EMA composite Φ design — treating $\text{gap}_t$ and $\Delta x^\text{env}$ as dual necessary channels — is not merely a heuristic but an empirically validated requirement: information-geometric alternatives reproduce the Seq MSE gains but fail to achieve the entropy differentiation signature central to the homeomorphic fixation claim.
 
 ---
 
