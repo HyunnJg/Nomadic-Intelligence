@@ -356,11 +356,11 @@ non-stationary regression task used in the main ablation (§4.1–4.3).
 
 **Variants.** Four Φ formulations were compared against the EMA composite baseline:
 
-- **Phi_EMA** (baseline): $\Phi = \tanh(s_\text{env} \cdot \Delta x^\text{env} + s_\text{err} \cdot \Delta x^\text{err} + s_\text{exp} \cdot \mathcal{L}_\text{task} + s_\text{gap} \cdot \text{gap}_t)$
-- **Phi_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \| \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
-- **Phi_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \| \bar{g}_{t-1}))$, asymmetric forward KL divergence
+- **Phi_EMA** (baseline): $\Phi = \tanh(s_{\text{env}} \cdot \Delta x^{\text{env}} + s_{\text{err}} \cdot \Delta x^{\text{err}} + s_{\text{exp}} \cdot \mathcal{L}_{\text{task}} + s_{\text{gap}} \cdot \text{gap}_t)$
+- **Phi_JSD**: $\Phi = \tanh(\alpha \cdot \text{JSD}(\bar{g}_t \parallel \bar{g}_{t-1}))$, Jensen-Shannon divergence between consecutive batch-mean gate distributions
+- **Phi_KL**: $\Phi = \tanh(\alpha \cdot \text{KL}(\bar{g}_t \parallel \bar{g}_{t-1}))$, asymmetric forward KL divergence
 - **Phi_Switch**: $\Phi = \text{stay\_switch\_probs}[:,1]$, PolicyNet switch head output used directly as Φ (end-to-end)
-- **Phi_JSD_v2**: $\Phi = \tanh(s_\text{div} \cdot \text{std}_i[\text{JSD}(g_i \| \bar{g}_t)] + s_\text{ema} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \| \bar{g}_t)]))$, intra-batch routing heterogeneity
+- **Phi_JSD_v2**: $\Phi = \tanh(s_{\text{div}} \cdot \text{std}_i[\text{JSD}(g_i \parallel \bar{g}_t)] + s_{\text{ema}} \cdot \text{EMA}(\text{mean}_i[\text{JSD}(g_i \parallel \bar{g}_t)]))$, intra-batch routing heterogeneity
 
 **Results.**
 
@@ -383,7 +383,7 @@ precisely when the system is in the stable phase. This structural limitation pre
 Dwell Time Regularizer from receiving a sustained switching signal during fixation.
 
 Phi_JSD_v2 partially addresses this by computing per-sample routing heterogeneity
-$\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$ rather than batch-mean divergence,
+$\text{std}_i[\text{JSD}(g_i \parallel \bar{g}_t)]$ rather than batch-mean divergence,
 maintaining a nonzero Φ signal (mean 0.456) even during fixation. ΔH improves to 0.444
 with stable variance (std=0.048). However, ΔH remains below Phi_EMA (0.544), because
 $\text{std}_i[\text{JSD}]$ measures task-agnostic routing noise rather than the
@@ -398,7 +398,7 @@ RL-based policy learning direction identified as future work.
 **Interpretation.** Phi_EMA's ΔH advantage is robust across three experimental iterations
 (v1–v3, with 3-pass probe structure). The experiment provides post-hoc empirical
 justification for the EMA composite design: the combination of environment change
-detection ($\Delta x^\text{env}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_\text{task}$)
+detection ($\Delta x^{\text{env}}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_{\text{task}}$)
 is necessary for sustained switching pressure during stable phases. Neither component alone
 suffices — pure information-geometric Φ lacks task awareness, while task-only signals
 lack environmental responsiveness.
