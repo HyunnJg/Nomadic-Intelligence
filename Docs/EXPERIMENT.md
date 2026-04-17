@@ -46,6 +46,18 @@ Standard MoE has no temporal signals. Its routing decisions are stateless.
 Static and sequential evaluation are equivalent for this model by construction.  
 This provides a clean lower bound on the temporal structure benefit.
 
+### 1.1 Real-World Time Series (ETTh1)
+- **Dataset:** Electricity Transformer Temperature (ETTh1), hourly data.
+- **Features (7):** HUFL, HULL, MUFL, MULL, LUFL, LULL, OT (Normalized).
+- **Regime Definition:** 3-tier volatility regimes based on the 7-day rolling standard deviation of OT (split at 33rd and 67th percentiles).
+- **Target Horizon:** 24-step ahead prediction ($t+24$) via `df['OT'].shift(-24)`. This enforces strict prediction pressure, rendering simple persistence baselines ineffective.
+
+### 1.2 LLM Signal Transfer (Gemma-4-E2B)
+- **Base Model:** `google/gemma-2b` (4-bit NF4 quantization via bitsandbytes).
+- **Environment:** Single T4/L4 GPU.
+- **Signal Extraction:** Hidden state of the final token at each generation step serves as $x_t$. Model uncertainty (1 - top1 probability) serves as $err_t$.
+- **Adapters:** 3 distinct LoRA adapters (r=4) routed by $\Delta x$ thresholds.
+
 ---
 
 ## 2. Model Configurations

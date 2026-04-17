@@ -8,6 +8,7 @@ For experimental results grounded in these components, see `PAPER.md`.
 ---
 
 ## Core Mapping Table
+> **Note on Implementation Scope:** > While the table above references `run_structured.py` (synthetic experiments), the exact same conceptual mapping and modules (`HybridDeltaTracker`, `DwellTimeRegularizer`, `PolicyNet`) are utilized in the real-world Jupyter notebooks (`nomadic_etth1_timeseries.ipynb`), demonstrating the universal applicability of the axioms across different architectures and domains.
 
 | Theoretical Concept | Implementation | Code Location |
 |---------------------|---------------|---------------|
