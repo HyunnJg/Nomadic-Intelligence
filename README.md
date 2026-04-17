@@ -231,7 +231,7 @@ Neither noise switching (τ → 0) nor dogmatic fixation (τ → ∞).
 The Fixed Model is a special case, not an opponent:
 `Fixed Model = Nomadic Intelligence |_{τₖ → ∞}`
 
-For the full philosophical and mathematical development, see [`Theory_and_Axioms.md`](./Theory_and_Axioms.md).
+For the full philosophical and mathematical development, see [Theory_and_Axioms.md](./docs/Theory_and_Axioms.md)
 
 ---
 
