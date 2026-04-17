@@ -40,6 +40,12 @@ Evaluated on a synthetic 3-regime non-stationary regression task. All numbers ar
 | Nomadic NoPolicy | 0.255 | 0.556 | 0.949 | +0.394 |
 | **Nomadic Full** | **0.162** | **0.108** | **0.896** | **+0.788** |
 
+### Real-World Benchmarks & LLM Transfer
+The behavioral signatures observed in synthetic data successfully transfer to real-world applications:
+
+* **ETTh1 (24-step ahead):** Nomadic Full achieves a **13.9% lower Seq MSE** (0.126) compared to Standard MoE (0.147), proving that transition dynamics control provides asymmetric advantages in physical systems with structured regime shifts.
+* **Gemma-4-E2B (LLM):** After PolicyNet training, the entropy differentiation signature (**ΔH = +0.984**) exceeds the synthetic result. LoRA-based expert switching operates seamlessly across specialized adapters, demonstrating the signal layer's scalability to autoregressive generation.
+
 **Ablation decomposition (Seq MSE reduction):**
 - Fixed → Standard MoE: −0.002 — *expert mixture alone has no benefit in sequential settings*
 - Standard MoE → NoPolicy: **−0.155** — *Δx + temporal dynamics is the largest single gain*
@@ -314,14 +320,14 @@ The components added on top of standard MoE — $\Delta x$-conditioned gating, d
 | Document | Role |
 |----------|------|
 | `README.md` | Project overview (you are here) |
-| `PAPER.md` | Full research paper |
-| `EXPERIMENT.md` | Experimental setup, hyperparameters, full results |
-| `ABLATION.md` | Component-wise ablation with per-stage interpretation |
-| `CONCEPT_MAPPING.md` | Theory → code mapping (concept to implementation) |
-| `VISUALIZATION.md` | Figure guide and diagnostic checklist |
-| `Theory_and_Axioms.md` | Formal axioms, reward structure, philosophical foundations |
-| `Philosophy_En.md` | Philosophical and ethical implications (English) |
-| `Philosophy_Kr.md` | Philosophical and ethical implications (Korean) |
+| `Docs/PAPER.md` | Full research paper |
+| `Docs/EXPERIMENT.md` | Experimental setup, hyperparameters, full results |
+| `Docs/ABLATION.md` | Component-wise ablation with per-stage interpretation |
+| `Docs/CONCEPT_MAPPING.md` | Theory → code mapping (concept to implementation) |
+| `Docs/Theory_and_Axioms.md` | Formal axioms, reward structure, philosophical foundations |
+| `Figure/VISUALIZATION.md` | Figure guide and diagnostic checklist |
+| `Philosophy/Philosophy_En.md` | Philosophical and ethical implications (English) |
+| `Philosophy/Philosophy_Kr.md` | Philosophical and ethical implications (Korean) |
 
 ---
 
