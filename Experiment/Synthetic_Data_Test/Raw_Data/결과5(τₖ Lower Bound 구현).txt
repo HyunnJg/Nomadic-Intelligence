@@ -1,0 +1,256 @@
+C:\Users\JHY\Nomadic-Intelligence>python run_structured.py --config config.yaml --seed 123 --save_dir outputs_tau_seed123
+Using device: cuda
+Saving outputs to: outputs_tau_seed123
+Loaded config from: config.yaml
+[Fixed] Epoch 001/220 | Train MSE: 1.0153 | Test MSE: 0.6268
+[Fixed] Epoch 025/220 | Train MSE: 0.4379 | Test MSE: 0.4104
+[Fixed] Epoch 050/220 | Train MSE: 0.4295 | Test MSE: 0.4056
+[Fixed] Epoch 075/220 | Train MSE: 0.4279 | Test MSE: 0.4040
+[Fixed] Epoch 100/220 | Train MSE: 0.4269 | Test MSE: 0.4035
+[Fixed] Epoch 125/220 | Train MSE: 0.4233 | Test MSE: 0.4036
+[Fixed] Epoch 150/220 | Train MSE: 0.4210 | Test MSE: 0.4035
+[Fixed] Epoch 175/220 | Train MSE: 0.4220 | Test MSE: 0.4037
+[Fixed] Epoch 200/220 | Train MSE: 0.4197 | Test MSE: 0.4032
+[Nomadic] Epoch 001/220 | Train Total: 0.8726 | Train MSE: 1.0018 | Train GateDist(full): 0.4899 | Train Entropy: 0.8410 | Test Static MSE: 1.2820 | Test Seq MSE: 0.4734 | Test Static GateDist: 0.4922 | Switch Latency: 1.0000
+[Nomadic] Epoch 025/220 | Train Total: 0.2474 | Train MSE: 0.3097 | Train GateDist(full): 0.3174 | Train Entropy: 1.0372 | Test Static MSE: 1.3084 | Test Seq MSE: 0.3059 | Test Static GateDist: 0.3196 | Switch Latency: 1.3056
+[Nomadic] Epoch 050/220 | Train Total: 0.2178 | Train MSE: 0.2819 | Train GateDist(full): 0.3456 | Train Entropy: 1.0522 | Test Static MSE: 2.0416 | Test Seq MSE: 0.3382 | Test Static GateDist: 0.3475 | Switch Latency: 1.8056
+[Nomadic] Epoch 075/220 | Train Total: 0.2052 | Train MSE: 0.2723 | Train GateDist(full): 0.3155 | Train Entropy: 1.0550 | Test Static MSE: 1.5446 | Test Seq MSE: 0.2996 | Test Static GateDist: 0.3168 | Switch Latency: 2.4722
+[Nomadic] Epoch 100/220 | Train Total: 0.2089 | Train MSE: 0.2701 | Train GateDist(full): 0.3141 | Train Entropy: 1.0576 | Test Static MSE: 1.6768 | Test Seq MSE: 0.2980 | Test Static GateDist: 0.3153 | Switch Latency: 1.0278
+[Nomadic] Epoch 125/220 | Train Total: 0.2067 | Train MSE: 0.2663 | Train GateDist(full): 0.3073 | Train Entropy: 1.0595 | Test Static MSE: 1.6022 | Test Seq MSE: 0.2769 | Test Static GateDist: 0.3088 | Switch Latency: 0.3889
+[Nomadic] Epoch 150/220 | Train Total: 0.2030 | Train MSE: 0.2628 | Train GateDist(full): 0.3131 | Train Entropy: 1.0623 | Test Static MSE: 1.6853 | Test Seq MSE: 0.2717 | Test Static GateDist: 0.3143 | Switch Latency: 1.0000
+[Nomadic] Epoch 175/220 | Train Total: 0.1991 | Train MSE: 0.2631 | Train GateDist(full): 0.2742 | Train Entropy: 1.0637 | Test Static MSE: 1.5878 | Test Seq MSE: 0.2687 | Test Static GateDist: 0.2757 | Switch Latency: 1.5278
+[Nomadic] Epoch 200/220 | Train Total: 0.1966 | Train MSE: 0.2603 | Train GateDist(full): 0.2686 | Train Entropy: 1.0645 | Test Static MSE: 1.6553 | Test Seq MSE: 0.2711 | Test Static GateDist: 0.2708 | Switch Latency: 0.4722
+
+========================================================================
+FINAL REPORT
+========================================================================
+
+[Fixed Model]
+Total Test MSE: 0.403123
+  Regime A MSE: 0.448785
+  Regime B MSE: 0.181460
+  Regime C MSE: 0.579124
+
+[Nomadic Model | Static Eval]
+Static Total Test MSE: 1.624179
+  Regime A MSE: 1.845305
+  Regime B MSE: 0.519127
+  Regime C MSE: 2.508105
+
+[Nomadic Model | Sequence Eval]
+Sequence Total Test MSE: 0.262323
+
+[Nomadic Regime-wise Expert Usage | Top-1 Ratio]
+  Regime A -> E0: 0.672, E1: 0.328, E2: 0.000
+  Regime B -> E0: 0.075, E1: 0.348, E2: 0.578
+  Regime C -> E0: 0.019, E1: 0.927, E2: 0.054
+
+[Nomadic Mean Gate Distance | Static Full]
+Mean pairwise gate-centroid distance: 0.291642
+[Pairwise Gate Distances]
+  A-B: 0.232830
+  A-C: 0.374436
+  B-C: 0.267659
+
+[Transition Dynamics]
+Regime -> Expert mapping: {'A': 2, 'B': 2, 'C': 1}
+Mean switch latency: 1.0556
+Mean dwell time: 2.5312
+Stable-phase mean entropy: 0.9912
+Transition-phase mean entropy: 1.0741
+
+Interpretation hint:
+- Sequence Test MSE is the main performance metric in phase-transition settings.
+- Static Test MSE is only a reference check, not the main success criterion.
+- Transition entropy > stable entropy suggests gate uncertainty rises during phase shifts.
+- Shorter switch latency suggests faster nomadic response.
+- Moderate dwell time suggests neither rigid fixation nor chaotic wandering.
+========================================================================
+
+Saved files:
+ - outputs_tau_seed123\phase_dataset_input_space.png
+ - outputs_tau_seed123\fixed_vs_nomadic_test_mse.png
+ - outputs_tau_seed123\nomadic_loss_components.png
+ - outputs_tau_seed123\hybrid_delta_trace.png
+ - outputs_tau_seed123\regime_expert_usage_bars.png
+ - outputs_tau_seed123\regime_expert_usage_heatmap.png
+ - outputs_tau_seed123\regime_mean_gate_distance.png
+ - outputs_tau_seed123\phase_gate_entropy.png
+ - outputs_tau_seed123\expert_trajectory.png
+ - outputs_tau_seed123\dwell_time_histogram.png
+ - outputs_tau_seed123\switch_latency_histogram.png
+ - outputs_tau_seed123\stable_vs_transition_entropy.png
+ - outputs_tau_seed123\switch_latency_curve.png
+ - outputs_tau_seed123\regime_expert_alignment.png
+
+C:\Users\JHY\Nomadic-Intelligence>python run_structured.py --config config.yaml --seed 42 --save_dir outputs_tau_seed42
+Using device: cuda
+Saving outputs to: outputs_tau_seed42
+Loaded config from: config.yaml
+[Fixed] Epoch 001/220 | Train MSE: 1.0139 | Test MSE: 0.5261
+[Fixed] Epoch 025/220 | Train MSE: 0.4395 | Test MSE: 0.4227
+[Fixed] Epoch 050/220 | Train MSE: 0.4345 | Test MSE: 0.4188
+[Fixed] Epoch 075/220 | Train MSE: 0.4247 | Test MSE: 0.4159
+[Fixed] Epoch 100/220 | Train MSE: 0.4222 | Test MSE: 0.4161
+[Fixed] Epoch 125/220 | Train MSE: 0.4214 | Test MSE: 0.4145
+[Fixed] Epoch 150/220 | Train MSE: 0.4200 | Test MSE: 0.4145
+[Fixed] Epoch 175/220 | Train MSE: 0.4193 | Test MSE: 0.4144
+[Fixed] Epoch 200/220 | Train MSE: 0.4186 | Test MSE: 0.4141
+[Nomadic] Epoch 001/220 | Train Total: 0.9399 | Train MSE: 1.0544 | Train GateDist(full): 0.4536 | Train Entropy: 0.8643 | Test Static MSE: 1.2623 | Test Seq MSE: 0.4256 | Test Static GateDist: 0.4550 | Switch Latency: 1.8611
+[Nomadic] Epoch 025/220 | Train Total: 0.2374 | Train MSE: 0.3327 | Train GateDist(full): 0.4048 | Train Entropy: 1.0478 | Test Static MSE: 1.7931 | Test Seq MSE: 0.3552 | Test Static GateDist: 0.4002 | Switch Latency: 2.3056
+[Nomadic] Epoch 050/220 | Train Total: 0.2417 | Train MSE: 0.3111 | Train GateDist(full): 0.3843 | Train Entropy: 1.0503 | Test Static MSE: 1.8926 | Test Seq MSE: 0.2742 | Test Static GateDist: 0.3795 | Switch Latency: 3.1111
+[Nomadic] Epoch 075/220 | Train Total: 0.2162 | Train MSE: 0.2983 | Train GateDist(full): 0.3079 | Train Entropy: 1.0544 | Test Static MSE: 1.6568 | Test Seq MSE: 0.2882 | Test Static GateDist: 0.3033 | Switch Latency: 3.1944
+[Nomadic] Epoch 100/220 | Train Total: 0.1933 | Train MSE: 0.2709 | Train GateDist(full): 0.3123 | Train Entropy: 1.0579 | Test Static MSE: 1.4963 | Test Seq MSE: 0.2478 | Test Static GateDist: 0.3071 | Switch Latency: 3.1389
+[Nomadic] Epoch 125/220 | Train Total: 0.1995 | Train MSE: 0.2706 | Train GateDist(full): 0.2943 | Train Entropy: 1.0554 | Test Static MSE: 1.5530 | Test Seq MSE: 0.2485 | Test Static GateDist: 0.2893 | Switch Latency: 3.7222
+[Nomadic] Epoch 150/220 | Train Total: 0.2051 | Train MSE: 0.2953 | Train GateDist(full): 0.3807 | Train Entropy: 1.0502 | Test Static MSE: 1.4925 | Test Seq MSE: 0.2268 | Test Static GateDist: 0.3816 | Switch Latency: 2.8611
+[Nomadic] Epoch 175/220 | Train Total: 0.1596 | Train MSE: 0.2455 | Train GateDist(full): 0.4052 | Train Entropy: 1.0622 | Test Static MSE: 3.4449 | Test Seq MSE: 0.2341 | Test Static GateDist: 0.4064 | Switch Latency: 1.6667
+[Nomadic] Epoch 200/220 | Train Total: 0.1502 | Train MSE: 0.2372 | Train GateDist(full): 0.3739 | Train Entropy: 1.0650 | Test Static MSE: 3.0683 | Test Seq MSE: 0.2162 | Test Static GateDist: 0.3748 | Switch Latency: 2.1944
+
+========================================================================
+FINAL REPORT
+========================================================================
+
+[Fixed Model]
+Total Test MSE: 0.413857
+  Regime A MSE: 0.470008
+  Regime B MSE: 0.179418
+  Regime C MSE: 0.592147
+
+[Nomadic Model | Static Eval]
+Static Total Test MSE: 2.690451
+  Regime A MSE: 2.097053
+  Regime B MSE: 0.295643
+  Regime C MSE: 5.678656
+
+[Nomadic Model | Sequence Eval]
+Sequence Total Test MSE: 0.214921
+
+[Nomadic Regime-wise Expert Usage | Top-1 Ratio]
+  Regime A -> E0: 0.007, E1: 0.907, E2: 0.086
+  Regime B -> E0: 0.443, E1: 0.366, E2: 0.191
+  Regime C -> E0: 0.696, E1: 0.304, E2: 0.000
+
+[Nomadic Mean Gate Distance | Static Full]
+Mean pairwise gate-centroid distance: 0.378142
+[Pairwise Gate Distances]
+  A-B: 0.299099
+  A-C: 0.549752
+  B-C: 0.285574
+
+[Transition Dynamics]
+Regime -> Expert mapping: {'A': 0, 'B': 0, 'C': 2}
+Mean switch latency: 2.7500
+Mean dwell time: 3.1456
+Stable-phase mean entropy: 1.0294
+Transition-phase mean entropy: 1.0672
+
+Interpretation hint:
+- Sequence Test MSE is the main performance metric in phase-transition settings.
+- Static Test MSE is only a reference check, not the main success criterion.
+- Transition entropy > stable entropy suggests gate uncertainty rises during phase shifts.
+- Shorter switch latency suggests faster nomadic response.
+- Moderate dwell time suggests neither rigid fixation nor chaotic wandering.
+========================================================================
+
+Saved files:
+ - outputs_tau_seed42\phase_dataset_input_space.png
+ - outputs_tau_seed42\fixed_vs_nomadic_test_mse.png
+ - outputs_tau_seed42\nomadic_loss_components.png
+ - outputs_tau_seed42\hybrid_delta_trace.png
+ - outputs_tau_seed42\regime_expert_usage_bars.png
+ - outputs_tau_seed42\regime_expert_usage_heatmap.png
+ - outputs_tau_seed42\regime_mean_gate_distance.png
+ - outputs_tau_seed42\phase_gate_entropy.png
+ - outputs_tau_seed42\expert_trajectory.png
+ - outputs_tau_seed42\dwell_time_histogram.png
+ - outputs_tau_seed42\switch_latency_histogram.png
+ - outputs_tau_seed42\stable_vs_transition_entropy.png
+ - outputs_tau_seed42\switch_latency_curve.png
+ - outputs_tau_seed42\regime_expert_alignment.png
+
+C:\Users\JHY\Nomadic-Intelligence>python run_structured.py --config config.yaml --seed 456 --save_dir outputs_tau_seed456
+Using device: cuda
+Saving outputs to: outputs_tau_seed456
+Loaded config from: config.yaml
+[Fixed] Epoch 001/220 | Train MSE: 0.9615 | Test MSE: 0.5606
+[Fixed] Epoch 025/220 | Train MSE: 0.4361 | Test MSE: 0.4164
+[Fixed] Epoch 050/220 | Train MSE: 0.4262 | Test MSE: 0.4140
+[Fixed] Epoch 075/220 | Train MSE: 0.4231 | Test MSE: 0.4131
+[Fixed] Epoch 100/220 | Train MSE: 0.4232 | Test MSE: 0.4131
+[Fixed] Epoch 125/220 | Train MSE: 0.4240 | Test MSE: 0.4126
+[Fixed] Epoch 150/220 | Train MSE: 0.4254 | Test MSE: 0.4119
+[Fixed] Epoch 175/220 | Train MSE: 0.4187 | Test MSE: 0.4113
+[Fixed] Epoch 200/220 | Train MSE: 0.4181 | Test MSE: 0.4114
+[Nomadic] Epoch 001/220 | Train Total: 1.0185 | Train MSE: 1.0987 | Train GateDist(full): 0.5687 | Train Entropy: 0.7071 | Test Static MSE: 0.9402 | Test Seq MSE: 0.5111 | Test Static GateDist: 0.5695 | Switch Latency: 0.8333
+[Nomadic] Epoch 025/220 | Train Total: 0.2666 | Train MSE: 0.3283 | Train GateDist(full): 0.2899 | Train Entropy: 1.0475 | Test Static MSE: 1.5343 | Test Seq MSE: 0.2901 | Test Static GateDist: 0.2929 | Switch Latency: 0.7500
+[Nomadic] Epoch 050/220 | Train Total: 0.2389 | Train MSE: 0.3201 | Train GateDist(full): 0.2641 | Train Entropy: 1.0536 | Test Static MSE: 1.6325 | Test Seq MSE: 0.3039 | Test Static GateDist: 0.2666 | Switch Latency: 1.1944
+[Nomadic] Epoch 075/220 | Train Total: 0.2324 | Train MSE: 0.3118 | Train GateDist(full): 0.2635 | Train Entropy: 1.0529 | Test Static MSE: 1.3451 | Test Seq MSE: 0.2670 | Test Static GateDist: 0.2657 | Switch Latency: 0.6667
+[Nomadic] Epoch 100/220 | Train Total: 0.2476 | Train MSE: 0.2912 | Train GateDist(full): 0.2514 | Train Entropy: 1.0496 | Test Static MSE: 1.3622 | Test Seq MSE: 0.2566 | Test Static GateDist: 0.2546 | Switch Latency: 1.4722
+[Nomadic] Epoch 125/220 | Train Total: 0.2538 | Train MSE: 0.2979 | Train GateDist(full): 0.2767 | Train Entropy: 1.0533 | Test Static MSE: 1.3922 | Test Seq MSE: 0.2557 | Test Static GateDist: 0.2809 | Switch Latency: 1.1111
+[Nomadic] Epoch 150/220 | Train Total: 0.2368 | Train MSE: 0.2927 | Train GateDist(full): 0.2867 | Train Entropy: 1.0572 | Test Static MSE: 1.3896 | Test Seq MSE: 0.2509 | Test Static GateDist: 0.2878 | Switch Latency: 0.3611
+[Nomadic] Epoch 175/220 | Train Total: 0.1815 | Train MSE: 0.2493 | Train GateDist(full): 0.3388 | Train Entropy: 1.0663 | Test Static MSE: 8.2571 | Test Seq MSE: 0.2426 | Test Static GateDist: 0.3383 | Switch Latency: 1.4722
+[Nomadic] Epoch 200/220 | Train Total: 0.1733 | Train MSE: 0.2439 | Train GateDist(full): 0.3213 | Train Entropy: 1.0762 | Test Static MSE: 10.0826 | Test Seq MSE: 0.2487 | Test Static GateDist: 0.3209 | Switch Latency: 2.0000
+
+========================================================================
+FINAL REPORT
+========================================================================
+
+[Fixed Model]
+Total Test MSE: 0.419456
+  Regime A MSE: 0.507762
+  Regime B MSE: 0.182167
+  Regime C MSE: 0.568439
+
+[Nomadic Model | Static Eval]
+Static Total Test MSE: 8.732295
+  Regime A MSE: 2.484975
+  Regime B MSE: 0.526273
+  Regime C MSE: 23.185640
+
+[Nomadic Model | Sequence Eval]
+Sequence Total Test MSE: 0.238588
+
+[Nomadic Regime-wise Expert Usage | Top-1 Ratio]
+  Regime A -> E0: 0.000, E1: 0.079, E2: 0.921
+  Regime B -> E0: 0.098, E1: 0.101, E2: 0.801
+  Regime C -> E0: 0.000, E1: 0.000, E2: 1.000
+
+[Nomadic Mean Gate Distance | Static Full]
+Mean pairwise gate-centroid distance: 0.310690
+[Pairwise Gate Distances]
+  A-B: 0.141460
+  A-C: 0.347693
+  B-C: 0.442917
+
+[Transition Dynamics]
+Regime -> Expert mapping: {'A': 2, 'B': 1, 'C': 0}
+Mean switch latency: 2.1944
+Mean dwell time: 2.5116
+Stable-phase mean entropy: 1.0355
+Transition-phase mean entropy: 1.0805
+
+Interpretation hint:
+- Sequence Test MSE is the main performance metric in phase-transition settings.
+- Static Test MSE is only a reference check, not the main success criterion.
+- Transition entropy > stable entropy suggests gate uncertainty rises during phase shifts.
+- Shorter switch latency suggests faster nomadic response.
+- Moderate dwell time suggests neither rigid fixation nor chaotic wandering.
+========================================================================
+
+Saved files:
+ - outputs_tau_seed456\phase_dataset_input_space.png
+ - outputs_tau_seed456\fixed_vs_nomadic_test_mse.png
+ - outputs_tau_seed456\nomadic_loss_components.png
+ - outputs_tau_seed456\hybrid_delta_trace.png
+ - outputs_tau_seed456\regime_expert_usage_bars.png
+ - outputs_tau_seed456\regime_expert_usage_heatmap.png
+ - outputs_tau_seed456\regime_mean_gate_distance.png
+ - outputs_tau_seed456\phase_gate_entropy.png
+ - outputs_tau_seed456\expert_trajectory.png
+ - outputs_tau_seed456\dwell_time_histogram.png
+ - outputs_tau_seed456\switch_latency_histogram.png
+ - outputs_tau_seed456\stable_vs_transition_entropy.png
+ - outputs_tau_seed456\switch_latency_curve.png
+ - outputs_tau_seed456\regime_expert_alignment.png
+
+C:\Users\JHY\Nomadic-Intelligence>
