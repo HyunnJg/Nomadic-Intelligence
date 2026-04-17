@@ -10,7 +10,7 @@ Nomadic Intelligence sits at the intersection of philosophy, mathematics, and AI
 
 This project is at an early and unusually open stage — which means your contribution has an outsized chance of shaping its direction.
 
-A minimal prototype already works. In a 3-regime phase-transition environment, the Nomadic model converges to **~58% of the Fixed baseline's error** (Seq MSE: 0.22 vs 0.42) with no hyperparameter tuning. The gate learned to specialize experts per regime **without explicit regime labels** — purely from the $\Delta x$ signal.
+The prototype not only works in synthetic environments, but it has now proven its asymmetric advantage in real-world physical systems. On the ETTh1 24-step ahead prediction task, the Nomadic model achieves a **13.9% lower Seq MSE** than a parameter-matched Standard MoE. Furthermore, its core signal layer has been successfully transplanted onto Gemma-4-E2B, demonstrating a $\Delta H$ signature of +0.984 during autoregressive generation.
 
 That's the proof of concept. What's missing is everything that comes after:
 - The math isn't fully formalized
@@ -86,6 +86,9 @@ The prototype uses soft MoE routing as a proxy for attractor boundaries. In real
 
 **5. Formal Verification of Homeomorphic Identity**
 The claim $\\mathcal{I}(t) \\cong \\mathcal{I}(t+1)$ needs a verifiable criterion. What measurable property during training would confirm that the Will to Resonance ($\\Phi$) is being preserved? This bridges the philosophy and the engineering — and no one has proposed a concrete answer yet.
+
+**6. Overcoming the Prediction Pressure Boundary**
+Experiments show that the $\Phi$ signal requires a minimum threshold of prediction error to activate. On tasks that are too easy (1-step physical inertia) or purely random (Bitcoin), the signal flattens. How can we formulate a $\Delta x^{err}$ tracker that remains sensitive even in extremely high or extremely low signal-to-noise ratio environments?
 
 ---
 
