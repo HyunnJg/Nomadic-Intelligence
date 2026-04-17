@@ -1,0 +1,102 @@
+
+========== Seed 42 | variant=combined ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 49819.3789
+  [Fixed] Ep 055 | MSE 30541.5664
+  [Fixed] Ep 110 | MSE 22910.1328
+  [Fixed] Ep 165 | MSE 17712.1523
+  [Fixed] Ep 220 | MSE 19404.4531
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 51385.2930 | ΔH 0.045
+  [StdMoE] Ep 055 | MSE 49822.4180 | ΔH -0.006
+  [StdMoE] Ep 110 | MSE 49202.4531 | ΔH -0.006
+  [StdMoE] Ep 165 | MSE 49144.6484 | ΔH -0.005
+  [StdMoE] Ep 220 | MSE 49159.5156 | ΔH -0.001
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 51531.6289 | StH 0.670 | TrH 0.678 | ΔH 0.008
+  [Nomadic] Ep 055 | MSE 49472.3398 | StH 0.631 | TrH 0.707 | ΔH 0.076
+  [Nomadic] Ep 110 | MSE 49353.0742 | StH 0.649 | TrH 0.717 | ΔH 0.067
+  [Nomadic] Ep 165 | MSE 49865.5938 | StH 0.505 | TrH 0.669 | ΔH 0.164
+  [Nomadic] Ep 220 | MSE 51525.0195 | StH 0.581 | TrH 0.659 | ΔH 0.078
+  Seed 42 done (1591s)
+
+========== Seed 123 | variant=combined ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 1260.9584
+  [Fixed] Ep 055 | MSE 1585.7844
+  [Fixed] Ep 110 | MSE 1476.0890
+  [Fixed] Ep 165 | MSE 3333.0488
+  [Fixed] Ep 220 | MSE 3305.3418
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1329.8938 | ΔH 0.057
+  [StdMoE] Ep 055 | MSE 874.9735 | ΔH 0.003
+  [StdMoE] Ep 110 | MSE 745.3160 | ΔH -0.001
+  [StdMoE] Ep 165 | MSE 684.4160 | ΔH 0.050
+  [StdMoE] Ep 220 | MSE 665.9358 | ΔH 0.018
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1388.5692 | StH 0.649 | TrH 0.700 | ΔH 0.051
+  [Nomadic] Ep 055 | MSE 931.4569 | StH 0.292 | TrH 0.231 | ΔH -0.061
+  [Nomadic] Ep 110 | MSE 805.2043 | StH 0.283 | TrH 0.163 | ΔH -0.120
+  [Nomadic] Ep 165 | MSE 1147.2682 | StH 0.017 | TrH 0.001 | ΔH -0.016
+  [Nomadic] Ep 220 | MSE 845.2939 | StH 0.002 | TrH 0.002 | ΔH -0.000
+  Seed 123 done (1587s)
+
+========== Seed 456 | variant=combined ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 1193.7455
+  [Fixed] Ep 055 | MSE 2598.9614
+  [Fixed] Ep 110 | MSE 663.5403
+  [Fixed] Ep 165 | MSE 834.1509
+  [Fixed] Ep 220 | MSE 604.1411
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1233.2281 | ΔH 0.028
+  [StdMoE] Ep 055 | MSE 918.3255 | ΔH 0.002
+  [StdMoE] Ep 110 | MSE 770.0262 | ΔH 0.003
+  [StdMoE] Ep 165 | MSE 651.8101 | ΔH 0.001
+  [StdMoE] Ep 220 | MSE 711.5683 | ΔH 0.000
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1262.7366 | StH 0.466 | TrH 0.549 | ΔH 0.082
+  [Nomadic] Ep 055 | MSE 931.2947 | StH 0.629 | TrH 0.610 | ΔH -0.019
+  [Nomadic] Ep 110 | MSE 765.6027 | StH 0.622 | TrH 0.649 | ΔH 0.027
+  [Nomadic] Ep 165 | MSE 932.0788 | StH 0.509 | TrH 0.651 | ΔH 0.143
+  [Nomadic] Ep 220 | MSE 935.1011 | StH 0.619 | TrH 0.616 | ΔH -0.003
+  Seed 456 done (1592s)
+
+=== All seeds complete ===
+
+
+
+======================================================================
+TASK GENERALIZATION: COMBINED — 3-seed mean
+======================================================================
+  Model  Variant  Seq MSE mean  Seq MSE std  ΔH mean  ΔH std  Stable Ent  Trans Ent  Switch Lat
+  Fixed combined     7771.3120    8299.4619      NaN     NaN         NaN        NaN         NaN
+ StdMoE combined    16845.6732   22849.3447   0.0058  0.0085      0.5188     0.5247         NaN
+Nomadic combined    17768.4715   23869.5122   0.0250  0.0378      0.4009     0.4259      0.6944
+
+--- vs §4.1 baseline ---
+  Fixed      | MSE 7771.3120 (+7770.9030 vs §4.1) | ΔH nan (+nan vs §4.1)
+  StdMoE     | MSE 16845.6732 (+16845.2632 vs §4.1) | ΔH 0.0058 (-0.0112 vs §4.1)
+  Nomadic    | MSE 17768.4715 (+17768.3065 vs §4.1) | ΔH 0.0250 (-0.7560 vs §4.1)
+
+[판정]
+  ΔH gap (Nomadic vs StdMoE): 0.0192
+  MSE gap (Nomadic vs StdMoE): 922.7983
+  → entropy differentiation 약화 — 추가 분석 필요
+
+
+  Model  Variant  Seed    Seq MSE  Stable Ent  Trans Ent      ΔH  Switch Lat
+  Fixed combined    42 19404.4531         NaN        NaN     NaN         NaN
+  Fixed combined   123  3305.3418         NaN        NaN     NaN         NaN
+  Fixed combined   456   604.1411         NaN        NaN     NaN         NaN
+ StdMoE combined    42 49159.5156      0.0044     0.0036 -0.0007         NaN
+ StdMoE combined   123   665.9358      0.6932     0.7110  0.0178         NaN
+ StdMoE combined   456   711.5683      0.8590     0.8593  0.0003         NaN
+Nomadic combined    42 51525.0195      0.5810     0.6595  0.0785      0.7778
+Nomadic combined   123   845.2939      0.0021     0.0018 -0.0003      0.0000
+Nomadic combined   456   935.1011      0.6195     0.6164 -0.0031      1.3056
+
+Saved to: /content/task_gen_combined
+  results_per_seed_combined.csv
+  results_summary_combined.csv
+  task_gen_combined.png
