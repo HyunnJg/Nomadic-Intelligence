@@ -1,0 +1,336 @@
+C:\Users\JHY\Nomadic-Intelligence>python run_extended.py --config config.yaml --seed 123 --save_dir outputs_tau_seed123 & python run_extended.py --config config.yaml --seed 42 --save_dir outputs_tau_seed42 & python run_extended.py --config config.yaml --seed 456 --save_dir outputs_tau_seed456
+Using device: cuda
+Saving outputs to: outputs_tau_seed123
+Loaded config from: config.yaml
+Experiment: 4 regimes ['A', 'B', 'C', 'D']  |  random_order=True  |  num_experts=3  |  seed=123
+  *** Underprovisioned: 4 regimes / 3 experts — expert sharing expected ***
+[Fixed] Epoch 001/220 | Train MSE: 1.1629 | Test MSE: 0.7600
+[Fixed] Epoch 025/220 | Train MSE: 0.6493 | Test MSE: 0.6132
+[Fixed] Epoch 050/220 | Train MSE: 0.6363 | Test MSE: 0.6063
+[Fixed] Epoch 075/220 | Train MSE: 0.6289 | Test MSE: 0.6016
+[Fixed] Epoch 100/220 | Train MSE: 0.6245 | Test MSE: 0.6116
+[Fixed] Epoch 125/220 | Train MSE: 0.6190 | Test MSE: 0.6039
+[Fixed] Epoch 150/220 | Train MSE: 0.6199 | Test MSE: 0.6035
+[Fixed] Epoch 175/220 | Train MSE: 0.6187 | Test MSE: 0.6001
+[Fixed] Epoch 200/220 | Train MSE: 0.6187 | Test MSE: 0.6009
+[Standard MoE] Epoch 001/220 | Train Loss: 1.4280 | Test Static MSE: 0.9397 | Test Seq MSE: 0.9397 | Test GateDist: 0.4772
+[Standard MoE] Epoch 025/220 | Train Loss: 0.7182 | Test Static MSE: 0.6324 | Test Seq MSE: 0.6324 | Test GateDist: 0.2328
+[Standard MoE] Epoch 050/220 | Train Loss: 0.7009 | Test Static MSE: 0.6136 | Test Seq MSE: 0.6136 | Test GateDist: 0.2158
+[Standard MoE] Epoch 075/220 | Train Loss: 0.6968 | Test Static MSE: 0.6054 | Test Seq MSE: 0.6054 | Test GateDist: 0.2065
+[Standard MoE] Epoch 100/220 | Train Loss: 0.6912 | Test Static MSE: 0.6052 | Test Seq MSE: 0.6052 | Test GateDist: 0.2046
+[Standard MoE] Epoch 125/220 | Train Loss: 0.7018 | Test Static MSE: 0.6074 | Test Seq MSE: 0.6074 | Test GateDist: 0.2046
+[Standard MoE] Epoch 150/220 | Train Loss: 0.6847 | Test Static MSE: 0.6048 | Test Seq MSE: 0.6048 | Test GateDist: 0.2053
+[Standard MoE] Epoch 175/220 | Train Loss: 0.7031 | Test Static MSE: 0.6098 | Test Seq MSE: 0.6098 | Test GateDist: 0.2043
+[Standard MoE] Epoch 200/220 | Train Loss: 0.6866 | Test Static MSE: 0.6000 | Test Seq MSE: 0.6000 | Test GateDist: 0.2061
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.3618 | Test Static MSE: 1.7850 | Test Seq MSE: 0.6371 | Test GateDist: 0.6752
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.5770 | Test Static MSE: 1.7002 | Test Seq MSE: 0.4946 | Test GateDist: 0.5486
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.5396 | Test Static MSE: 1.6759 | Test Seq MSE: 0.4885 | Test GateDist: 0.5460
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.5302 | Test Static MSE: 1.5005 | Test Seq MSE: 0.4759 | Test GateDist: 0.5352
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.5373 | Test Static MSE: 1.4152 | Test Seq MSE: 0.4496 | Test GateDist: 0.5167
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.5319 | Test Static MSE: 1.3666 | Test Seq MSE: 0.4438 | Test GateDist: 0.5168
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.5240 | Test Static MSE: 1.2634 | Test Seq MSE: 0.4621 | Test GateDist: 0.4972
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.5175 | Test Static MSE: 1.2985 | Test Seq MSE: 0.4531 | Test GateDist: 0.5504
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.5161 | Test Static MSE: 1.3307 | Test Seq MSE: 0.4407 | Test GateDist: 0.5587
+[Nomadic] Epoch 001/220 | Train Total: 1.3105 | Train MSE: 1.1722 | Train GateDist(full): 0.7295 | Train Entropy: 0.6410 | Policy SwitchRate: 0.9929 | Policy HardRate: 0.0100 | Mean Tau: 6.0958 | Test Static MSE: 1.9422 | Test Seq MSE: 0.6621 | Test Static GateDist: 0.7222 | Switch Latency: 0.4727
+[Nomadic] Epoch 025/220 | Train Total: 0.5219 | Train MSE: 0.4242 | Train GateDist(full): 0.2410 | Train Entropy: 0.9320 | Policy SwitchRate: 0.9944 | Policy HardRate: 0.0103 | Mean Tau: 6.0958 | Test Static MSE: 1.4855 | Test Seq MSE: 0.3537 | Test Static GateDist: 0.2195 | Switch Latency: 1.4909
+[Nomadic] Epoch 050/220 | Train Total: 0.5124 | Train MSE: 0.4213 | Train GateDist(full): 0.2732 | Train Entropy: 0.8943 | Policy SwitchRate: 0.9945 | Policy HardRate: 0.0077 | Mean Tau: 6.0958 | Test Static MSE: 1.2695 | Test Seq MSE: 0.4111 | Test Static GateDist: 0.2650 | Switch Latency: 1.2727
+[Nomadic] Epoch 075/220 | Train Total: 0.5249 | Train MSE: 0.4082 | Train GateDist(full): 0.4582 | Train Entropy: 0.9260 | Policy SwitchRate: 0.9960 | Policy HardRate: 0.0101 | Mean Tau: 6.0958 | Test Static MSE: 1.3074 | Test Seq MSE: 0.3622 | Test Static GateDist: 0.4509 | Switch Latency: 1.5818
+[Nomadic] Epoch 100/220 | Train Total: 0.4999 | Train MSE: 0.4082 | Train GateDist(full): 0.4092 | Train Entropy: 0.9517 | Policy SwitchRate: 0.9959 | Policy HardRate: 0.0069 | Mean Tau: 6.0958 | Test Static MSE: 1.3817 | Test Seq MSE: 0.3678 | Test Static GateDist: 0.3976 | Switch Latency: 0.8364
+[Nomadic] Epoch 125/220 | Train Total: 0.4854 | Train MSE: 0.3797 | Train GateDist(full): 0.4930 | Train Entropy: 0.9121 | Policy SwitchRate: 0.9862 | Policy HardRate: 0.0280 | Mean Tau: 6.0958 | Test Static MSE: 1.4774 | Test Seq MSE: 0.3464 | Test Static GateDist: 0.4858 | Switch Latency: 1.6182
+[Nomadic] Epoch 150/220 | Train Total: 0.4649 | Train MSE: 0.3650 | Train GateDist(full): 0.5721 | Train Entropy: 0.8942 | Policy SwitchRate: 0.9827 | Policy HardRate: 0.0319 | Mean Tau: 6.0958 | Test Static MSE: 1.4270 | Test Seq MSE: 0.3373 | Test Static GateDist: 0.5622 | Switch Latency: 1.8727
+[Nomadic] Epoch 175/220 | Train Total: 0.4724 | Train MSE: 0.3657 | Train GateDist(full): 0.5015 | Train Entropy: 0.8961 | Policy SwitchRate: 0.9876 | Policy HardRate: 0.0287 | Mean Tau: 6.0958 | Test Static MSE: 1.4629 | Test Seq MSE: 0.3488 | Test Static GateDist: 0.4930 | Switch Latency: 1.5818
+[Nomadic] Epoch 200/220 | Train Total: 0.4797 | Train MSE: 0.3661 | Train GateDist(full): 0.4766 | Train Entropy: 0.8924 | Policy SwitchRate: 0.9837 | Policy HardRate: 0.0304 | Mean Tau: 6.0958 | Test Static MSE: 1.5865 | Test Seq MSE: 0.3496 | Test Static GateDist: 0.4731 | Switch Latency: 1.4545
+
+========================================================================
+FINAL REPORT — Ablation Study
+========================================================================
+
+[1] Fixed Model
+  Static MSE: 0.599846
+    Regime A: 0.695683
+    Regime B: 0.571868
+    Regime C: 0.579686
+    Regime D: 0.552148
+
+[2] Standard MoE  (mixture, no Δx / no policy)
+  Static MSE: 0.630592  |  Seq MSE: 0.630592
+  Gate dist: 0.2008
+  Entropy — stable: 0.8639  transition: 0.8708
+    Regime A -> E0: 0.232, E1: 0.210, E2: 0.558
+    Regime B -> E0: 0.000, E1: 0.081, E2: 0.919
+    Regime C -> E0: 0.160, E1: 0.330, E2: 0.510
+    Regime D -> E0: 0.000, E1: 0.273, E2: 0.727
+
+[3] Nomadic NoPolicy  (Δx + dynamic tau + dwell, no PolicyNet)
+  Static MSE: 1.312410  |  Seq MSE: 0.438660
+  Entropy — stable: 0.4702  transition: 0.9412
+  Mean switch latency: 1.8909
+
+[4] Nomadic Full  (Δx + dynamic tau + dwell + PolicyNet)
+  Static MSE: 1.471649  |  Seq MSE: 0.332327
+  Gate dist: 0.4503
+    Regime A -> E0: 0.023, E1: 0.777, E2: 0.200
+    Regime B -> E0: 0.437, E1: 0.216, E2: 0.347
+    Regime C -> E0: 0.063, E1: 0.668, E2: 0.269
+    Regime D -> E0: 0.472, E1: 0.112, E2: 0.416
+  Mean switch latency: 1.6909
+  Mean dwell time: 2.8609
+  Mean dynamic tau: 6.1723
+  Entropy — stable: 0.4603  transition: 0.9246
+
+[Expert Sharing]  (regimes=4, experts=3)
+  Expert 0 shared by: B, D
+  Expert 1 shared by: A, C
+
+[Ablation Summary]
+  Fixed → Standard MoE:    +0.0307  (mixture effect)
+  Standard MoE → NoPolicy: -0.1919  (Δx + meta-signal effect)
+  NoPolicy → Full:         -0.1063  (PolicyNet effect)
+
+[Interpretation hint]
+  Negative delta = improvement. Sign pattern shows where gains come from.
+  Transition entropy > stable entropy: gate explores more during phase shifts.
+  Dynamic tau rises in stable phases (fixation) and falls in volatile phases (nomadic).
+========================================================================
+
+Saved files:
+ - outputs_tau_seed123\phase_dataset_input_space.png
+ - outputs_tau_seed123\fixed_vs_standardmoe_vs_nomadic_test_mse.png
+ - outputs_tau_seed123\nomadic_loss_components.png
+ - outputs_tau_seed123\hybrid_delta_trace.png
+ - outputs_tau_seed123\regime_expert_usage_bars.png
+ - outputs_tau_seed123\regime_expert_usage_heatmap.png
+ - outputs_tau_seed123\regime_mean_gate_distance.png
+ - outputs_tau_seed123\phase_gate_entropy.png
+ - outputs_tau_seed123\expert_trajectory.png
+ - outputs_tau_seed123\dwell_time_histogram.png
+ - outputs_tau_seed123\switch_latency_histogram.png
+ - outputs_tau_seed123\stable_vs_transition_entropy.png
+ - outputs_tau_seed123\switch_latency_curve.png
+ - outputs_tau_seed123\regime_expert_alignment.png
+ - outputs_tau_seed123\dynamic_tau_trace.png
+ - outputs_tau_seed123\policy_hybrid_signals.png
+Using device: cuda
+Saving outputs to: outputs_tau_seed42
+Loaded config from: config.yaml
+Experiment: 4 regimes ['A', 'B', 'C', 'D']  |  random_order=True  |  num_experts=3  |  seed=42
+  *** Underprovisioned: 4 regimes / 3 experts — expert sharing expected ***
+[Fixed] Epoch 001/220 | Train MSE: 1.1720 | Test MSE: 0.8929
+[Fixed] Epoch 025/220 | Train MSE: 0.6472 | Test MSE: 0.5910
+[Fixed] Epoch 050/220 | Train MSE: 0.6291 | Test MSE: 0.5897
+[Fixed] Epoch 075/220 | Train MSE: 0.6269 | Test MSE: 0.5828
+[Fixed] Epoch 100/220 | Train MSE: 0.6260 | Test MSE: 0.5824
+[Fixed] Epoch 125/220 | Train MSE: 0.6218 | Test MSE: 0.5815
+[Fixed] Epoch 150/220 | Train MSE: 0.6216 | Test MSE: 0.5818
+[Fixed] Epoch 175/220 | Train MSE: 0.6175 | Test MSE: 0.5814
+[Fixed] Epoch 200/220 | Train MSE: 0.6177 | Test MSE: 0.6028
+[Standard MoE] Epoch 001/220 | Train Loss: 1.3400 | Test Static MSE: 0.8140 | Test Seq MSE: 0.8140 | Test GateDist: 0.4906
+[Standard MoE] Epoch 025/220 | Train Loss: 0.6995 | Test Static MSE: 0.6155 | Test Seq MSE: 0.6155 | Test GateDist: 0.2103
+[Standard MoE] Epoch 050/220 | Train Loss: 0.7036 | Test Static MSE: 0.6565 | Test Seq MSE: 0.6565 | Test GateDist: 0.1983
+[Standard MoE] Epoch 075/220 | Train Loss: 0.6939 | Test Static MSE: 0.6402 | Test Seq MSE: 0.6402 | Test GateDist: 0.1778
+[Standard MoE] Epoch 100/220 | Train Loss: 0.6869 | Test Static MSE: 0.6292 | Test Seq MSE: 0.6292 | Test GateDist: 0.1215
+[Standard MoE] Epoch 125/220 | Train Loss: 0.6810 | Test Static MSE: 0.6321 | Test Seq MSE: 0.6321 | Test GateDist: 0.0815
+[Standard MoE] Epoch 150/220 | Train Loss: 0.6783 | Test Static MSE: 0.6179 | Test Seq MSE: 0.6179 | Test GateDist: 0.0727
+[Standard MoE] Epoch 175/220 | Train Loss: 0.6741 | Test Static MSE: 0.6226 | Test Seq MSE: 0.6226 | Test GateDist: 0.0593
+[Standard MoE] Epoch 200/220 | Train Loss: 0.6727 | Test Static MSE: 0.6096 | Test Seq MSE: 0.6096 | Test GateDist: 0.0624
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.2510 | Test Static MSE: 1.9000 | Test Seq MSE: 0.6354 | Test GateDist: 0.5559
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.4609 | Test Static MSE: 1.5415 | Test Seq MSE: 0.4946 | Test GateDist: 0.3207
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.4994 | Test Static MSE: 1.4336 | Test Seq MSE: 0.4497 | Test GateDist: 0.3257
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.4881 | Test Static MSE: 1.4577 | Test Seq MSE: 0.4334 | Test GateDist: 0.2970
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.4821 | Test Static MSE: 1.3937 | Test Seq MSE: 0.4184 | Test GateDist: 0.3143
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.4771 | Test Static MSE: 1.3217 | Test Seq MSE: 0.4199 | Test GateDist: 0.2902
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.4743 | Test Static MSE: 1.2920 | Test Seq MSE: 0.4186 | Test GateDist: 0.3133
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.4635 | Test Static MSE: 1.2982 | Test Seq MSE: 0.4158 | Test GateDist: 0.3099
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.4635 | Test Static MSE: 1.3256 | Test Seq MSE: 0.4106 | Test GateDist: 0.2988
+[Nomadic] Epoch 001/220 | Train Total: 1.2419 | Train MSE: 1.1068 | Train GateDist(full): 0.5624 | Train Entropy: 0.8354 | Policy SwitchRate: 0.9924 | Policy HardRate: 0.0080 | Mean Tau: 6.0310 | Test Static MSE: 1.5540 | Test Seq MSE: 0.6913 | Test Static GateDist: 0.5541 | Switch Latency: 1.1636
+[Nomadic] Epoch 025/220 | Train Total: 0.5161 | Train MSE: 0.4045 | Train GateDist(full): 0.5310 | Train Entropy: 0.9237 | Policy SwitchRate: 0.9958 | Policy HardRate: 0.0070 | Mean Tau: 6.0310 | Test Static MSE: 1.5652 | Test Seq MSE: 0.3717 | Test Static GateDist: 0.5206 | Switch Latency: 1.7636
+[Nomadic] Epoch 050/220 | Train Total: 0.4691 | Train MSE: 0.3653 | Train GateDist(full): 0.4545 | Train Entropy: 0.8760 | Policy SwitchRate: 0.9861 | Policy HardRate: 0.0214 | Mean Tau: 6.0310 | Test Static MSE: 1.5222 | Test Seq MSE: 0.3319 | Test Static GateDist: 0.4481 | Switch Latency: 1.4909
+[Nomadic] Epoch 075/220 | Train Total: 0.4540 | Train MSE: 0.3479 | Train GateDist(full): 0.5777 | Train Entropy: 0.8643 | Policy SwitchRate: 0.9830 | Policy HardRate: 0.0269 | Mean Tau: 6.0310 | Test Static MSE: 1.7332 | Test Seq MSE: 0.3396 | Test Static GateDist: 0.5692 | Switch Latency: 1.9273
+[Nomadic] Epoch 100/220 | Train Total: 0.4290 | Train MSE: 0.3364 | Train GateDist(full): 0.5465 | Train Entropy: 0.8522 | Policy SwitchRate: 0.9850 | Policy HardRate: 0.0285 | Mean Tau: 6.0310 | Test Static MSE: 1.7595 | Test Seq MSE: 0.3365 | Test Static GateDist: 0.5393 | Switch Latency: 1.6909
+[Nomadic] Epoch 125/220 | Train Total: 0.4207 | Train MSE: 0.3222 | Train GateDist(full): 0.5087 | Train Entropy: 0.8286 | Policy SwitchRate: 0.9802 | Policy HardRate: 0.0357 | Mean Tau: 6.0310 | Test Static MSE: 1.5449 | Test Seq MSE: 0.3353 | Test Static GateDist: 0.5030 | Switch Latency: 1.4364
+[Nomadic] Epoch 150/220 | Train Total: 0.4223 | Train MSE: 0.3290 | Train GateDist(full): 0.5374 | Train Entropy: 0.8331 | Policy SwitchRate: 0.9787 | Policy HardRate: 0.0358 | Mean Tau: 6.0310 | Test Static MSE: 1.4594 | Test Seq MSE: 0.3256 | Test Static GateDist: 0.5298 | Switch Latency: 1.5273
+[Nomadic] Epoch 175/220 | Train Total: 0.4636 | Train MSE: 0.3727 | Train GateDist(full): 0.5394 | Train Entropy: 0.8586 | Policy SwitchRate: 0.9855 | Policy HardRate: 0.0253 | Mean Tau: 6.0310 | Test Static MSE: 1.8217 | Test Seq MSE: 0.3436 | Test Static GateDist: 0.5367 | Switch Latency: 1.8364
+[Nomadic] Epoch 200/220 | Train Total: 0.4277 | Train MSE: 0.3413 | Train GateDist(full): 0.4214 | Train Entropy: 0.8196 | Policy SwitchRate: 0.9787 | Policy HardRate: 0.0348 | Mean Tau: 6.0310 | Test Static MSE: 1.5160 | Test Seq MSE: 0.3115 | Test Static GateDist: 0.4204 | Switch Latency: 1.1636
+
+========================================================================
+FINAL REPORT — Ablation Study
+========================================================================
+
+[1] Fixed Model
+  Static MSE: 0.580665
+    Regime A: 0.754306
+    Regime B: 0.507171
+    Regime C: 0.520371
+    Regime D: 0.540815
+
+[2] Standard MoE  (mixture, no Δx / no policy)
+  Static MSE: 0.604538  |  Seq MSE: 0.604538
+  Gate dist: 0.0555
+  Entropy — stable: 1.0084  transition: 1.0728
+    Regime A -> E0: 0.300, E1: 0.032, E2: 0.668
+    Regime B -> E0: 0.079, E1: 0.251, E2: 0.670
+    Regime C -> E0: 0.259, E1: 0.018, E2: 0.723
+    Regime D -> E0: 0.005, E1: 0.202, E2: 0.793
+
+[3] Nomadic NoPolicy  (Δx + dynamic tau + dwell, no PolicyNet)
+  Static MSE: 1.341294  |  Seq MSE: 0.405756
+  Entropy — stable: 0.5081  transition: 0.9324
+  Mean switch latency: 0.9818
+
+[4] Nomadic Full  (Δx + dynamic tau + dwell + PolicyNet)
+  Static MSE: 1.586261  |  Seq MSE: 0.337352
+  Gate dist: 0.4116
+    Regime A -> E0: 0.081, E1: 0.011, E2: 0.908
+    Regime B -> E0: 0.263, E1: 0.304, E2: 0.433
+    Regime C -> E0: 0.037, E1: 0.025, E2: 0.938
+    Regime D -> E0: 0.234, E1: 0.085, E2: 0.681
+  Mean switch latency: 0.8364
+  Mean dwell time: 3.2727
+  Mean dynamic tau: 6.0861
+  Entropy — stable: 0.4334  transition: 0.8529
+
+[Expert Sharing]  (regimes=4, experts=3)
+  Expert 2 shared by: A, B, C, D
+
+[Ablation Summary]
+  Fixed → Standard MoE:    +0.0239  (mixture effect)
+  Standard MoE → NoPolicy: -0.1988  (Δx + meta-signal effect)
+  NoPolicy → Full:         -0.0684  (PolicyNet effect)
+
+[Interpretation hint]
+  Negative delta = improvement. Sign pattern shows where gains come from.
+  Transition entropy > stable entropy: gate explores more during phase shifts.
+  Dynamic tau rises in stable phases (fixation) and falls in volatile phases (nomadic).
+========================================================================
+
+Saved files:
+ - outputs_tau_seed42\phase_dataset_input_space.png
+ - outputs_tau_seed42\fixed_vs_standardmoe_vs_nomadic_test_mse.png
+ - outputs_tau_seed42\nomadic_loss_components.png
+ - outputs_tau_seed42\hybrid_delta_trace.png
+ - outputs_tau_seed42\regime_expert_usage_bars.png
+ - outputs_tau_seed42\regime_expert_usage_heatmap.png
+ - outputs_tau_seed42\regime_mean_gate_distance.png
+ - outputs_tau_seed42\phase_gate_entropy.png
+ - outputs_tau_seed42\expert_trajectory.png
+ - outputs_tau_seed42\dwell_time_histogram.png
+ - outputs_tau_seed42\switch_latency_histogram.png
+ - outputs_tau_seed42\stable_vs_transition_entropy.png
+ - outputs_tau_seed42\switch_latency_curve.png
+ - outputs_tau_seed42\regime_expert_alignment.png
+ - outputs_tau_seed42\dynamic_tau_trace.png
+ - outputs_tau_seed42\policy_hybrid_signals.png
+Using device: cuda
+Saving outputs to: outputs_tau_seed456
+Loaded config from: config.yaml
+Experiment: 4 regimes ['A', 'B', 'C', 'D']  |  random_order=True  |  num_experts=3  |  seed=456
+  *** Underprovisioned: 4 regimes / 3 experts — expert sharing expected ***
+[Fixed] Epoch 001/220 | Train MSE: 1.1502 | Test MSE: 1.0687
+[Fixed] Epoch 025/220 | Train MSE: 0.6402 | Test MSE: 0.6496
+[Fixed] Epoch 050/220 | Train MSE: 0.6335 | Test MSE: 0.6256
+[Fixed] Epoch 075/220 | Train MSE: 0.6228 | Test MSE: 0.6191
+[Fixed] Epoch 100/220 | Train MSE: 0.6174 | Test MSE: 0.6065
+[Fixed] Epoch 125/220 | Train MSE: 0.6136 | Test MSE: 0.6050
+[Fixed] Epoch 150/220 | Train MSE: 0.6164 | Test MSE: 0.6058
+[Fixed] Epoch 175/220 | Train MSE: 0.6120 | Test MSE: 0.6037
+[Fixed] Epoch 200/220 | Train MSE: 0.6119 | Test MSE: 0.6043
+[Standard MoE] Epoch 001/220 | Train Loss: 1.3221 | Test Static MSE: 1.3320 | Test Seq MSE: 1.3320 | Test GateDist: 0.6587
+[Standard MoE] Epoch 025/220 | Train Loss: 0.7658 | Test Static MSE: 0.8276 | Test Seq MSE: 0.8276 | Test GateDist: 0.4512
+[Standard MoE] Epoch 050/220 | Train Loss: 0.7020 | Test Static MSE: 0.8011 | Test Seq MSE: 0.8011 | Test GateDist: 0.1394
+[Standard MoE] Epoch 075/220 | Train Loss: 0.6877 | Test Static MSE: 0.7431 | Test Seq MSE: 0.7431 | Test GateDist: 0.1134
+[Standard MoE] Epoch 100/220 | Train Loss: 0.6760 | Test Static MSE: 0.7184 | Test Seq MSE: 0.7184 | Test GateDist: 0.1048
+[Standard MoE] Epoch 125/220 | Train Loss: 0.6709 | Test Static MSE: 0.6751 | Test Seq MSE: 0.6751 | Test GateDist: 0.0978
+[Standard MoE] Epoch 150/220 | Train Loss: 0.6654 | Test Static MSE: 0.6812 | Test Seq MSE: 0.6812 | Test GateDist: 0.0939
+[Standard MoE] Epoch 175/220 | Train Loss: 0.6635 | Test Static MSE: 0.6656 | Test Seq MSE: 0.6656 | Test GateDist: 0.0926
+[Standard MoE] Epoch 200/220 | Train Loss: 0.6635 | Test Static MSE: 0.6540 | Test Seq MSE: 0.6540 | Test GateDist: 0.0934
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.3982 | Test Static MSE: 1.6111 | Test Seq MSE: 0.9579 | Test GateDist: 0.7957
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.6154 | Test Static MSE: 1.5550 | Test Seq MSE: 0.5704 | Test GateDist: 0.5447
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.5691 | Test Static MSE: 1.5381 | Test Seq MSE: 0.4858 | Test GateDist: 0.3665
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.5535 | Test Static MSE: 1.5851 | Test Seq MSE: 0.4457 | Test GateDist: 0.4179
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.5653 | Test Static MSE: 1.5666 | Test Seq MSE: 0.4407 | Test GateDist: 0.4019
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.5159 | Test Static MSE: 1.5638 | Test Seq MSE: 0.4191 | Test GateDist: 0.4035
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.4968 | Test Static MSE: 1.6555 | Test Seq MSE: 0.4304 | Test GateDist: 0.3715
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.5697 | Test Static MSE: 1.5447 | Test Seq MSE: 0.4315 | Test GateDist: 0.3869
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.5010 | Test Static MSE: 1.5959 | Test Seq MSE: 0.4257 | Test GateDist: 0.3815
+[Nomadic] Epoch 001/220 | Train Total: 1.2988 | Train MSE: 1.2396 | Train GateDist(full): 0.5880 | Train Entropy: 0.9093 | Policy SwitchRate: 0.9917 | Policy HardRate: 0.0085 | Mean Tau: 6.2260 | Test Static MSE: 5.5470 | Test Seq MSE: 0.9592 | Test Static GateDist: 0.5909 | Switch Latency: 0.5185
+[Nomadic] Epoch 025/220 | Train Total: 0.5341 | Train MSE: 0.4348 | Train GateDist(full): 0.5046 | Train Entropy: 0.9160 | Policy SwitchRate: 0.9911 | Policy HardRate: 0.0163 | Mean Tau: 6.2260 | Test Static MSE: 2.8301 | Test Seq MSE: 0.4539 | Test Static GateDist: 0.5109 | Switch Latency: 1.6667
+[Nomadic] Epoch 050/220 | Train Total: 0.5287 | Train MSE: 0.4347 | Train GateDist(full): 0.5596 | Train Entropy: 0.8677 | Policy SwitchRate: 0.9899 | Policy HardRate: 0.0227 | Mean Tau: 6.2260 | Test Static MSE: 3.2006 | Test Seq MSE: 0.4702 | Test Static GateDist: 0.5740 | Switch Latency: 1.2778
+[Nomadic] Epoch 075/220 | Train Total: 0.4667 | Train MSE: 0.3943 | Train GateDist(full): 0.5969 | Train Entropy: 0.8649 | Policy SwitchRate: 0.9876 | Policy HardRate: 0.0239 | Mean Tau: 6.2260 | Test Static MSE: 2.8211 | Test Seq MSE: 0.3564 | Test Static GateDist: 0.6075 | Switch Latency: 1.1111
+[Nomadic] Epoch 100/220 | Train Total: 0.4527 | Train MSE: 0.3840 | Train GateDist(full): 0.5783 | Train Entropy: 0.8669 | Policy SwitchRate: 0.9860 | Policy HardRate: 0.0228 | Mean Tau: 6.2260 | Test Static MSE: 2.5893 | Test Seq MSE: 0.3396 | Test Static GateDist: 0.5904 | Switch Latency: 1.2037
+[Nomadic] Epoch 125/220 | Train Total: 0.4902 | Train MSE: 0.3863 | Train GateDist(full): 0.6032 | Train Entropy: 0.8654 | Policy SwitchRate: 0.9847 | Policy HardRate: 0.0284 | Mean Tau: 6.2260 | Test Static MSE: 2.4356 | Test Seq MSE: 0.3775 | Test Static GateDist: 0.6168 | Switch Latency: 1.5000
+[Nomadic] Epoch 150/220 | Train Total: 0.4366 | Train MSE: 0.3559 | Train GateDist(full): 0.5777 | Train Entropy: 0.8464 | Policy SwitchRate: 0.9802 | Policy HardRate: 0.0301 | Mean Tau: 6.2260 | Test Static MSE: 2.3907 | Test Seq MSE: 0.3520 | Test Static GateDist: 0.5800 | Switch Latency: 1.1296
+[Nomadic] Epoch 175/220 | Train Total: 0.4044 | Train MSE: 0.3465 | Train GateDist(full): 0.5598 | Train Entropy: 0.8577 | Policy SwitchRate: 0.9812 | Policy HardRate: 0.0349 | Mean Tau: 6.2260 | Test Static MSE: 1.9656 | Test Seq MSE: 0.3062 | Test Static GateDist: 0.5688 | Switch Latency: 1.0370
+[Nomadic] Epoch 200/220 | Train Total: 0.4338 | Train MSE: 0.3527 | Train GateDist(full): 0.5759 | Train Entropy: 0.8531 | Policy SwitchRate: 0.9801 | Policy HardRate: 0.0338 | Mean Tau: 6.2260 | Test Static MSE: 2.1704 | Test Seq MSE: 0.3243 | Test Static GateDist: 0.5816 | Switch Latency: 0.7407
+
+========================================================================
+FINAL REPORT — Ablation Study
+========================================================================
+
+[1] Fixed Model
+  Static MSE: 0.603560
+    Regime A: 0.739220
+    Regime B: 0.481260
+    Regime C: 0.613077
+    Regime D: 0.580684
+
+[2] Standard MoE  (mixture, no Δx / no policy)
+  Static MSE: 0.661832  |  Seq MSE: 0.661832
+  Gate dist: 0.0939
+  Entropy — stable: 0.9943  transition: 1.0714
+    Regime A -> E0: 0.001, E1: 0.998, E2: 0.000
+    Regime B -> E0: 0.036, E1: 0.671, E2: 0.293
+    Regime C -> E0: 0.171, E1: 0.800, E2: 0.028
+    Regime D -> E0: 0.000, E1: 0.882, E2: 0.118
+
+[3] Nomadic NoPolicy  (Δx + dynamic tau + dwell, no PolicyNet)
+  Static MSE: 1.613459  |  Seq MSE: 0.422600
+  Entropy — stable: 0.4923  transition: 0.9556
+  Mean switch latency: 2.1111
+
+[4] Nomadic Full  (Δx + dynamic tau + dwell + PolicyNet)
+  Static MSE: 2.422707  |  Seq MSE: 0.333324
+  Gate dist: 0.6708
+    Regime A -> E0: 0.015, E1: 0.977, E2: 0.008
+    Regime B -> E0: 0.453, E1: 0.112, E2: 0.435
+    Regime C -> E0: 0.807, E1: 0.160, E2: 0.033
+    Regime D -> E0: 0.397, E1: 0.551, E2: 0.052
+  Mean switch latency: 1.0370
+  Mean dwell time: 3.6610
+  Mean dynamic tau: 6.3418
+  Entropy — stable: 0.4695  transition: 0.8965
+
+[Expert Sharing]  (regimes=4, experts=3)
+  Expert 0 shared by: B, C
+  Expert 1 shared by: A, D
+
+[Ablation Summary]
+  Fixed → Standard MoE:    +0.0583  (mixture effect)
+  Standard MoE → NoPolicy: -0.2392  (Δx + meta-signal effect)
+  NoPolicy → Full:         -0.0893  (PolicyNet effect)
+
+[Interpretation hint]
+  Negative delta = improvement. Sign pattern shows where gains come from.
+  Transition entropy > stable entropy: gate explores more during phase shifts.
+  Dynamic tau rises in stable phases (fixation) and falls in volatile phases (nomadic).
+========================================================================
+
+Saved files:
+ - outputs_tau_seed456\phase_dataset_input_space.png
+ - outputs_tau_seed456\fixed_vs_standardmoe_vs_nomadic_test_mse.png
+ - outputs_tau_seed456\nomadic_loss_components.png
+ - outputs_tau_seed456\hybrid_delta_trace.png
+ - outputs_tau_seed456\regime_expert_usage_bars.png
+ - outputs_tau_seed456\regime_expert_usage_heatmap.png
+ - outputs_tau_seed456\regime_mean_gate_distance.png
+ - outputs_tau_seed456\phase_gate_entropy.png
+ - outputs_tau_seed456\expert_trajectory.png
+ - outputs_tau_seed456\dwell_time_histogram.png
+ - outputs_tau_seed456\switch_latency_histogram.png
+ - outputs_tau_seed456\stable_vs_transition_entropy.png
+ - outputs_tau_seed456\switch_latency_curve.png
+ - outputs_tau_seed456\regime_expert_alignment.png
+ - outputs_tau_seed456\dynamic_tau_trace.png
+ - outputs_tau_seed456\policy_hybrid_signals.png
+
+C:\Users\JHY\Nomadic-Intelligence>
+C:\Users\JHY\Nomadic-Intelligence>
