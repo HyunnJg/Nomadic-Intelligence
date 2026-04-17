@@ -1,0 +1,100 @@
+
+========== Seed 42 | variant=abrupt ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 0.4251
+  [Fixed] Ep 055 | MSE 0.3308
+  [Fixed] Ep 110 | MSE 0.3241
+  [Fixed] Ep 165 | MSE 0.3212
+  [Fixed] Ep 220 | MSE 0.3222
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 0.4380 | ΔH 0.098
+  [StdMoE] Ep 055 | MSE 0.3283 | ΔH 0.019
+  [StdMoE] Ep 110 | MSE 0.3252 | ΔH 0.016
+  [StdMoE] Ep 165 | MSE 0.3246 | ΔH 0.013
+  [StdMoE] Ep 220 | MSE 0.3239 | ΔH 0.012
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 0.2504 | StH 0.638 | TrH 0.866 | ΔH 0.228
+  [Nomadic] Ep 055 | MSE 0.1369 | StH 0.918 | TrH 0.968 | ΔH 0.050
+  [Nomadic] Ep 110 | MSE 0.1434 | StH 1.040 | TrH 0.986 | ΔH -0.054
+  [Nomadic] Ep 165 | MSE 0.2043 | StH 1.023 | TrH 0.959 | ΔH -0.064
+  [Nomadic] Ep 220 | MSE 0.2688 | StH 0.983 | TrH 0.950 | ΔH -0.032
+  Seed 42 done (1542s)
+
+========== Seed 123 | variant=abrupt ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 0.3806
+  [Fixed] Ep 055 | MSE 0.2990
+  [Fixed] Ep 110 | MSE 0.2968
+  [Fixed] Ep 165 | MSE 0.2973
+  [Fixed] Ep 220 | MSE 0.2972
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 0.4441 | ΔH 0.178
+  [StdMoE] Ep 055 | MSE 0.2973 | ΔH 0.041
+  [StdMoE] Ep 110 | MSE 0.2997 | ΔH 0.018
+  [StdMoE] Ep 165 | MSE 0.2992 | ΔH 0.013
+  [StdMoE] Ep 220 | MSE 0.3047 | ΔH 0.013
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 0.4680 | StH 0.589 | TrH 0.743 | ΔH 0.154
+  [Nomadic] Ep 055 | MSE 0.0136 | StH 0.990 | TrH 1.029 | ΔH 0.039
+  [Nomadic] Ep 110 | MSE 0.0302 | StH 1.028 | TrH 1.040 | ΔH 0.012
+  [Nomadic] Ep 165 | MSE 0.0496 | StH 0.999 | TrH 1.017 | ΔH 0.018
+  [Nomadic] Ep 220 | MSE 0.1233 | StH 1.007 | TrH 0.972 | ΔH -0.035
+  Seed 123 done (1535s)
+
+========== Seed 456 | variant=abrupt ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 0.4268
+  [Fixed] Ep 055 | MSE 0.3103
+  [Fixed] Ep 110 | MSE 0.3051
+  [Fixed] Ep 165 | MSE 0.3032
+  [Fixed] Ep 220 | MSE 0.3025
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 0.3865 | ΔH 0.135
+  [StdMoE] Ep 055 | MSE 0.3178 | ΔH 0.027
+  [StdMoE] Ep 110 | MSE 0.3161 | ΔH 0.015
+  [StdMoE] Ep 165 | MSE 0.3187 | ΔH 0.014
+  [StdMoE] Ep 220 | MSE 0.3223 | ΔH 0.011
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 0.2057 | StH 0.591 | TrH 0.780 | ΔH 0.189
+  [Nomadic] Ep 055 | MSE 0.1185 | StH 0.707 | TrH 0.846 | ΔH 0.139
+  [Nomadic] Ep 110 | MSE 0.1733 | StH 0.996 | TrH 0.969 | ΔH -0.027
+  [Nomadic] Ep 165 | MSE 0.1113 | StH 0.918 | TrH 0.979 | ΔH 0.061
+  [Nomadic] Ep 220 | MSE 0.0871 | StH 0.964 | TrH 1.006 | ΔH 0.042
+  Seed 456 done (1545s)
+
+=== All seeds complete ===
+
+
+======================================================================
+TASK GENERALIZATION: ABRUPT — 3-seed mean
+======================================================================
+  Model Variant  Seq MSE mean  Seq MSE std  ΔH mean  ΔH std  Stable Ent  Trans Ent  Switch Lat
+  Fixed  abrupt        0.3073       0.0107      NaN     NaN         NaN        NaN         NaN
+ StdMoE  abrupt        0.3170       0.0087   0.0120  0.0005      1.0614     1.0734         NaN
+Nomadic  abrupt        0.1597       0.0785  -0.0086  0.0357      0.9847     0.9761      0.3611
+
+--- vs §4.1 baseline ---
+  Fixed      | MSE 0.3073 (-0.1017 vs §4.1) | ΔH nan (+nan vs §4.1)
+  StdMoE     | MSE 0.3170 (-0.0930 vs §4.1) | ΔH 0.0120 (-0.0050 vs §4.1)
+  Nomadic    | MSE 0.1597 (-0.0053 vs §4.1) | ΔH -0.0086 (-0.7896 vs §4.1)
+
+[판정]
+  ΔH gap (Nomadic vs StdMoE): -0.0206
+  MSE gap (Nomadic vs StdMoE): -0.1572
+  → entropy differentiation 약화 — 추가 분석 필요
+
+  Model Variant  Seed  Seq MSE  Stable Ent  Trans Ent      ΔH  Switch Lat
+  Fixed  abrupt    42   0.3222         NaN        NaN     NaN         NaN
+  Fixed  abrupt   123   0.2972         NaN        NaN     NaN         NaN
+  Fixed  abrupt   456   0.3025         NaN        NaN     NaN         NaN
+ StdMoE  abrupt    42   0.3239      1.0585     1.0704  0.0119         NaN
+ StdMoE  abrupt   123   0.3047      1.0649     1.0775  0.0126         NaN
+ StdMoE  abrupt   456   0.3223      1.0608     1.0722  0.0114         NaN
+Nomadic  abrupt    42   0.2688      0.9827     0.9504 -0.0323      0.5833
+Nomadic  abrupt   123   0.1233      1.0073     0.9720 -0.0354      0.0000
+Nomadic  abrupt   456   0.0871      0.9641     1.0058  0.0417      0.5000
+
+Saved to: /content/task_gen_abrupt
+  results_per_seed_abrupt.csv
+  results_summary_abrupt.csv
+  task_gen_abrupt.pn
