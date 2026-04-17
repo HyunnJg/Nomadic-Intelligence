@@ -1,0 +1,135 @@
+
+============================================================
+[Nomadic_Full] seed=42 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.1104 | StableH: 1.0814 | TransH: 1.0835 | Lat: 2.0625
+  Ep 050 | MSE: 0.0911 | StableH: 1.0916 | TransH: 1.0824 | Lat: 3.5556
+  Ep 100 | MSE: 0.0976 | StableH: 1.0863 | TransH: 1.0808 | Lat: 2.8889
+  Ep 150 | MSE: 0.1161 | StableH: 1.0849 | TransH: 1.0771 | Lat: 4.0000
+  Ep 200 | MSE: 0.1036 | StableH: 1.0862 | TransH: 1.0850 | Lat: 2.0000
+→ done 492s | Final MSE: 0.1252
+
+============================================================
+[Nomadic_Full] seed=123 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.1546 | StableH: 1.0917 | TransH: 1.0932 | Lat: 1.0000
+  Ep 050 | MSE: 0.1022 | StableH: 1.0853 | TransH: 1.0854 | Lat: 1.3529
+  Ep 100 | MSE: 0.0944 | StableH: 1.0800 | TransH: 1.0812 | Lat: 1.2941
+  Ep 150 | MSE: 0.1052 | StableH: 1.0883 | TransH: 1.0892 | Lat: 2.4118
+  Ep 200 | MSE: 0.0934 | StableH: 1.0916 | TransH: 1.0844 | Lat: 1.1333
+→ done 488s | Final MSE: 0.1072
+
+============================================================
+[Nomadic_Full] seed=456 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.1860 | StableH: 1.0169 | TransH: 1.0320 | Lat: 1.0000
+  Ep 050 | MSE: 0.1000 | StableH: 1.0899 | TransH: 1.0912 | Lat: 3.9333
+  Ep 100 | MSE: 0.1207 | StableH: 1.0809 | TransH: 1.0827 | Lat: 4.2000
+  Ep 150 | MSE: 0.1128 | StableH: 1.0809 | TransH: 1.0817 | Lat: nan
+  Ep 200 | MSE: 0.1343 | StableH: 1.0765 | TransH: 1.0773 | Lat: 4.8000
+→ done 489s | Final MSE: 0.1489
+
+=== All ablation experiments complete ===
+
+w/o PolicyNet, L_dwell (24-step, ema_decay=0.8)
+| Variant | Seq MSE | MSE std | ΔH | ΔH std | Stable H | Trans H | Switch Lat |
+|---|---|---|---|---|---|---|---|
+| Nomadic Full | 0.1271 | 0.0171 | -0.0046 | 0.0068 | 1.0840 | 1.0794 | 2.404 |
+
+
+---
+
+============================================================
+[Nomadic_Full] seed=42 | policy=True | delta_err=False | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1094 | StableH: 0.9942 | TransH: 1.0057 | Lat: 1.5294
+  Ep 050 | MSE: 0.0966 | StableH: 1.0758 | TransH: 1.0751 | Lat: 1.7647
+  Ep 100 | MSE: 0.1132 | StableH: 1.0840 | TransH: 1.0860 | Lat: 2.2941
+  Ep 150 | MSE: 0.1233 | StableH: 1.0833 | TransH: 1.0869 | Lat: 1.8824
+  Ep 200 | MSE: 0.1211 | StableH: 1.0781 | TransH: 1.0832 | Lat: 1.5882
+→ done 635s | Final MSE: 0.1148
+
+============================================================
+[Nomadic_Full] seed=123 | policy=True | delta_err=False | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1068 | StableH: 0.9077 | TransH: 0.9419 | Lat: 2.9231
+  Ep 050 | MSE: 0.0919 | StableH: 1.0560 | TransH: 1.0115 | Lat: 2.1875
+  Ep 100 | MSE: 0.1137 | StableH: 1.0377 | TransH: 0.9910 | Lat: 1.3529
+  Ep 150 | MSE: 0.1246 | StableH: 1.0714 | TransH: 0.9655 | Lat: 1.7500
+  Ep 200 | MSE: 0.1160 | StableH: 1.0845 | TransH: 1.0823 | Lat: 3.5556
+→ done 635s | Final MSE: 0.1294
+
+============================================================
+[Nomadic_Full] seed=456 | policy=True | delta_err=False | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1586 | StableH: 1.0410 | TransH: 1.0418 | Lat: 1.0000
+  Ep 050 | MSE: 0.0917 | StableH: 1.0646 | TransH: 1.0650 | Lat: 1.0000
+  Ep 100 | MSE: 0.1250 | StableH: 1.0870 | TransH: 1.0759 | Lat: 2.8571
+  Ep 150 | MSE: 0.1469 | StableH: 1.0836 | TransH: 1.0723 | Lat: 4.6364
+  Ep 200 | MSE: 0.2030 | StableH: 1.0820 | TransH: 1.0723 | Lat: 3.3333
+→ done 631s | Final MSE: 0.1986
+
+=== All ablation experiments complete ===
+
+
+w/o Δx_err, L_cons (24-step, ema_decay=0.8)
+| Variant | Seq MSE | MSE std | ΔH | ΔH std | Stable H | Trans H | Switch Lat |
+|---|---|---|---|---|---|---|---|
+| Nomadic Full | 0.1476 | 0.0366 | -0.0029 | 0.0058 | 1.0825 | 1.0796 | 2.279 |
+
+---
+
+
+============================================================
+[Nomadic_Full] seed=42 | policy=False | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1111 | StableH: 1.0821 | TransH: 1.0842 | Lat: 1.8000
+  Ep 050 | MSE: 0.0996 | StableH: 1.0916 | TransH: 1.0799 | Lat: 2.3333
+  Ep 100 | MSE: 0.0825 | StableH: 1.0846 | TransH: 1.0706 | Lat: 2.5000
+  Ep 150 | MSE: 0.1072 | StableH: 1.0840 | TransH: 1.0840 | Lat: 3.6250
+  Ep 200 | MSE: 0.1185 | StableH: 1.0627 | TransH: 1.0198 | Lat: 2.8750
+→ done 491s | Final MSE: 0.1157
+
+============================================================
+[Nomadic_Full] seed=123 | policy=False | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1542 | StableH: 1.0914 | TransH: 1.0928 | Lat: 1.0000
+  Ep 050 | MSE: 0.1126 | StableH: 1.0848 | TransH: 1.0838 | Lat: 1.6471
+  Ep 100 | MSE: 0.0959 | StableH: 1.0865 | TransH: 1.0824 | Lat: 3.5714
+  Ep 150 | MSE: 0.0983 | StableH: 1.0867 | TransH: 1.0884 | Lat: 1.4706
+  Ep 200 | MSE: 0.1042 | StableH: 1.0867 | TransH: 1.0898 | Lat: 1.6471
+→ done 494s | Final MSE: 0.1078
+
+============================================================
+[Nomadic_Full] seed=456 | policy=False | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1832 | StableH: 1.0159 | TransH: 1.0308 | Lat: 1.0000
+  Ep 050 | MSE: 0.1067 | StableH: 1.0921 | TransH: 1.0906 | Lat: 3.4444
+  Ep 100 | MSE: 0.1001 | StableH: 1.0894 | TransH: 1.0833 | Lat: 2.0000
+  Ep 150 | MSE: 0.1157 | StableH: 1.0853 | TransH: 1.0722 | Lat: 3.6000
+  Ep 200 | MSE: 0.1276 | StableH: 1.0836 | TransH: 1.0790 | Lat: 3.9333
+→ done 490s | Final MSE: 0.1182
+
+=== All ablation experiments complete ===
+
+
+========================================================================
+§4.12 ETTh1 ABLATION (24-step) — Final Results (3-seed mean ± std)
+========================================================================
+     Variant         Seq MSE               ΔH Stable H Trans H Switch Lat
+Nomadic_Full 0.1139 ± 0.0044 -0.0180 ± 0.0217   1.0770  1.0590     4.1458
+========================================================================
+
+Nomadic Full reference MSE: 0.1139
+
+
+--- Per-seed Detail ---
+Nomadic_Full         | seed=42 | MSE=0.1157 | StableH=1.0612 | TransH=1.0127 | ΔH=-0.0484 | Lat=6.2500
+Nomadic_Full         | seed=123 | MSE=0.1078 | StableH=1.0888 | TransH=1.0900 | ΔH=0.0012 | Lat=2.6875
+Nomadic_Full         | seed=456 | MSE=0.1182 | StableH=1.0810 | TransH=1.0741 | ΔH=-0.0069 | Lat=3.5000
+
+
+§4.12 ETTh1 Ablation (24-step, ema_decay=0.8)
+| Variant | Seq MSE | MSE std | ΔH | ΔH std | Stable H | Trans H | Switch Lat |
+|---|---|---|---|---|---|---|---|
+| Nomadic Full | 0.1139 | 0.0044 | -0.0180 | 0.0217 | 1.0770 | 1.0590 | 4.146 |
