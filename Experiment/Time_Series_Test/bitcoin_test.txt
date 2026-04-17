@@ -1,0 +1,94 @@
+============================================================
+Seed 42 — StdMoE
+============================================================
+  [StdMoE] Ep 001 | Seq MSE: 0.7814 | StableH: 1.0774 | TransH: 1.0887
+  [StdMoE] Ep 050 | Seq MSE: 0.7797 | StableH: 0.8682 | TransH: 0.8957
+  [StdMoE] Ep 100 | Seq MSE: 0.8420 | StableH: 0.7803 | TransH: 0.8406
+  [StdMoE] Ep 150 | Seq MSE: 0.9332 | StableH: 0.7822 | TransH: 0.8388
+  [StdMoE] Ep 200 | Seq MSE: 1.0151 | StableH: 0.7793 | TransH: 0.8349
+→ StdMoE seed=42 done in 41s | Final MSE: 1.0468
+
+Seed 42 — Nomadic Full
+============================================================
+  [Nomadic Full] Ep 001 | Seq MSE: 0.7813 | StableH: 1.0267 | TransH: 1.0360 | Latency: 1.8000
+  [Nomadic Full] Ep 050 | Seq MSE: 0.8520 | StableH: 0.8636 | TransH: 1.0899 | Latency: 1.0000
+  [Nomadic Full] Ep 100 | Seq MSE: 0.9207 | StableH: 1.0342 | TransH: 0.9858 | Latency: 1.0000
+  [Nomadic Full] Ep 150 | Seq MSE: 0.9036 | StableH: 1.0386 | TransH: 1.0347 | Latency: 1.2000
+  [Nomadic Full] Ep 200 | Seq MSE: 1.0030 | StableH: 1.0435 | TransH: 1.0629 | Latency: 1.2000
+→ Nomadic seed=42 done in 114s | Final MSE: 1.0156
+
+============================================================
+Seed 123 — StdMoE
+============================================================
+  [StdMoE] Ep 001 | Seq MSE: 0.7816 | StableH: 1.0933 | TransH: 1.0967
+  [StdMoE] Ep 050 | Seq MSE: 0.8068 | StableH: 0.9909 | TransH: 1.0186
+  [StdMoE] Ep 100 | Seq MSE: 0.9194 | StableH: 0.9914 | TransH: 1.0062
+  [StdMoE] Ep 150 | Seq MSE: 0.9466 | StableH: 0.9519 | TransH: 0.9930
+  [StdMoE] Ep 200 | Seq MSE: 1.0149 | StableH: 0.9603 | TransH: 0.9985
+→ StdMoE seed=123 done in 41s | Final MSE: 0.9813
+
+Seed 123 — Nomadic Full
+============================================================
+  [Nomadic Full] Ep 001 | Seq MSE: 0.7815 | StableH: 1.0947 | TransH: 1.0950 | Latency: 1.2500
+  [Nomadic Full] Ep 050 | Seq MSE: 0.8469 | StableH: 1.0751 | TransH: 1.0917 | Latency: 1.2500
+  [Nomadic Full] Ep 100 | Seq MSE: 0.9352 | StableH: 1.0536 | TransH: 1.0825 | Latency: 1.5000
+  [Nomadic Full] Ep 150 | Seq MSE: 1.0496 | StableH: 1.0569 | TransH: 1.0859 | Latency: 1.6000
+  [Nomadic Full] Ep 200 | Seq MSE: 1.0845 | StableH: 1.0584 | TransH: 1.0832 | Latency: nan
+→ Nomadic seed=123 done in 114s | Final MSE: 1.0907
+
+============================================================
+Seed 456 — StdMoE
+============================================================
+  [StdMoE] Ep 001 | Seq MSE: 0.7765 | StableH: 1.0724 | TransH: 1.0881
+  [StdMoE] Ep 050 | Seq MSE: 0.8019 | StableH: 0.9994 | TransH: 0.9831
+  [StdMoE] Ep 100 | Seq MSE: 0.8424 | StableH: 0.9658 | TransH: 0.9682
+  [StdMoE] Ep 150 | Seq MSE: 1.0201 | StableH: 0.8940 | TransH: 0.8897
+  [StdMoE] Ep 200 | Seq MSE: 1.0579 | StableH: 0.9164 | TransH: 0.9466
+→ StdMoE seed=456 done in 41s | Final MSE: 1.0291
+
+Seed 456 — Nomadic Full
+============================================================
+  [Nomadic Full] Ep 001 | Seq MSE: 0.7820 | StableH: 1.0728 | TransH: 1.0701 | Latency: 1.0000
+  [Nomadic Full] Ep 050 | Seq MSE: 0.7949 | StableH: 0.8664 | TransH: 1.0917 | Latency: 1.2000
+  [Nomadic Full] Ep 100 | Seq MSE: 0.8663 | StableH: 1.0698 | TransH: 1.0763 | Latency: 1.0000
+  [Nomadic Full] Ep 150 | Seq MSE: 0.8881 | StableH: 1.0613 | TransH: 1.0662 | Latency: 1.6000
+  [Nomadic Full] Ep 200 | Seq MSE: 0.9930 | StableH: 1.0636 | TransH: 1.0745 | Latency: 2.2000
+→ Nomadic seed=456 done in 115s | Final MSE: 1.0397
+
+=== All experiments complete ===
+
+
+======================================================================
+§4.11 BITCOIN TIME SERIES — Final Results (3-seed mean ± std)
+======================================================================
+       Model         Seq MSE              ΔH Stable H Trans H Switch Lat
+      StdMoE 1.0191 ± 0.0277 0.0446 ± 0.0244   0.8878  0.9325     1.0000
+Nomadic_Full 1.0487 ± 0.0313 0.0184 ± 0.0027   1.0548  1.0732     1.9111
+======================================================================
+
+--- Per-seed Detail ---
+StdMoE          | seed=42 | MSE=1.0468 | StableH=0.8163 | TransH=0.8843 | ΔH=0.0679 | Lat=1.0000
+StdMoE          | seed=123 | MSE=0.9813 | StableH=0.9356 | TransH=0.9906 | ΔH=0.0550 | Lat=1.0000
+StdMoE          | seed=456 | MSE=1.0291 | StableH=0.9116 | TransH=0.9226 | ΔH=0.0110 | Lat=1.0000
+Nomadic_Full    | seed=42 | MSE=1.0156 | StableH=1.0468 | TransH=1.0678 | ΔH=0.0211 | Lat=1.2000
+Nomadic_Full    | seed=123 | MSE=1.0907 | StableH=1.0601 | TransH=1.0795 | ΔH=0.0194 | Lat=2.3333
+Nomadic_Full    | seed=456 | MSE=1.0397 | StableH=1.0576 | TransH=1.0723 | ΔH=0.0146 | Lat=2.2000
+
+
+======================================================================
+§4.11 PAPER.md 반영용 마크다운 테이블 출력
+======================================================================
+
+| Model | Seq MSE | MSE std | ΔH | ΔH std | Stable H | Trans H | Switch Lat |
+|---|---|---|---|---|---|---|---|
+| Standard MoE | 1.019 | 0.028 | 0.045 | 0.024 | 0.888 | 0.932 | 1.000 |
+| Nomadic Full | 1.049 | 0.031 | 0.018 | 0.003 | 1.055 | 1.073 | 1.911 |
+
+MSE 개선: 1.0191 → 1.0487 (-2.9% reduction)
+ΔH 비율: Nomadic(0.018) / StdMoE(0.045) = 0.41×
+
+--- 주요 해석 포인트 ---
+1. ΔH > 0: Nomadic이 실제 금융 시계열에서도 stable/transition 구분 학습 여부
+2. Stable H: Nomadic < StdMoE이면 homeomorphic fixation 관찰됨
+3. MSE 개선 폭: synthetic(~48%) 대비 실제 데이터에서 얼마나 유지되는지
+4. 금융 예측 자체가 near-random이므로 MSE 절댓값보다 상대적 개선에 집중
