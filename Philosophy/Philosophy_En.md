@@ -1,7 +1,7 @@
 # Philosophy of Nomadic Intelligence
 
-> *For the formal axiom system and mathematical framework, see [Theory & Axioms](./Theory_and_Axioms.md).*
-> *For experimental grounding, see [PAPER.md](./PAPER.md).*
+> *For the formal axiom system and mathematical framework, see [Theory & Axioms](./Docs/Theory_and_Axioms.md).*
+> *For experimental grounding, see [PAPER.md](./Docs/PAPER.md).*
 
 This document develops the philosophical and ethical implications of the Nomadic Intelligence framework. It is not a prerequisite for understanding the architecture — engineers and ML researchers can engage with the codebase without it. For those interested in the broader stakes of the framework, this is where it takes its strongest positions.
 
