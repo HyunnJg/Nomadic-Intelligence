@@ -1,0 +1,100 @@
+
+========== Seed 42 | variant=heavy_tail ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 5.3943
+  [Fixed] Ep 055 | MSE 3.7191
+  [Fixed] Ep 110 | MSE 3.5473
+  [Fixed] Ep 165 | MSE 3.2189
+  [Fixed] Ep 220 | MSE 3.1569
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 4.4021 | ΔH 0.107
+  [StdMoE] Ep 055 | MSE 3.3570 | ΔH 0.022
+  [StdMoE] Ep 110 | MSE 3.1847 | ΔH 0.024
+  [StdMoE] Ep 165 | MSE 3.1794 | ΔH 0.021
+  [StdMoE] Ep 220 | MSE 3.1311 | ΔH 0.022
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 4.0005 | StH 0.782 | TrH 0.882 | ΔH 0.100
+  [Nomadic] Ep 055 | MSE 1.2635 | StH 0.883 | TrH 0.880 | ΔH -0.003
+  [Nomadic] Ep 110 | MSE 1.0162 | StH 0.825 | TrH 0.859 | ΔH 0.034
+  [Nomadic] Ep 165 | MSE 2.2341 | StH 0.840 | TrH 0.841 | ΔH 0.001
+  [Nomadic] Ep 220 | MSE 1.8532 | StH 0.872 | TrH 0.865 | ΔH -0.006
+  Seed 42 done (4771s)
+
+========== Seed 123 | variant=heavy_tail ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 11.9327
+  [Fixed] Ep 055 | MSE 5.0578
+  [Fixed] Ep 110 | MSE 4.5402
+  [Fixed] Ep 165 | MSE 4.4218
+  [Fixed] Ep 220 | MSE 5.1630
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 7.3435 | ΔH 0.169
+  [StdMoE] Ep 055 | MSE 7.3122 | ΔH 0.107
+  [StdMoE] Ep 110 | MSE 9.9333 | ΔH 0.112
+  [StdMoE] Ep 165 | MSE 6.2767 | ΔH 0.123
+  [StdMoE] Ep 220 | MSE 7.9300 | ΔH 0.087
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 6.7928 | StH 0.795 | TrH 0.891 | ΔH 0.096
+  [Nomadic] Ep 055 | MSE 5.9359 | StH 0.886 | TrH 0.914 | ΔH 0.028
+  [Nomadic] Ep 110 | MSE 6.5653 | StH 0.954 | TrH 0.962 | ΔH 0.008
+  [Nomadic] Ep 165 | MSE 6.7335 | StH 0.930 | TrH 0.997 | ΔH 0.066
+  [Nomadic] Ep 220 | MSE 5.9653 | StH 0.924 | TrH 0.979 | ΔH 0.056
+  Seed 123 done (4779s)
+
+========== Seed 456 | variant=heavy_tail ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 8.1080
+  [Fixed] Ep 055 | MSE 7.0809
+  [Fixed] Ep 110 | MSE 7.5401
+  [Fixed] Ep 165 | MSE 8.5540
+  [Fixed] Ep 220 | MSE 8.6501
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 7.5346 | ΔH 0.102
+  [StdMoE] Ep 055 | MSE 7.1452 | ΔH 0.099
+  [StdMoE] Ep 110 | MSE 7.3952 | ΔH 0.103
+  [StdMoE] Ep 165 | MSE 6.7675 | ΔH 0.112
+  [StdMoE] Ep 220 | MSE 7.4191 | ΔH 0.096
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 6.6866 | StH 0.830 | TrH 0.938 | ΔH 0.108
+  [Nomadic] Ep 055 | MSE 5.5267 | StH 0.873 | TrH 0.893 | ΔH 0.020
+  [Nomadic] Ep 110 | MSE 6.6306 | StH 0.953 | TrH 0.941 | ΔH -0.012
+  [Nomadic] Ep 165 | MSE 6.6001 | StH 0.851 | TrH 0.835 | ΔH -0.016
+  [Nomadic] Ep 220 | MSE 5.4254 | StH 0.892 | TrH 0.861 | ΔH -0.032
+  Seed 456 done (4781s)
+
+=== All seeds complete ===
+
+
+======================================================================
+TASK GENERALIZATION: HEAVY_TAIL — 3-seed mean
+======================================================================
+  Model    Variant  Seq MSE mean  Seq MSE std  ΔH mean  ΔH std  Stable Ent  Trans Ent  Switch Lat
+  Fixed heavy_tail        5.6567       2.2696      NaN     NaN         NaN        NaN         NaN
+ StdMoE heavy_tail        6.1601       2.1520   0.0683  0.0332      0.4431     0.5114         NaN
+Nomadic heavy_tail        4.4146       1.8246   0.0059  0.0367      0.8959     0.9018      0.3148
+
+--- vs §4.1 baseline ---
+  Fixed      | MSE 5.6567 (+5.2477 vs §4.1) | ΔH nan (+nan vs §4.1)
+  StdMoE     | MSE 6.1601 (+5.7501 vs §4.1) | ΔH 0.0683 (+0.0513 vs §4.1)
+  Nomadic    | MSE 4.4146 (+4.2496 vs §4.1) | ΔH 0.0059 (-0.7751 vs §4.1)
+
+[판정]
+  ΔH gap (Nomadic vs StdMoE): -0.0624
+  MSE gap (Nomadic vs StdMoE): -1.7454
+  → entropy differentiation 약화 — 추가 분석 필요
+
+  Model    Variant  Seed  Seq MSE  Stable Ent  Trans Ent      ΔH  Switch Lat
+  Fixed heavy_tail    42   3.1569         NaN        NaN     NaN         NaN
+  Fixed heavy_tail   123   5.1630         NaN        NaN     NaN         NaN
+  Fixed heavy_tail   456   8.6501         NaN        NaN     NaN         NaN
+ StdMoE heavy_tail    42   3.1311      0.3913     0.4129  0.0217         NaN
+ StdMoE heavy_tail   123   7.9300      0.5392     0.6266  0.0874         NaN
+ StdMoE heavy_tail   456   7.4191      0.3989     0.4948  0.0958         NaN
+Nomadic heavy_tail    42   1.8532      0.8717     0.8654 -0.0063      0.0000
+Nomadic heavy_tail   123   5.9653      0.9235     0.9792  0.0557      0.9444
+Nomadic heavy_tail   456   5.4254      0.8925     0.8607 -0.0317      0.0000
+
+Saved to: /content/task_gen_heavy_tail
+  results_per_seed_heavy_tail.csv
+  results_summary_heavy_tail.csv
+  task_gen_heavy_tail.png

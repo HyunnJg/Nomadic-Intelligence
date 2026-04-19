@@ -1,0 +1,104 @@
+
+========== Seed 42 | variant=nonlinear ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 1.6272
+  [Fixed] Ep 055 | MSE 0.2495
+  [Fixed] Ep 110 | MSE 0.2492
+  [Fixed] Ep 165 | MSE 0.2375
+  [Fixed] Ep 220 | MSE 0.2259
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 2.0005 | ΔH -0.041
+  [StdMoE] Ep 055 | MSE 0.2332 | ΔH 0.095
+  [StdMoE] Ep 110 | MSE 0.2373 | ΔH 0.097
+  [StdMoE] Ep 165 | MSE 0.3768 | ΔH 0.090
+  [StdMoE] Ep 220 | MSE 0.2199 | ΔH 0.077
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 0.8102 | StH 0.774 | TrH 0.826 | ΔH 0.052
+  [Nomadic] Ep 055 | MSE 0.1264 | StH 0.305 | TrH 0.927 | ΔH 0.621
+  [Nomadic] Ep 110 | MSE 0.2026 | StH 0.336 | TrH 0.955 | ΔH 0.619
+  [Nomadic] Ep 165 | MSE 0.1617 | StH 0.308 | TrH 0.970 | ΔH 0.662
+  [Nomadic] Ep 220 | MSE 0.2071 | StH 0.621 | TrH 0.972 | ΔH 0.351
+  Seed 42 done (4681s)
+
+========== Seed 123 | variant=nonlinear ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 1.1165
+  [Fixed] Ep 055 | MSE 0.4471
+  [Fixed] Ep 110 | MSE 0.2256
+  [Fixed] Ep 165 | MSE 0.2270
+  [Fixed] Ep 220 | MSE 0.2247
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 2.9250 | ΔH 0.067
+  [StdMoE] Ep 055 | MSE 0.2317 | ΔH 0.103
+  [StdMoE] Ep 110 | MSE 0.2397 | ΔH 0.077
+  [StdMoE] Ep 165 | MSE 0.2252 | ΔH 0.072
+  [StdMoE] Ep 220 | MSE 0.2822 | ΔH 0.055
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1.2756 | StH 0.728 | TrH 0.866 | ΔH 0.138
+  [Nomadic] Ep 055 | MSE 0.1394 | StH 0.654 | TrH 0.976 | ΔH 0.322
+  [Nomadic] Ep 110 | MSE 0.1483 | StH 0.696 | TrH 0.966 | ΔH 0.271
+  [Nomadic] Ep 165 | MSE 0.1023 | StH 0.371 | TrH 0.970 | ΔH 0.599
+  [Nomadic] Ep 220 | MSE 0.1805 | StH 0.442 | TrH 0.984 | ΔH 0.541
+  Seed 123 done (4675s)
+
+========== Seed 456 | variant=nonlinear ==========
+--- Fixed ---
+  [Fixed] Ep 001 | MSE 0.6198
+  [Fixed] Ep 055 | MSE 0.2162
+  [Fixed] Ep 110 | MSE 0.2036
+  [Fixed] Ep 165 | MSE 0.2147
+  [Fixed] Ep 220 | MSE 0.2120
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1.7707 | ΔH 0.101
+  [StdMoE] Ep 055 | MSE 0.2847 | ΔH 0.060
+  [StdMoE] Ep 110 | MSE 0.2075 | ΔH 0.069
+  [StdMoE] Ep 165 | MSE 0.3122 | ΔH 0.081
+  [StdMoE] Ep 220 | MSE 0.3366 | ΔH 0.082
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1.3672 | StH 0.796 | TrH 0.787 | ΔH -0.009
+  [Nomadic] Ep 055 | MSE 0.1700 | StH 0.896 | TrH 0.942 | ΔH 0.046
+  [Nomadic] Ep 110 | MSE 0.0861 | StH 0.725 | TrH 0.939 | ΔH 0.213
+  [Nomadic] Ep 165 | MSE 0.0881 | StH 0.812 | TrH 0.937 | ΔH 0.125
+  [Nomadic] Ep 220 | MSE 0.1355 | StH 0.839 | TrH 0.970 | ΔH 0.131
+  Seed 456 done (4669s)
+
+=== All seeds complete ===
+
+
+======================================================================
+TASK GENERALIZATION: NONLINEAR — 3-seed mean
+======================================================================
+  Model   Variant  Seq MSE mean  Seq MSE std  ΔH mean  ΔH std  Stable Ent  Trans Ent  Switch Lat
+  Fixed nonlinear        0.2209       0.0063      NaN     NaN         NaN        NaN         NaN
+ StdMoE nonlinear        0.2795       0.0477   0.0713  0.0118      0.9771     1.0484         NaN
+Nomadic nonlinear        0.1744       0.0295   0.3412  0.1673      0.6342     0.9754      2.0000
+
+--- vs §4.1 baseline ---
+  Fixed      | MSE 0.2209 (-0.1881 vs §4.1) | ΔH nan (+nan vs §4.1)
+  StdMoE     | MSE 0.2795 (-0.1305 vs §4.1) | ΔH 0.0713 (+0.0543 vs §4.1)
+  Nomadic    | MSE 0.1744 (+0.0094 vs §4.1) | ΔH 0.3412 (-0.4398 vs §4.1)
+
+[판정]
+  ΔH gap (Nomadic vs StdMoE): 0.2698
+  MSE gap (Nomadic vs StdMoE): -0.1052
+  → entropy differentiation 약화 — 추가 분석 필요
+
+---
+
+  Model   Variant  Seed  Seq MSE  Stable Ent  Trans Ent     ΔH  Switch Lat
+  Fixed nonlinear    42   0.2259         NaN        NaN    NaN         NaN
+  Fixed nonlinear   123   0.2247         NaN        NaN    NaN         NaN
+  Fixed nonlinear   456   0.2120         NaN        NaN    NaN         NaN
+ StdMoE nonlinear    42   0.2199      0.9741     1.0509 0.0768         NaN
+ StdMoE nonlinear   123   0.2822      1.0144     1.0694 0.0550         NaN
+ StdMoE nonlinear   456   0.3366      0.9428     1.0251 0.0823         NaN
+Nomadic nonlinear    42   0.2071      0.6214     0.9724 0.3510      3.3056
+Nomadic nonlinear   123   0.1805      0.4425     0.9835 0.5410      1.3333
+Nomadic nonlinear   456   0.1355      0.8388     0.9703 0.1315      1.3611
+
+Saved to: /content/task_gen_nonlinear
+  results_per_seed_nonlinear.csv
+  results_summary_nonlinear.csv
+  task_gen_nonlinear.png
+
+---
