@@ -1,0 +1,201 @@
+
+============================================================
+[Nomadic_Full] seed=42 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+/tmp/ipykernel_3047/3733015516.py:42: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  mix = cfg.policy_mix_weight * float(stay_sw[:, 1].mean())
+  Ep 001 | MSE: 0.0947 | StableH: 0.8977 | TransH: 0.9170 | Lat: 1.0000
+  Ep 050 | MSE: 0.1131 | StableH: 1.0874 | TransH: 1.0883 | Lat: 1.0000
+  Ep 100 | MSE: 0.1375 | StableH: 1.0792 | TransH: 1.0842 | Lat: 1.0000
+  Ep 150 | MSE: 0.1040 | StableH: 1.0865 | TransH: 1.0894 | Lat: 1.0000
+  Ep 200 | MSE: 0.1021 | StableH: 1.0858 | TransH: 1.0890 | Lat: 1.0000
+→ done 596s | Final MSE: 0.1195
+
+============================================================
+[Nomadic_Full] seed=123 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1209 | StableH: 1.0560 | TransH: 1.0667 | Lat: 1.1176
+  Ep 050 | MSE: 0.1099 | StableH: 1.0165 | TransH: 0.9654 | Lat: 1.1176
+  Ep 100 | MSE: 0.1025 | StableH: 1.0904 | TransH: 1.0909 | Lat: 1.6471
+  Ep 150 | MSE: 0.0925 | StableH: 1.0923 | TransH: 1.0886 | Lat: 2.3750
+  Ep 200 | MSE: 0.0975 | StableH: 1.0893 | TransH: 1.0859 | Lat: 1.6429
+→ done 589s | Final MSE: 0.1094
+
+============================================================
+[Nomadic_Full] seed=456 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1448 | StableH: 0.9131 | TransH: 0.9365 | Lat: 1.0000
+  Ep 050 | MSE: 0.0788 | StableH: 1.0474 | TransH: 1.0661 | Lat: 1.7059
+  Ep 100 | MSE: 0.0982 | StableH: 1.0890 | TransH: 1.0922 | Lat: 2.3125
+  Ep 150 | MSE: 0.1000 | StableH: 1.0894 | TransH: 1.0905 | Lat: 1.0588
+  Ep 200 | MSE: 0.1251 | StableH: 1.0861 | TransH: 1.0872 | Lat: 1.2500
+→ done 591s | Final MSE: 0.1080
+
+============================================================
+[No_PolicyNet] seed=42 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1141 | StableH: 1.0931 | TransH: 1.0941 | Lat: 2.3333
+  Ep 050 | MSE: 0.1074 | StableH: 1.0827 | TransH: 1.0830 | Lat: 2.0588
+  Ep 100 | MSE: 0.1100 | StableH: 1.0795 | TransH: 1.0771 | Lat: 1.5294
+  Ep 150 | MSE: 0.1047 | StableH: 1.0841 | TransH: 1.0873 | Lat: 1.1176
+  Ep 200 | MSE: 0.1253 | StableH: 1.0747 | TransH: 1.0766 | Lat: 2.7059
+→ done 495s | Final MSE: 0.1419
+
+============================================================
+[No_PolicyNet] seed=123 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1505 | StableH: 1.0939 | TransH: 1.0942 | Lat: 1.0000
+  Ep 050 | MSE: 0.1204 | StableH: 1.0950 | TransH: 1.0946 | Lat: 1.1176
+  Ep 100 | MSE: 0.1356 | StableH: 1.0796 | TransH: 1.0776 | Lat: 1.2941
+  Ep 150 | MSE: 0.1149 | StableH: 1.0715 | TransH: 1.0634 | Lat: 1.1765
+  Ep 200 | MSE: 0.0990 | StableH: 1.0733 | TransH: 1.0646 | Lat: nan
+→ done 489s | Final MSE: 0.1125
+
+============================================================
+[No_PolicyNet] seed=456 | policy=False | delta_err=True | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1757 | StableH: 1.0596 | TransH: 1.0675 | Lat: 1.0000
+  Ep 050 | MSE: 0.1163 | StableH: 1.0915 | TransH: 1.0896 | Lat: 4.1333
+  Ep 100 | MSE: 0.1029 | StableH: 1.0930 | TransH: 1.0842 | Lat: 1.0588
+  Ep 150 | MSE: 0.0944 | StableH: 1.0909 | TransH: 1.0825 | Lat: 1.4000
+  Ep 200 | MSE: 0.1028 | StableH: 1.0845 | TransH: 1.0778 | Lat: 1.4545
+→ done 489s | Final MSE: 0.0991
+
+============================================================
+[No_DeltaErr] seed=42 | policy=True | delta_err=False | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1017 | StableH: 0.8880 | TransH: 0.9313 | Lat: 1.0000
+  Ep 050 | MSE: 0.1443 | StableH: 1.0737 | TransH: 1.0364 | Lat: 2.4000
+  Ep 100 | MSE: 0.1493 | StableH: 1.0452 | TransH: 1.0714 | Lat: 1.0000
+  Ep 150 | MSE: 0.1181 | StableH: 1.0557 | TransH: 1.0591 | Lat: 2.5000
+  Ep 200 | MSE: 0.1264 | StableH: 1.0601 | TransH: 1.0088 | Lat: 2.9375
+→ done 603s | Final MSE: 0.1256
+
+============================================================
+[No_DeltaErr] seed=123 | policy=True | delta_err=False | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1141 | StableH: 0.8928 | TransH: 0.9031 | Lat: 1.0000
+  Ep 050 | MSE: 0.1346 | StableH: 1.0794 | TransH: 1.0795 | Lat: 1.3529
+  Ep 100 | MSE: 0.1218 | StableH: 1.0336 | TransH: 1.0337 | Lat: 1.2941
+  Ep 150 | MSE: 0.1044 | StableH: 1.0105 | TransH: 1.0026 | Lat: 1.9375
+  Ep 200 | MSE: 0.1303 | StableH: 0.9744 | TransH: 0.9917 | Lat: 1.4118
+→ done 611s | Final MSE: 0.1217
+
+============================================================
+[No_DeltaErr] seed=456 | policy=True | delta_err=False | lambda_cons=0.03 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1510 | StableH: 0.8599 | TransH: 0.8951 | Lat: 1.4118
+  Ep 050 | MSE: 0.0952 | StableH: 1.0574 | TransH: 1.0484 | Lat: 1.0588
+  Ep 100 | MSE: 0.1009 | StableH: 1.0926 | TransH: 1.0837 | Lat: 1.8235
+  Ep 150 | MSE: 0.1338 | StableH: 1.0880 | TransH: 1.0867 | Lat: 2.8333
+  Ep 200 | MSE: 0.1508 | StableH: 1.0883 | TransH: 1.0854 | Lat: 2.3529
+→ done 612s | Final MSE: 0.1350
+
+============================================================
+[No_Lcons] seed=42 | policy=True | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.0947 | StableH: 0.8973 | TransH: 0.9166 | Lat: 1.0000
+  Ep 050 | MSE: 0.0811 | StableH: 1.0403 | TransH: 1.0540 | Lat: 1.4118
+  Ep 100 | MSE: 0.0916 | StableH: 1.0161 | TransH: 1.0315 | Lat: 1.1765
+  Ep 150 | MSE: 0.0845 | StableH: 1.0798 | TransH: 1.0767 | Lat: 3.2000
+  Ep 200 | MSE: 0.1124 | StableH: 1.0820 | TransH: 1.0863 | Lat: 2.1176
+→ done 614s | Final MSE: 0.0924
+
+============================================================
+[No_Lcons] seed=123 | policy=True | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1208 | StableH: 1.0554 | TransH: 1.0662 | Lat: 1.1176
+  Ep 050 | MSE: 0.0999 | StableH: 1.0599 | TransH: 1.0475 | Lat: 2.2941
+  Ep 100 | MSE: 0.0872 | StableH: 1.0785 | TransH: 1.0834 | Lat: 1.0000
+  Ep 150 | MSE: 0.0891 | StableH: 1.0818 | TransH: 1.0829 | Lat: 2.1765
+  Ep 200 | MSE: 0.1052 | StableH: 1.0846 | TransH: 1.0880 | Lat: 2.9286
+→ done 609s | Final MSE: 0.1009
+
+============================================================
+[No_Lcons] seed=456 | policy=True | delta_err=True | lambda_cons=0.0 | dwell=True
+============================================================
+  Ep 001 | MSE: 0.1446 | StableH: 0.9163 | TransH: 0.9394 | Lat: 1.0000
+  Ep 050 | MSE: 0.0974 | StableH: 1.0882 | TransH: 1.0840 | Lat: 4.0000
+  Ep 100 | MSE: 0.1418 | StableH: 1.0785 | TransH: 1.0842 | Lat: 1.1176
+  Ep 150 | MSE: 0.1320 | StableH: 1.0692 | TransH: 1.0732 | Lat: 3.5385
+  Ep 200 | MSE: 0.1302 | StableH: 1.0707 | TransH: 1.0756 | Lat: 3.3846
+→ done 607s | Final MSE: 0.1093
+
+============================================================
+[No_Ldwell] seed=42 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.0947 | StableH: 0.8977 | TransH: 0.9170 | Lat: 1.0000
+  Ep 050 | MSE: 0.1131 | StableH: 1.0874 | TransH: 1.0883 | Lat: 1.0000
+  Ep 100 | MSE: 0.1375 | StableH: 1.0792 | TransH: 1.0842 | Lat: 1.0000
+  Ep 150 | MSE: 0.1040 | StableH: 1.0865 | TransH: 1.0894 | Lat: 1.0000
+  Ep 200 | MSE: 0.1021 | StableH: 1.0858 | TransH: 1.0890 | Lat: 1.0000
+→ done 607s | Final MSE: 0.1195
+
+============================================================
+[No_Ldwell] seed=123 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.1209 | StableH: 1.0560 | TransH: 1.0667 | Lat: 1.1176
+  Ep 050 | MSE: 0.1099 | StableH: 1.0165 | TransH: 0.9654 | Lat: 1.1176
+  Ep 100 | MSE: 0.1025 | StableH: 1.0904 | TransH: 1.0909 | Lat: 1.6471
+  Ep 150 | MSE: 0.0925 | StableH: 1.0923 | TransH: 1.0886 | Lat: 2.3750
+  Ep 200 | MSE: 0.0975 | StableH: 1.0893 | TransH: 1.0859 | Lat: 1.6429
+→ done 606s | Final MSE: 0.1094
+
+============================================================
+[No_Ldwell] seed=456 | policy=True | delta_err=True | lambda_cons=0.03 | dwell=False
+============================================================
+  Ep 001 | MSE: 0.1448 | StableH: 0.9131 | TransH: 0.9365 | Lat: 1.0000
+  Ep 050 | MSE: 0.0788 | StableH: 1.0474 | TransH: 1.0661 | Lat: 1.7059
+  Ep 100 | MSE: 0.0982 | StableH: 1.0890 | TransH: 1.0922 | Lat: 2.3125
+  Ep 150 | MSE: 0.1000 | StableH: 1.0894 | TransH: 1.0905 | Lat: 1.0588
+  Ep 200 | MSE: 0.1251 | StableH: 1.0861 | TransH: 1.0872 | Lat: 1.2500
+→ done 610s | Final MSE: 0.1080
+
+=== All ablation experiments complete ===
+
+
+========================================================================
+§4.12 ETTh1 ABLATION (24-step) — Final Results (3-seed mean ± std)
+========================================================================
+     Variant         Seq MSE               ΔH Stable H Trans H Switch Lat
+Nomadic_Full 0.1123 ± 0.0051  0.0005 ± 0.0060   1.0861  1.0866     1.1029
+No_PolicyNet 0.1179 ± 0.0179 -0.0023 ± 0.0026   1.0782  1.0759     1.6902
+ No_DeltaErr 0.1274 ± 0.0056 -0.0077 ± 0.0211   1.0532  1.0455     2.3893
+    No_Lcons 0.1009 ± 0.0069  0.0032 ± 0.0025   1.0738  1.0770     3.1655
+   No_Ldwell 0.1123 ± 0.0051  0.0005 ± 0.0060   1.0861  1.0866     1.1029
+========================================================================
+
+Nomadic Full reference MSE: 0.1123
+
+No_PolicyNet        : 0.1179 ± 0.0179  Δ vs Full = +0.0056
+No_DeltaErr         : 0.1274 ± 0.0056  Δ vs Full = +0.0151
+No_Lcons            : 0.1009 ± 0.0069  Δ vs Full = -0.0114
+No_Ldwell           : 0.1123 ± 0.0051  Δ vs Full = +0.0000
+
+--- Per-seed Detail ---
+Nomadic_Full         | seed=42 | MSE=0.1195 | StableH=1.0798 | TransH=1.0873 | ΔH=0.0075 | Lat=1.0588
+Nomadic_Full         | seed=123 | MSE=0.1094 | StableH=1.0864 | TransH=1.0792 | ΔH=-0.0072 | Lat=1.0000
+Nomadic_Full         | seed=456 | MSE=0.1080 | StableH=1.0921 | TransH=1.0935 | ΔH=0.0014 | Lat=1.2500
+No_PolicyNet         | seed=42 | MSE=0.1419 | StableH=1.0712 | TransH=1.0724 | ΔH=0.0012 | Lat=2.0000
+No_PolicyNet         | seed=123 | MSE=0.1125 | StableH=1.0762 | TransH=1.0730 | ΔH=-0.0032 | Lat=1.4706
+No_PolicyNet         | seed=456 | MSE=0.0991 | StableH=1.0871 | TransH=1.0823 | ΔH=-0.0048 | Lat=1.6000
+No_DeltaErr          | seed=42 | MSE=0.1256 | StableH=1.0657 | TransH=1.0779 | ΔH=0.0122 | Lat=2.1250
+No_DeltaErr          | seed=123 | MSE=0.1217 | StableH=1.0073 | TransH=0.9704 | ΔH=-0.0369 | Lat=3.4545
+No_DeltaErr          | seed=456 | MSE=0.1350 | StableH=1.0868 | TransH=1.0883 | ΔH=0.0016 | Lat=1.5882
+No_Lcons             | seed=42 | MSE=0.0924 | StableH=1.0869 | TransH=1.0866 | ΔH=-0.0004 | Lat=2.7273
+No_Lcons             | seed=123 | MSE=0.1009 | StableH=1.0838 | TransH=1.0885 | ΔH=0.0046 | Lat=4.7692
+No_Lcons             | seed=456 | MSE=0.1093 | StableH=1.0507 | TransH=1.0560 | ΔH=0.0053 | Lat=2.0000
+No_Ldwell            | seed=42 | MSE=0.1195 | StableH=1.0798 | TransH=1.0873 | ΔH=0.0075 | Lat=1.0588
+No_Ldwell            | seed=123 | MSE=0.1094 | StableH=1.0864 | TransH=1.0792 | ΔH=-0.0072 | Lat=1.0000
+No_Ldwell            | seed=456 | MSE=0.1080 | StableH=1.0921 | TransH=1.0935 | ΔH=0.0014 | Lat=1.2500
+
+
+§4.12 ETTh1 Ablation (24-step, ema_decay=0.95)
+| Variant | Seq MSE | MSE std | ΔH | ΔH std | Stable H | Trans H | Switch Lat |
+|---|---|---|---|---|---|---|---|
+| Nomadic Full | 0.1123 | 0.0051 | 0.0005 | 0.0060 | 1.0861 | 1.0866 | 1.103 |
+| w/o PolicyNet | 0.1179 | 0.0179 | -0.0023 | 0.0026 | 1.0782 | 1.0759 | 1.690 |
+| w/o Δx_err | 0.1274 | 0.0056 | -0.0077 | 0.0211 | 1.0532 | 1.0455 | 2.389 |
+| w/o L_cons | 0.1009 | 0.0069 | 0.0032 | 0.0025 | 1.0738 | 1.0770 | 3.166 |
+| w/o L_dwell | 0.1123 | 0.0051 | 0.0005 | 0.0060 | 1.0861 | 1.0866 | 1.103 |

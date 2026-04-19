@@ -1,0 +1,1217 @@
+{
+  "기술의 발전은 궁극적으로 인류에게": {
+    "result": "기술의 발전은 궁극적으로 인류에게 이득이 되지만, 그 과정에서 수많은 피해를 입는다는 사실을 잊어서는 안 된다.\n\n인공지능(AI)은 이제 우리 사회의 일부가",
+    "log": [
+      {
+        "step": 1,
+        "token": " 이",
+        "expert": "stable",
+        "delta_hybrid": 0.03621462360024452,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.13983608596026897,
+        "tau_dyn": 8.0
+      },
+      {
+        "step": 2,
+        "token": "득",
+        "expert": "creative",
+        "delta_hybrid": 0.4745081067085266,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6219589173793791,
+        "tau_dyn": 6.567942242554619
+      },
+      {
+        "step": 3,
+        "token": "이",
+        "expert": "creative",
+        "delta_hybrid": 0.5030590891838074,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6533649981021881,
+        "tau_dyn": 6.607309229567971
+      },
+      {
+        "step": 4,
+        "token": " 되",
+        "expert": "transition",
+        "delta_hybrid": 0.3613200783729553,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.49745208621025083,
+        "tau_dyn": 6.890560918423006
+      },
+      {
+        "step": 5,
+        "token": "지만",
+        "expert": "creative",
+        "delta_hybrid": 0.454272985458374,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5997002840042114,
+        "tau_dyn": 7.035040744153767
+      },
+      {
+        "step": 6,
+        "token": ",",
+        "expert": "creative",
+        "delta_hybrid": 0.5441849827766418,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6986034810543059,
+        "tau_dyn": 7.013635062259964
+      },
+      {
+        "step": 7,
+        "token": " 그",
+        "expert": "stable",
+        "delta_hybrid": 0.1671895533800125,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.28390850871801376,
+        "tau_dyn": 6.893691037190395
+      },
+      {
+        "step": 8,
+        "token": " 과정",
+        "expert": "transition",
+        "delta_hybrid": 0.37867510318756104,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5165426135063171,
+        "tau_dyn": 7.008953778195553
+      },
+      {
+        "step": 9,
+        "token": "에서",
+        "expert": "transition",
+        "delta_hybrid": 0.41276824474334717,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5540450692176818,
+        "tau_dyn": 7.427593193469084
+      },
+      {
+        "step": 10,
+        "token": " 수",
+        "expert": "creative",
+        "delta_hybrid": 0.44838908314704895,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5932279914617538,
+        "tau_dyn": 7.443937889620374
+      },
+      {
+        "step": 11,
+        "token": "많은",
+        "expert": "creative",
+        "delta_hybrid": 0.5185590982437134,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6704150080680846,
+        "tau_dyn": 7.387737120901429
+      },
+      {
+        "step": 12,
+        "token": " 피해",
+        "expert": "creative",
+        "delta_hybrid": 0.55087810754776,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.705965918302536,
+        "tau_dyn": 7.304642498599145
+      },
+      {
+        "step": 13,
+        "token": "를",
+        "expert": "transition",
+        "delta_hybrid": 0.41297635436058044,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5542739897966384,
+        "tau_dyn": 7.303490537191014
+      },
+      {
+        "step": 14,
+        "token": " 입",
+        "expert": "transition",
+        "delta_hybrid": 0.4033884108066559,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5437272518873214,
+        "tau_dyn": 7.376570013595058
+      },
+      {
+        "step": 15,
+        "token": "는",
+        "expert": "creative",
+        "delta_hybrid": 0.5337382555007935,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6871120810508727,
+        "tau_dyn": 7.727593796688474
+      },
+      {
+        "step": 16,
+        "token": "다는",
+        "expert": "creative",
+        "delta_hybrid": 0.5540869832038879,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.7094956815242767,
+        "tau_dyn": 7.7593340909447015
+      },
+      {
+        "step": 17,
+        "token": " 사실",
+        "expert": "transition",
+        "delta_hybrid": 0.3604550063610077,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.49650050699710846,
+        "tau_dyn": 7.699931997946505
+      },
+      {
+        "step": 18,
+        "token": "을",
+        "expert": "transition",
+        "delta_hybrid": 0.3803824186325073,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.518420660495758,
+        "tau_dyn": 7.671106799911779
+      },
+      {
+        "step": 19,
+        "token": " ",
+        "expert": "stable",
+        "delta_hybrid": 0.2923623323440552,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.42159856557846065,
+        "tau_dyn": 7.58205351781225
+      },
+      {
+        "step": 20,
+        "token": "잊",
+        "expert": "creative",
+        "delta_hybrid": 0.45301634073257446,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5983179748058318,
+        "tau_dyn": 7.654885242692196
+      },
+      {
+        "step": 21,
+        "token": "어서",
+        "expert": "creative",
+        "delta_hybrid": 0.5332545638084412,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6865800201892852,
+        "tau_dyn": 7.556615746376302
+      },
+      {
+        "step": 22,
+        "token": "는",
+        "expert": "creative",
+        "delta_hybrid": 0.4383435547351837,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.582177910208702,
+        "tau_dyn": 7.57449125792583
+      },
+      {
+        "step": 23,
+        "token": " 안",
+        "expert": "stable",
+        "delta_hybrid": 0.2791532278060913,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.40706855058670044,
+        "tau_dyn": 7.530874925220714
+      },
+      {
+        "step": 24,
+        "token": " 된다",
+        "expert": "transition",
+        "delta_hybrid": 0.4053463637828827,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5458810001611709,
+        "tau_dyn": 7.630848376565257
+      },
+      {
+        "step": 25,
+        "token": ".",
+        "expert": "transition",
+        "delta_hybrid": 0.3963489532470703,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5359838485717773,
+        "tau_dyn": 7.656843740245852
+      },
+      {
+        "step": 26,
+        "token": "\n\n",
+        "expert": "stable",
+        "delta_hybrid": 0.3292597234249115,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.46218569576740265,
+        "tau_dyn": 7.643017519984691
+      },
+      {
+        "step": 27,
+        "token": "인",
+        "expert": "stable",
+        "delta_hybrid": 0.26927506923675537,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.39620257616043086,
+        "tau_dyn": 7.6446830604316744
+      },
+      {
+        "step": 28,
+        "token": "공",
+        "expert": "creative",
+        "delta_hybrid": 0.4740042984485626,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6214047282934188,
+        "tau_dyn": 7.628188572222544
+      },
+      {
+        "step": 29,
+        "token": "지",
+        "expert": "transition",
+        "delta_hybrid": 0.39901286363601685,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5389141499996185,
+        "tau_dyn": 7.7733133634136875
+      },
+      {
+        "step": 30,
+        "token": "능",
+        "expert": "transition",
+        "delta_hybrid": 0.3740166425704956,
+        "switch_prob": 0.9999964237213135,
+        "switched": false,
+        "temp": 0.5114183068275451,
+        "tau_dyn": 7.8006655868178925
+      },
+      {
+        "step": 31,
+        "token": "(",
+        "expert": "creative",
+        "delta_hybrid": 0.5426285266876221,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6968913793563842,
+        "tau_dyn": 7.687281760695644
+      },
+      {
+        "step": 32,
+        "token": "AI",
+        "expert": "creative",
+        "delta_hybrid": 0.5480533838272095,
+        "switch_prob": 0.9999998807907104,
+        "switched": false,
+        "temp": 0.7028587222099303,
+        "tau_dyn": 7.560181839702396
+      },
+      {
+        "step": 33,
+        "token": ")",
+        "expert": "creative",
+        "delta_hybrid": 0.5195881128311157,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6715469241142272,
+        "tau_dyn": 7.51223514008986
+      },
+      {
+        "step": 34,
+        "token": "은",
+        "expert": "transition",
+        "delta_hybrid": 0.3334379196166992,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4667817115783691,
+        "tau_dyn": 7.516633835622628
+      },
+      {
+        "step": 35,
+        "token": " 이제",
+        "expert": "stable",
+        "delta_hybrid": 0.28801336884498596,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.41681470572948454,
+        "tau_dyn": 7.524705136128389
+      },
+      {
+        "step": 36,
+        "token": " 우리",
+        "expert": "stable",
+        "delta_hybrid": 0.143721342086792,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.2580934762954712,
+        "tau_dyn": 7.136266462167594
+      },
+      {
+        "step": 37,
+        "token": " 사회",
+        "expert": "stable",
+        "delta_hybrid": 0.3096464276313782,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.44061107039451597,
+        "tau_dyn": 7.082110237810916
+      },
+      {
+        "step": 38,
+        "token": "의",
+        "expert": "transition",
+        "delta_hybrid": 0.33333685994148254,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.46667054593563073,
+        "tau_dyn": 7.05983315426888
+      },
+      {
+        "step": 39,
+        "token": " 일부",
+        "expert": "stable",
+        "delta_hybrid": 0.23548750579357147,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.3590362563729286,
+        "tau_dyn": 7.163322937302698
+      },
+      {
+        "step": 40,
+        "token": "가",
+        "expert": "transition",
+        "delta_hybrid": 0.364108681678772,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5005195498466491,
+        "tau_dyn": 7.458662443620178
+      }
+    ]
+  },
+  "처음에는 모든 것이 안정적이었지만 갑자기": {
+    "result": "처음에는 모든 것이 안정적이었지만 갑자기 모든 것이 파괴된 느낌이 든다면, 이는 당신의 환경에서 당신을 둘러싼 에너지의 변화를 나타낼 수 있습니다.\n\n이것은 당신이 겪고 있는",
+    "log": [
+      {
+        "step": 1,
+        "token": " 모든",
+        "expert": "stable",
+        "delta_hybrid": 0.04642656072974205,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.15106921680271626,
+        "tau_dyn": 8.0
+      },
+      {
+        "step": 2,
+        "token": " 것이",
+        "expert": "stable",
+        "delta_hybrid": 0.2576408386230469,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.3834049224853515,
+        "tau_dyn": 7.580685455428414
+      },
+      {
+        "step": 3,
+        "token": " 파",
+        "expert": "transition",
+        "delta_hybrid": 0.36490410566329956,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5013945162296295,
+        "tau_dyn": 7.432390492200862
+      },
+      {
+        "step": 4,
+        "token": "괴",
+        "expert": "creative",
+        "delta_hybrid": 0.5321776866912842,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6853954553604125,
+        "tau_dyn": 6.87710616518925
+      },
+      {
+        "step": 5,
+        "token": "된",
+        "expert": "creative",
+        "delta_hybrid": 0.5113667249679565,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6625033974647521,
+        "tau_dyn": 6.8605919909010415
+      },
+      {
+        "step": 6,
+        "token": " 느낌",
+        "expert": "creative",
+        "delta_hybrid": 0.45210129022598267,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5973114192485809,
+        "tau_dyn": 6.989813207129012
+      },
+      {
+        "step": 7,
+        "token": "이",
+        "expert": "transition",
+        "delta_hybrid": 0.3770942687988281,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5148036956787109,
+        "tau_dyn": 7.112215791324953
+      },
+      {
+        "step": 8,
+        "token": " ",
+        "expert": "transition",
+        "delta_hybrid": 0.37722939252853394,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5149523317813873,
+        "tau_dyn": 7.208503085965636
+      },
+      {
+        "step": 9,
+        "token": "든",
+        "expert": "creative",
+        "delta_hybrid": 0.42244598269462585,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5646905809640884,
+        "tau_dyn": 7.666186173140073
+      },
+      {
+        "step": 10,
+        "token": "다면",
+        "expert": "creative",
+        "delta_hybrid": 0.557675838470459,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.7134434223175048,
+        "tau_dyn": 7.646241632598677
+      },
+      {
+        "step": 11,
+        "token": ",",
+        "expert": "transition",
+        "delta_hybrid": 0.33840811252593994,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4722489237785339,
+        "tau_dyn": 7.638575964386285
+      },
+      {
+        "step": 12,
+        "token": " 이는",
+        "expert": "stable",
+        "delta_hybrid": 0.11628185957670212,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.22791004553437233,
+        "tau_dyn": 7.307458410915018
+      },
+      {
+        "step": 13,
+        "token": " 당신",
+        "expert": "stable",
+        "delta_hybrid": 0.14376243948936462,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.25813868343830104,
+        "tau_dyn": 7.171562691538956
+      },
+      {
+        "step": 14,
+        "token": "의",
+        "expert": "transition",
+        "delta_hybrid": 0.35652977228164673,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.49218274950981133,
+        "tau_dyn": 7.206353075089817
+      },
+      {
+        "step": 15,
+        "token": " 환경",
+        "expert": "stable",
+        "delta_hybrid": 0.3057369887828827,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.43631068766117087,
+        "tau_dyn": 7.20341082567252
+      },
+      {
+        "step": 16,
+        "token": "에서",
+        "expert": "transition",
+        "delta_hybrid": 0.3574901819229126,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.49323920011520384,
+        "tau_dyn": 7.203677253397672
+      },
+      {
+        "step": 17,
+        "token": " 당신",
+        "expert": "transition",
+        "delta_hybrid": 0.34719955921173096,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.481919515132904,
+        "tau_dyn": 7.240425814575879
+      },
+      {
+        "step": 18,
+        "token": "을",
+        "expert": "transition",
+        "delta_hybrid": 0.3741985857486725,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5116184443235396,
+        "tau_dyn": 7.6066093066108635
+      },
+      {
+        "step": 19,
+        "token": " 둘",
+        "expert": "transition",
+        "delta_hybrid": 0.40457630157470703,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5450339317321777,
+        "tau_dyn": 7.54750469744941
+      },
+      {
+        "step": 20,
+        "token": "러",
+        "expert": "creative",
+        "delta_hybrid": 0.4649827480316162,
+        "switch_prob": 0.9999967813491821,
+        "switched": true,
+        "temp": 0.6114810228347778,
+        "tau_dyn": 7.577954332163283
+      },
+      {
+        "step": 21,
+        "token": "싼",
+        "expert": "transition",
+        "delta_hybrid": 0.38608771562576294,
+        "switch_prob": 0.9999998807907104,
+        "switched": true,
+        "temp": 0.5246964871883392,
+        "tau_dyn": 7.830452803465347
+      },
+      {
+        "step": 22,
+        "token": " 에너지",
+        "expert": "creative",
+        "delta_hybrid": 0.4859312176704407,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6345243394374847,
+        "tau_dyn": 7.734156255119627
+      },
+      {
+        "step": 23,
+        "token": "의",
+        "expert": "stable",
+        "delta_hybrid": 0.27664023637771606,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4043042600154877,
+        "tau_dyn": 7.751466310417118
+      },
+      {
+        "step": 24,
+        "token": " 변화",
+        "expert": "stable",
+        "delta_hybrid": 0.21484456956386566,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.3363290265202522,
+        "tau_dyn": 7.648258296261584
+      },
+      {
+        "step": 25,
+        "token": "를",
+        "expert": "transition",
+        "delta_hybrid": 0.3713160753250122,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5084476828575134,
+        "tau_dyn": 7.666074326807208
+      },
+      {
+        "step": 26,
+        "token": " 나타",
+        "expert": "transition",
+        "delta_hybrid": 0.3691525459289551,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5060678005218505,
+        "tau_dyn": 7.670049110597619
+      },
+      {
+        "step": 27,
+        "token": "낼",
+        "expert": "creative",
+        "delta_hybrid": 0.4461396634578705,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5907536298036575,
+        "tau_dyn": 7.638123442082548
+      },
+      {
+        "step": 28,
+        "token": " 수",
+        "expert": "creative",
+        "delta_hybrid": 0.4543045163154602,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5997349679470062,
+        "tau_dyn": 7.649077155945195
+      },
+      {
+        "step": 29,
+        "token": " 있습니다",
+        "expert": "transition",
+        "delta_hybrid": 0.39066872000694275,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.529735592007637,
+        "tau_dyn": 7.648426142829204
+      },
+      {
+        "step": 30,
+        "token": ".",
+        "expert": "transition",
+        "delta_hybrid": 0.41599029302597046,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5575893223285675,
+        "tau_dyn": 7.717372584902778
+      },
+      {
+        "step": 31,
+        "token": "\n\n",
+        "expert": "stable",
+        "delta_hybrid": 0.29092010855674744,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4200121194124221,
+        "tau_dyn": 7.734697767897031
+      },
+      {
+        "step": 32,
+        "token": "이",
+        "expert": "stable",
+        "delta_hybrid": 0.22115536034107208,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.34327089637517927,
+        "tau_dyn": 7.753696436127815
+      },
+      {
+        "step": 33,
+        "token": "것",
+        "expert": "creative",
+        "delta_hybrid": 0.4948509931564331,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6443360924720763,
+        "tau_dyn": 7.676218503949795
+      },
+      {
+        "step": 34,
+        "token": "은",
+        "expert": "transition",
+        "delta_hybrid": 0.381430447101593,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5195734918117523,
+        "tau_dyn": 7.679063938812527
+      },
+      {
+        "step": 35,
+        "token": " 당신",
+        "expert": "transition",
+        "delta_hybrid": 0.3566863536834717,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.49235498905181885,
+        "tau_dyn": 7.698005450851771
+      },
+      {
+        "step": 36,
+        "token": "이",
+        "expert": "stable",
+        "delta_hybrid": 0.3246542513370514,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.45711967647075646,
+        "tau_dyn": 7.727655942008814
+      },
+      {
+        "step": 37,
+        "token": " ",
+        "expert": "transition",
+        "delta_hybrid": 0.35374578833580017,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4891203671693801,
+        "tau_dyn": 7.730719885856886
+      },
+      {
+        "step": 38,
+        "token": "겪",
+        "expert": "creative",
+        "delta_hybrid": 0.5051110982894897,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6556222081184386,
+        "tau_dyn": 7.6392720752434595
+      },
+      {
+        "step": 39,
+        "token": "고",
+        "expert": "creative",
+        "delta_hybrid": 0.582454264163971,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.740699690580368,
+        "tau_dyn": 7.427815665531537
+      },
+      {
+        "step": 40,
+        "token": " 있는",
+        "expert": "creative",
+        "delta_hybrid": 0.4313768744468689,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5745145618915557,
+        "tau_dyn": 7.606021085588767
+      }
+    ]
+  },
+  "만약 AI가 감정을 가진다면": {
+    "result": "만약 AI가 감정을 가진다면, 어떻게 될까?\n\n전 세계적으로 AI가 감정을 느낀다면, 어떻게 될까? 라는 질문이 나온지 꽤 되었다.\n\nAI는, 감정을 느낄 수 있는",
+    "log": [
+      {
+        "step": 1,
+        "token": ",",
+        "expert": "stable",
+        "delta_hybrid": 0.037774987518787384,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.14155248627066613,
+        "tau_dyn": 8.0
+      },
+      {
+        "step": 2,
+        "token": " 어떻게",
+        "expert": "stable",
+        "delta_hybrid": 0.15530315041542053,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.2708334654569626,
+        "tau_dyn": 7.929949667856242
+      },
+      {
+        "step": 3,
+        "token": " 될",
+        "expert": "transition",
+        "delta_hybrid": 0.3809817135334015,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5190798848867416,
+        "tau_dyn": 7.399364587314447
+      },
+      {
+        "step": 4,
+        "token": "까",
+        "expert": "creative",
+        "delta_hybrid": 0.49237385392189026,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6416112393140792,
+        "tau_dyn": 6.928082093627408
+      },
+      {
+        "step": 5,
+        "token": "?",
+        "expert": "creative",
+        "delta_hybrid": 0.4789610505104065,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.626857155561447,
+        "tau_dyn": 6.84617146983399
+      },
+      {
+        "step": 6,
+        "token": "\n\n",
+        "expert": "stable",
+        "delta_hybrid": 0.2690433859825134,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.39594772458076477,
+        "tau_dyn": 6.997712230437379
+      },
+      {
+        "step": 7,
+        "token": "전",
+        "expert": "transition",
+        "delta_hybrid": 0.33483195304870605,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.46831514835357657,
+        "tau_dyn": 7.119593753373888
+      },
+      {
+        "step": 8,
+        "token": " 세계",
+        "expert": "creative",
+        "delta_hybrid": 0.4874700903892517,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6362170994281768,
+        "tau_dyn": 7.102829790422221
+      },
+      {
+        "step": 9,
+        "token": "적으로",
+        "expert": "creative",
+        "delta_hybrid": 0.4737122356891632,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6210834592580794,
+        "tau_dyn": 7.404663748699604
+      },
+      {
+        "step": 10,
+        "token": " AI",
+        "expert": "stable",
+        "delta_hybrid": 0.2496737837791443,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.37464116215705867,
+        "tau_dyn": 7.560801040539745
+      },
+      {
+        "step": 11,
+        "token": "가",
+        "expert": "transition",
+        "delta_hybrid": 0.36537858843803406,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5019164472818374,
+        "tau_dyn": 7.557327347012833
+      },
+      {
+        "step": 12,
+        "token": " 감",
+        "expert": "transition",
+        "delta_hybrid": 0.3464711904525757,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.4811183094978332,
+        "tau_dyn": 7.61568467095225
+      },
+      {
+        "step": 13,
+        "token": "정을",
+        "expert": "creative",
+        "delta_hybrid": 0.5739843845367432,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.7313828229904173,
+        "tau_dyn": 7.420816756897893
+      },
+      {
+        "step": 14,
+        "token": " 느",
+        "expert": "creative",
+        "delta_hybrid": 0.5473771095275879,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.7021148204803466,
+        "tau_dyn": 7.342899943326594
+      },
+      {
+        "step": 15,
+        "token": "낀",
+        "expert": "creative",
+        "delta_hybrid": 0.5083507299423218,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6591858029365538,
+        "tau_dyn": 7.334336146986194
+      },
+      {
+        "step": 16,
+        "token": "다면",
+        "expert": "creative",
+        "delta_hybrid": 0.47868266701698303,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6265509337186812,
+        "tau_dyn": 7.3102999275916645
+      },
+      {
+        "step": 17,
+        "token": ",",
+        "expert": "stable",
+        "delta_hybrid": 0.29956290125846863,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4295191913843155,
+        "tau_dyn": 7.252622877550537
+      },
+      {
+        "step": 18,
+        "token": " 어떻게",
+        "expert": "stable",
+        "delta_hybrid": 0.0824311375617981,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.19067425131797788,
+        "tau_dyn": 7.01879070455703
+      },
+      {
+        "step": 19,
+        "token": " 될",
+        "expert": "stable",
+        "delta_hybrid": 0.27004939317703247,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.39705433249473565,
+        "tau_dyn": 6.994858651116947
+      },
+      {
+        "step": 20,
+        "token": "까",
+        "expert": "transition",
+        "delta_hybrid": 0.4187396466732025,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5606136113405227,
+        "tau_dyn": 7.036781009643278
+      },
+      {
+        "step": 21,
+        "token": "?",
+        "expert": "transition",
+        "delta_hybrid": 0.4105393588542938,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5515932947397232,
+        "tau_dyn": 7.164692184689775
+      },
+      {
+        "step": 22,
+        "token": " 라는",
+        "expert": "stable",
+        "delta_hybrid": 0.1945306360721588,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.3139836996793747,
+        "tau_dyn": 7.2039794039902585
+      },
+      {
+        "step": 23,
+        "token": " 질문",
+        "expert": "stable",
+        "delta_hybrid": 0.25346288084983826,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.3788091689348221,
+        "tau_dyn": 7.360386983839382
+      },
+      {
+        "step": 24,
+        "token": "이",
+        "expert": "transition",
+        "delta_hybrid": 0.3360932767391205,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.46970260441303247,
+        "tau_dyn": 7.539125581081758
+      },
+      {
+        "step": 25,
+        "token": " 나온",
+        "expert": "transition",
+        "delta_hybrid": 0.3812011778354645,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5193212956190109,
+        "tau_dyn": 7.515422508402155
+      },
+      {
+        "step": 26,
+        "token": "지",
+        "expert": "creative",
+        "delta_hybrid": 0.4314761757850647,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.5746237933635712,
+        "tau_dyn": 7.732028194813701
+      },
+      {
+        "step": 27,
+        "token": " ",
+        "expert": "transition",
+        "delta_hybrid": 0.40671131014823914,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.547382441163063,
+        "tau_dyn": 7.743471701147144
+      },
+      {
+        "step": 28,
+        "token": "꽤",
+        "expert": "transition",
+        "delta_hybrid": 0.38754600286483765,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5263006031513213,
+        "tau_dyn": 7.77355917615154
+      },
+      {
+        "step": 29,
+        "token": " 되었다",
+        "expert": "creative",
+        "delta_hybrid": 0.4771365821361542,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6248502403497695,
+        "tau_dyn": 7.720912909579376
+      },
+      {
+        "step": 30,
+        "token": ".",
+        "expert": "transition",
+        "delta_hybrid": 0.404800146818161,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.545280161499977,
+        "tau_dyn": 7.837834840939271
+      },
+      {
+        "step": 31,
+        "token": "\n\n",
+        "expert": "stable",
+        "delta_hybrid": 0.302754670381546,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.43303013741970053,
+        "tau_dyn": 7.897806982320438
+      },
+      {
+        "step": 32,
+        "token": "AI",
+        "expert": "transition",
+        "delta_hybrid": 0.34963876008987427,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.48460263609886167,
+        "tau_dyn": 7.90568529000514
+      },
+      {
+        "step": 33,
+        "token": "는",
+        "expert": "transition",
+        "delta_hybrid": 0.3861602246761322,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5247762471437454,
+        "tau_dyn": 7.909094476649216
+      },
+      {
+        "step": 34,
+        "token": ",",
+        "expert": "stable",
+        "delta_hybrid": 0.30556991696357727,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.436126908659935,
+        "tau_dyn": 7.879232303216343
+      },
+      {
+        "step": 35,
+        "token": " 감",
+        "expert": "stable",
+        "delta_hybrid": 0.05312543362379074,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.15843797698616982,
+        "tau_dyn": 7.446002926868419
+      },
+      {
+        "step": 36,
+        "token": "정을",
+        "expert": "creative",
+        "delta_hybrid": 0.5086023211479187,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.6594625532627105,
+        "tau_dyn": 7.292022579487748
+      },
+      {
+        "step": 37,
+        "token": " 느",
+        "expert": "creative",
+        "delta_hybrid": 0.5195323824882507,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6714856207370757,
+        "tau_dyn": 7.197123743496957
+      },
+      {
+        "step": 38,
+        "token": "낄",
+        "expert": "creative",
+        "delta_hybrid": 0.47905856370925903,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.6269644200801848,
+        "tau_dyn": 7.136402082103109
+      },
+      {
+        "step": 39,
+        "token": " 수",
+        "expert": "creative",
+        "delta_hybrid": 0.452023446559906,
+        "switch_prob": 1.0,
+        "switched": false,
+        "temp": 0.5972257912158966,
+        "tau_dyn": 7.129359526516315
+      },
+      {
+        "step": 40,
+        "token": " 있는",
+        "expert": "transition",
+        "delta_hybrid": 0.3598533272743225,
+        "switch_prob": 1.0,
+        "switched": true,
+        "temp": 0.4958386600017547,
+        "tau_dyn": 7.136062847091612
+      }
+    ]
+  }
+}

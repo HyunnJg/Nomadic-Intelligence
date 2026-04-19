@@ -1,0 +1,107 @@
+
+========== Seed 42 ==========
+--- Standard MoE ---
+  [StdMoE] Ep001 MSE=0.6096 ΔH=0.175
+  [StdMoE] Ep055 MSE=0.4152 ΔH=0.009
+  [StdMoE] Ep110 MSE=0.4142 ΔH=0.007
+  [StdMoE] Ep165 MSE=0.4140 ΔH=0.009
+  [StdMoE] Ep220 MSE=0.4142 ΔH=0.012
+--- GRU MoE ---
+  [GRUMoE] Ep001 MSE=0.5778 ΔH=0.220 StH=0.441
+  [GRUMoE] Ep055 MSE=0.0739 ΔH=0.350 StH=0.344
+  [GRUMoE] Ep110 MSE=0.0887 ΔH=0.306 StH=0.391
+  [GRUMoE] Ep165 MSE=0.0693 ΔH=0.303 StH=0.411
+  [GRUMoE] Ep220 MSE=0.0365 ΔH=0.301 StH=0.435
+--- Nomadic Full ---
+  [Nomadic] Ep001 MSE=0.4199 ΔH=0.254 StH=0.647
+  [Nomadic] Ep055 MSE=0.2073 ΔH=0.427 StH=0.516
+  [Nomadic] Ep110 MSE=0.1846 ΔH=0.653 StH=0.299
+  [Nomadic] Ep165 MSE=0.1993 ΔH=0.525 StH=0.408
+  [Nomadic] Ep220 MSE=0.1370 ΔH=0.627 StH=0.266
+--- Oracle (using Nomadic experts) ---
+  [Oracle]  MSE=1.3025  (upper bound with Nomadic experts)
+  Seed 42 done (5750s)
+
+========== Seed 123 ==========
+--- Standard MoE ---
+  [StdMoE] Ep001 MSE=0.5159 ΔH=0.177
+  [StdMoE] Ep055 MSE=0.4054 ΔH=0.009
+  [StdMoE] Ep110 MSE=0.4120 ΔH=0.018
+  [StdMoE] Ep165 MSE=0.4241 ΔH=0.018
+  [StdMoE] Ep220 MSE=0.4057 ΔH=0.020
+--- GRU MoE ---
+  [GRUMoE] Ep001 MSE=0.3974 ΔH=0.201 StH=0.325
+  [GRUMoE] Ep055 MSE=0.0834 ΔH=0.245 StH=0.560
+  [GRUMoE] Ep110 MSE=0.0584 ΔH=0.294 StH=0.458
+  [GRUMoE] Ep165 MSE=0.2307 ΔH=0.295 StH=0.509
+  [GRUMoE] Ep220 MSE=0.0470 ΔH=0.311 StH=0.519
+--- Nomadic Full ---
+  [Nomadic] Ep001 MSE=0.2728 ΔH=0.270 StH=0.647
+  [Nomadic] Ep055 MSE=0.4226 ΔH=0.327 StH=0.557
+  [Nomadic] Ep110 MSE=0.1044 ΔH=0.348 StH=0.554
+  [Nomadic] Ep165 MSE=0.1801 ΔH=0.353 StH=0.536
+  [Nomadic] Ep220 MSE=0.0869 ΔH=0.351 StH=0.570
+--- Oracle (using Nomadic experts) ---
+  [Oracle]  MSE=0.6538  (upper bound with Nomadic experts)
+  Seed 123 done (5772s)
+
+========== Seed 456 ==========
+--- Standard MoE ---
+  [StdMoE] Ep001 MSE=0.5184 ΔH=0.063
+  [StdMoE] Ep055 MSE=0.4080 ΔH=0.025
+  [StdMoE] Ep110 MSE=0.4077 ΔH=0.030
+  [StdMoE] Ep165 MSE=0.4075 ΔH=0.031
+  [StdMoE] Ep220 MSE=0.4072 ΔH=0.021
+--- GRU MoE ---
+  [GRUMoE] Ep001 MSE=0.4970 ΔH=0.295 StH=0.357
+  [GRUMoE] Ep055 MSE=0.0808 ΔH=0.342 StH=0.369
+  [GRUMoE] Ep110 MSE=0.0775 ΔH=0.328 StH=0.399
+  [GRUMoE] Ep165 MSE=0.0655 ΔH=0.361 StH=0.332
+  [GRUMoE] Ep220 MSE=0.0764 ΔH=0.384 StH=0.352
+--- Nomadic Full ---
+  [Nomadic] Ep001 MSE=0.4031 ΔH=0.232 StH=0.678
+  [Nomadic] Ep055 MSE=0.2057 ΔH=0.613 StH=0.320
+  [Nomadic] Ep110 MSE=0.1752 ΔH=0.633 StH=0.307
+  [Nomadic] Ep165 MSE=0.1221 ΔH=0.459 StH=0.440
+  [Nomadic] Ep220 MSE=0.1114 ΔH=0.664 StH=0.243
+--- Oracle (using Nomadic experts) ---
+  [Oracle]  MSE=0.5531  (upper bound with Nomadic experts)
+  Seed 456 done (5781s)
+
+=== All seeds complete ===
+
+
+===========================================================================
+§4.10 RECURRENT GATE + ORACLE BASELINE (3-seed mean)
+===========================================================================
+  Model Params  Seq MSE  MSE std     ΔH  ΔH std  Stable H  Trans H  Switch Lat
+ StdMoE  17798   0.4090   0.0037 0.0174  0.0040    0.9518   0.9692         NaN
+    GRU  26502   0.0533   0.0169 0.3321  0.0370    0.4352   0.7674      1.0000
+Nomadic  23053   0.1118   0.0204 0.5474  0.1394    0.3594   0.9068      1.9630
+ Oracle      —   0.8365   0.3321 0.0000  0.0000    0.0000   0.0000      5.7389
+
+--- 핵심 비교 ---
+  GRU MoE vs Nomadic Full: MSE 0.0533 vs 0.1118  (-52.3%)
+  Nomadic / Oracle ratio:  0.134  (1.0 = Oracle)
+  ΔH — GRU:0.3321  Nomadic:0.5474
+  → GRU matches or beats Nomadic — implicit temporal structure sufficient
+  Nomadic is -86.6% above Oracle MSE
+
+  Model  Seed  Seq MSE  Stable H  Trans H     ΔH  Switch Lat
+ StdMoE    42   0.4142    0.9429   0.9547 0.0118         NaN
+ StdMoE   123   0.4057    0.9263   0.9461 0.0199         NaN
+ StdMoE   456   0.4072    0.9862   1.0069 0.0207         NaN
+    GRU    42   0.0365    0.4347   0.7356 0.3009      0.6667
+    GRU   123   0.0470    0.5193   0.8307 0.3115      1.5556
+    GRU   456   0.0764    0.3517   0.7358 0.3841      0.7778
+Nomadic    42   0.1370    0.2657   0.8929 0.6272      1.9167
+Nomadic   123   0.0869    0.5696   0.9211 0.3514      1.9722
+Nomadic   456   0.1114    0.2429   0.9064 0.6636      2.0000
+ Oracle    42   1.3025    0.0000   0.0000 0.0000      2.4167
+ Oracle   123   0.6538    0.0000   0.0000 0.0000      7.2571
+ Oracle   456   0.5531    0.0000   0.0000 0.0000      7.5429
+
+Saved to: /content/recurrent_oracle_results
+  recurrent_oracle_comparison.png
+  results_per_seed.csv
+  results_summary.csv

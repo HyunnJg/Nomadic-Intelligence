@@ -1,0 +1,35 @@
+{
+  "run_id": "20260412_122334",
+  "phases": [
+    "policy_training",
+    "lora_experts",
+    "nomadic_generation"
+  ],
+  "entropy_before": {
+    "stable_H": 1.806,
+    "trans_H": 2.537,
+    "delta_H": 0.731
+  },
+  "entropy_after_policy": {
+    "stable_H": 1.2494235229492188,
+    "trans_H": 2.2337615203857424,
+    "delta_H": 0.9843379974365236,
+    "stable_switch_prob": 0.9999999225139617,
+    "trans_switch_prob": 0.9999989953637123
+  },
+  "switching_metrics": {
+    "total_steps": 120,
+    "total_switches": 65,
+    "switch_rate": 0.5416666666666666,
+    "expert_usage": {
+      "stable": 0.26666666666666666,
+      "transition": 0.375,
+      "creative": 0.35833333333333334
+    }
+  },
+  "expert_paths": {
+    "stable": "/content/drive/MyDrive/nomadic_llm_results/run_phase4_20260412_122334/lora_expert_stable",
+    "transition": "/content/drive/MyDrive/nomadic_llm_results/run_phase4_20260412_122334/lora_expert_transition",
+    "creative": "/content/drive/MyDrive/nomadic_llm_results/run_phase4_20260412_122334/lora_expert_creative"
+  }
+}
