@@ -1,60 +1,68 @@
-# Nomadic Routing: Temporally Structured Expert Control under Non-Stationary Dynamics
+#Nomadic Routing: A Control-Theoretic Framework for Transition-Aware Expert Routing under Non-Stationary Dynamics
 
 **Abstract**
 
-We revisit expert routing in mixture-of-experts (MoE) models from a temporal perspective. While existing approaches treat routing as a per-step selection problem, this assumption becomes limiting under non-stationary conditions where the dynamics of transitions carry important information.
+The goal of this work is not to outperform recurrent architectures in predictive accuracy, but to introduce explicit control over transition dynamics as a separate objective.
 
-In this work, we introduce **Nomadic Routing**, a framework that models routing as a temporally structured control process. The approach is built on three components: a hybrid transition signal (Δx) that captures distributional change, a policy network that modulates routing behavior, and a dwell-time constraint that regulates commitment to experts over time.
+We reinterpret expert routing in mixture-of-experts (MoE) models as a control problem over transition dynamics. While existing approaches treat routing as a per-step selection mechanism, this formulation becomes limiting under non-stationary conditions where the timing and structure of transitions carry important information beyond instantaneous input features.
 
-Through synthetic and real-world experiments — including time-series forecasting and language modeling — we show that the effectiveness of the framework depends on an intermediate regime of change pressure. On a synthetic non-stationary regression task, Δx-based meta-control yields the largest single gain (−38% Seq MSE over Standard MoE), while PolicyNet further reduces error and collapses stable-phase gate entropy to near-deterministic levels (0.108 vs. 0.951 in Standard MoE). A parameter-matched baseline confirms that gains do not arise from increased capacity. When dynamics are sufficiently structured, the model exhibits stable fixation and adaptive switching behavior; when dynamics are either too smooth or too volatile, these effects diminish.
+In this work, we introduce Nomadic Routing, a control-theoretic framework built on a structural separation between two distinct signals. The hybrid change signal (Δx) captures *whether* the environment has shifted — it is a measure of distributional uncertainty about the world. The uncertainty-modulated switching signal (Φ) addresses a different question: *given that change is occurring, should the current routing policy be revised?* We formalize Φ as approximating the free energy differential between maintaining the current expert assignment and transitioning to an alternative, operationalized as a tractable weighted composite of environmental, predictive, and counterfactual evidence terms. A dynamic dwell-time constraint and a policy network complete the framework, regulating commitment to experts and meta-level routing decisions over time.
 
-Our results suggest that routing performance is not solely determined by representational capacity, but by how transition dynamics are utilized. This perspective provides a complementary view to existing MoE approaches and highlights the importance of temporally aware routing under non-stationary environments.
+Through synthetic and real-world experiments — including time-series forecasting and language modeling — we show that the effectiveness of the framework depends on an intermediate regime of change pressure. On a synthetic non-stationary regression task, Δx-based meta-control yields the largest single gain (−38% Seq MSE over Standard MoE). PolicyNet further reduces error and collapses stable-phase gate entropy to near-deterministic levels (0.108 vs. 0.951 in Standard MoE), a pattern we term *homeomorphic fixation*: the system fixates during stable phases and switches adaptively during transitions, preserving routing identity as a consistent response law rather than a fixed assignment. A parameter-matched baseline confirms that gains do not arise from increased capacity. When dynamics are either too smooth or too volatile, these effects diminish.
+
+Our results suggest that routing performance is not solely determined by representational capacity, but by how transition dynamics are structured and utilized. These improvements should be interpreted as evidence of transition-aware behavior rather than as claims of superior predictive performance.
 
 ---
 
 ## 1 Introduction
 
-Mixture-of-experts (MoE) architectures have become a standard approach for scaling neural networks by enabling sparse activation and expert specialization. In most implementations, routing is performed independently at each step, selecting experts based on instantaneous input features. While effective in stationary settings, this stateless formulation does not explicitly account for temporal dependencies in the routing process.
+Mixture-of-experts (MoE) architectures are typically formulated as a routing problem, where a gating function selects experts at each step. This formulation implicitly assumes that routing is a stateless selection process, driven solely by instantaneous input features.
 
-However, many real-world environments are inherently non-stationary. In such settings, the structure of transitions—how and when the model shifts between experts—can carry meaningful information beyond per-step predictions. Existing routing mechanisms, as well as load-balancing objectives, do not directly model this temporal structure.
+However, in non-stationary environments, the structure of transitions — when to switch experts, when to remain, and how long to commit — carries information that cannot be captured by per-step decisions alone. Stateless routing mechanisms ignore this temporal structure, limiting their ability to respond coherently to regime changes.
 
-In this work, we propose **Nomadic Routing**, a framework that treats routing as a temporally structured control problem. Instead of focusing solely on which expert to select, the framework models when to remain with an expert and when to transition, based on observed changes in the input distribution.
+In this work, we reinterpret expert routing as a control problem over transition dynamics. Rather than selecting experts independently at each step, we model routing as a process that regulates transitions over time, balancing stability and adaptation under changing conditions.
 
-The approach is built on three components. First, a hybrid signal Δx captures distributional change by combining error dynamics and input variation. Second, a policy network modulates routing decisions in response to this signal. Third, a dwell-time mechanism regulates the duration of expert commitment, enabling stable fixation under consistent conditions while allowing adaptation when change pressure increases.
+We introduce Nomadic Routing, a control-theoretic framework for transition-aware expert routing. The framework is built on a structural separation between two signals with distinct roles: a hybrid change signal (Δx) that measures *whether* the environment has shifted, and an uncertainty-modulated switching signal (Φ) that determines *whether a routing revision is warranted* given that shift. These are complemented by a dynamic dwell-time constraint that regulates expert commitment and a policy network that operates at the meta-level above the gate.
 
-Across a range of controlled and real-world settings, we observe that the effectiveness of the framework depends on the level of change in the environment. When changes are too small, the model does not benefit from transition-aware routing; when changes are too large, stable structure cannot be maintained. Between these extremes, the model exhibits consistent switching patterns and improved performance.
+Across synthetic and real-world experiments, we show that the effectiveness of routing depends on an intermediate regime of change pressure. Under these conditions, the model exhibits structured switching behavior, characterized by stable fixation during consistent phases and adaptive exploration during transitions — a pattern we term *homeomorphic fixation*.
 
-These findings suggest that routing should not be viewed purely as a selection problem, but as a control process over transitions in non-stationary environments. Our work provides empirical evidence for this perspective and outlines the conditions under which such a formulation is beneficial.
+Importantly, our objective differs from recurrent approaches that aim to improve predictive accuracy through implicit temporal encoding. Instead, we focus on explicitly shaping the dynamics of transitions, treating routing as a control problem rather than a prediction problem.
 
 ### 1.1 Relationship to Prior Work
 
 Standard MoE architectures [16] treat routing as stateless per-step selection. Load balancing losses [13] prevent expert collapse but impose no temporal structure on transitions. While large-scale sparse models like Switch Transformers [13] and Mixtral [7] have demonstrated the efficiency of expert specialization, their routing remains primarily a stateless selection problem. Our framework departs from these and alternative mechanisms like Expert Choice Routing [8] or Hash Layers [11] by explicitly modeling the temporal sequence of expert transitions.
 
-The hybrid signal Δx draws inspiration from Bayesian changepoint detection [1], identifying regime shifts through distributional drift rather than per-step noise. Furthermore, our formulation of strategic dwell time τₖ instantiates the Marginal Value Theorem [3] within the context of neural routing, balancing the benefit of current expert commitment against the pressure to transition in volatile environments. This is the closest conceptual analog to Option-Critic architectures [2], which introduce temporal abstraction in RL through options—but our formulation operates in supervised routing rather than reinforcement learning, and treats dwell time as an environmentally-adaptive constraint rather than a learned sub-policy.
+The hybrid signal Δx draws inspiration from Bayesian changepoint detection [1], identifying regime shifts through distributional drift rather than per-step noise. Furthermore, our formulation of strategic dwell time τₖ instantiates the Marginal Value Theorem [3] within the context of neural routing, balancing the benefit of current expert commitment against the pressure to transition in volatile environments. This connection supports interpreting routing as a form of temporal control rather than static selection, and is related to the option-critic architecture [2], which introduces temporal abstraction in RL through options — our formulation, however, operates in supervised routing rather than reinforcement learning, and treats dwell time as an environmentally-adaptive constraint rather than a learned sub-policy.
 
-The most relevant conceptual contrast is with Friston's Active Inference [4, 15], which treats prediction error as a quantity to minimize as free energy. Nomadic Routing treats the analogous signal Δx as an *energy source* driving routing decisions. The distinction is architectural, not merely terminological:
+The most relevant conceptual connection is with Friston's Free Energy Principle (FEP) [4, 15]. FEP posits that adaptive systems minimize surprise — or equivalently, the upper bound on sensory entropy — by updating their generative models to better predict incoming signals. This is a powerful and broadly applicable framework: the reason biological agents can minimize surprise at all is that the world itself exhibits structured, interpretable regularities. A universe of pure noise would make FEP-based adaptation impossible.
 
-| | Active Inference / Standard MoE | Nomadic Routing |
+Nomadic Routing generalizes this insight rather than contradicting it. Where FEP treats prediction error as a quantity to suppress unconditionally, we observe that unconditional suppression leads to a degenerate stable state: a system that fixates permanently on the current expert representation, regardless of whether the environment has changed. The cost of pure surprise-minimization, absent a mechanism for strategic transition, is pathological rigidity.
+
+Our framework resolves this by separating the roles of Δx and Φ. Δx quantifies environmental uncertainty — the raw signal that the world's structure has shifted. Φ is not a second uncertainty measure, but a *decision variable*: it approximates the free energy differential between maintaining the current routing policy and transitioning to a new one. This separation is architectural, not merely terminological:
+
+| | FEP / Standard MoE | Nomadic Routing |
 |---|---|---|
-| Role of Δx | Error to suppress | Signal to integrate |
-| Objective | Minimize prediction error toward zero | Use error gradient to navigate transitions |
-| Stable state | Convergence (low-entropy fixation as goal) | Strategic fixation with finite dwell time |
+| Role of Δx | Prediction error to suppress | Environmental uncertainty signal to integrate |
+| Role of Φ | — | Free energy differential: cost of staying vs. gain of switching |
+| Objective | Minimize surprise toward zero | Navigate the boundary between fixation and transition |
+| Stable state | Convergence (entropy suppression as terminal goal) | Homeomorphic fixation with finite dwell time |
 | Identity | Fixed generative model or static gate | Consistent transformation law under change |
 
-Rather than suppressing Δx, we treat it as navigational information — a system that treats distributional difference as something to minimize is a system that suppresses the signal it needs to adapt. This perspective aligns with broader views of adaptive systems where identity emerges from consistent response laws under varying conditions [20], and leverages information-theoretic measures [6, 27] to characterize routing transitions rather than route away from them [21].
+A system that treats Δx solely as noise to be eliminated will converge — but convergence is not always correct. What Nomadic Routing adds is a second layer of judgment: given that uncertainty exists (Δx > 0), *is it informative enough to warrant a transition?* This is precisely the question that Φ answers. Rather than routing away from uncertainty, Φ uses it as navigational evidence, enabling the system to maintain structured fixation when uncertainty is below the transition threshold, and to switch adaptively when it is not. This perspective aligns with broader views of adaptive systems where identity emerges from consistent response laws under varying conditions [20], and leverages information-theoretic measures [6, 27] to characterize routing transitions [21].
 
 Continual learning approaches [5, 9] address non-stationarity through weight consolidation rather than dynamic routing, and do not model transition timing. The loss of plasticity in non-stationary distributions [12, 14, 30] poses a fundamental challenge to long-term adaptation. While traditional continual learning methods [5, 9, 22] focus on weight preservation — whether through elastic weight consolidation, synaptic intelligence, or episodic memory — our approach targets the routing level. Prior work on sparse model adaptation [23] and knowledge transfer across domains [25, 26] demonstrates that architectural routing structure itself can serve as a mechanism for preserving specialization; our framework operationalizes this insight through explicit transition dynamics control rather than post-hoc weight regularization.
 
-Taken together, these perspectives highlight that Nomadic routing is not an incremental modification of MoE, but a reframing of routing as a temporally structured control problem under non-stationary conditions.
+Taken together, these perspectives position Nomadic Routing not as a modification of existing MoE methods, but as a reframing of routing as a control problem over transition dynamics under non-stationary conditions.
 
 ### 1.2 Contributions
 
-We reinterpret MoE routing as a temporally structured control problem and show that its effectiveness depends on an intermediate regime of change pressure. Our contributions are as follows:
+We reformulate MoE routing as a control problem over transition dynamics and show that its effectiveness depends on an intermediate regime of change pressure. Our contributions are as follows:
 
 - We propose **Nomadic Routing**, a framework that models expert routing as a temporally structured control process rather than a stateless selection mechanism.
-- We introduce a hybrid transition signal (Δx) and a dwell-time mechanism that enable adaptive switching and stable fixation under changing conditions.
+- We introduce a structural separation between the hybrid change signal (Δx), which measures environmental uncertainty, and the switching signal (Φ), which approximates the free energy differential between maintaining and revising the current routing policy — a distinction that enables adaptive switching and stable fixation under changing conditions.
 - We empirically demonstrate that the effectiveness of routing depends on an intermediate regime of change pressure, identifying boundary conditions where the approach succeeds or fails.
 - We validate the framework across synthetic tasks, real-world time series, and language modeling, showing consistent behavioral patterns across domains.
+- We demonstrate that predictive accuracy and transition structure are separable objectives, requiring different inductive biases (see §4.10).
 
 ---
 
@@ -77,6 +85,8 @@ where g_t is the gate distribution, optionally modified by PolicyNet.
 
 ### 2.2 Hybrid Change Signal (Δx)
 
+Δx serves as an evidence signal contributing to the posterior comparison implemented by Φ.
+
 The hybrid change signal combines environmental shift and prediction error:
 
 $$\Delta x_t^{\text{env}} = \| \bar{x}_t - \bar{x}_{t-1} \|_2$$
@@ -91,24 +101,86 @@ Both components are provided as separate channels to GateNet: [x, Δx_hybrid, Δ
 
 ### 2.3 Uncertainty-Modulated Switching (Φ)
 
-Φ is a scalar switching pressure computed from four terms:
+#### Conceptual Motivation
+
+The separation between Δx and Φ is structural rather than cosmetic. Δx measures *whether* the environment has changed — it is a signal about the world. Φ addresses a different question: *given that change is occurring, should the current routing policy be revised?*
+
+This corresponds to a decision-theoretic comparison between maintaining the current expert assignment and transitioning to an alternative. We interpret Φ as a control variable that governs this trade-off.
+
+Formally, we define Φ as approximating the **difference in expected free energy** between two actions:
+
+$$\Phi_t \approx \mathcal{F}_t(\text{stay}) - \mathcal{F}_t(\text{switch})$$
+
+When $\Phi_t > 0$, transitioning reduces expected free energy; when $\Phi_t \approx 0$, the current assignment remains near-optimal, leading to stable fixation.
+
+#### Theoretical Mapping
+
+We further interpret Φ as a **functional approximation to a log-posterior ratio**:
+
+$$\Phi_t \approx \log \frac{P(\text{switch} \mid \mathcal{D}_t)}{P(\text{stay} \mid \mathcal{D}_t)}$$
+
+where $\mathcal{D}_t$ denotes the current observation context.
+
+Under mild assumptions (e.g., independent evidence sources and locally linear aggregation), this log-ratio can be approximated as a weighted sum of evidence terms:
+
+$$\Phi_t \propto \sum_i s_i \cdot \phi_i(\cdot)$$
+
+where $s_i$ controls the **precision (confidence)** of each information source.
+
+#### Operationalization
+
+In practice, Φ is computed as:
 
 $$\Phi_t = \tanh\left(s_{\text{env}} \cdot \Delta x^{\text{env}} + s_{\text{err}} \cdot \Delta x^{\text{err}} + s_{\text{exp}} \cdot \mathcal{L}_{\text{task}} + s_{\text{gap}} \cdot \text{gap}_t \right)$$
 
-where gap_t = ReLU(err_top1 − err_best) measures how much better the best available expert would do versus the currently routed expert. The adaptive temperature is then:
+where:
+
+- $\Delta x^{\text{env}}$ — *Environmental prior*: captures distributional shift, reducing the prior probability that the current expert remains valid.
+- $\Delta x^{\text{err}}$ — *Likelihood update*: reflects evidence that the current expert's predictive likelihood has degraded relative to its recent baseline.
+- $\mathcal{L}_{\text{task}}$ — *Absolute error signal*: indicates global mismatch between model predictions and observations.
+- $\text{gap}_t$ — *Lower bound of expected information gain*: measures the performance deficit between the current expert and the best available alternative:
+
+$$\text{gap}_t = \text{ReLU}(\epsilon_{\text{top1}} - \epsilon_{\text{best}})$$
+
+This term directly approximates the utility of switching.
+
+#### Interpretation
+
+Each component of Φ corresponds to a distinct aspect of Bayesian inference:
+
+| Component | Role |
+|---|---|
+| $\Delta x^{\text{env}}$ | Prior shift (epistemic uncertainty) |
+| $\Delta x^{\text{err}}$ | Likelihood evidence |
+| $\mathcal{L}_{\text{task}}$ | Absolute model mismatch |
+| $\text{gap}_t$ | Expected information gain (decision utility) |
+
+Together, these terms approximate the question: *Is the expected cost of remaining with the current expert greater than the expected cost of switching?*
+
+Importantly, Φ does **not** compute an exact posterior, as doing so would require maintaining full distributions over all experts. Instead, it preserves the **directional structure of Bayesian inference** in a computationally tractable form.
+
+#### Control Effect on Routing
+
+Φ modulates routing entropy through temperature control:
 
 $$\tau_t^{\text{temp}} = \tau_{\text{stable}} + (\tau_{\text{transition}} - \tau_{\text{stable}}) \cdot \Phi_t$$
 
-High Φ → high temperature → high routing entropy (transition mode).  
-Low Φ → low temperature → concentrated routing (stable/fixation mode).
+- High Φ → high temperature → high entropy → **transition mode**
+- Low Φ → low temperature → low entropy → **Homeomorphic Fixation mode**
 
-**Interpretation as a behavioral proxy for information gain.** Each component of Φ approximates a distinct facet of the expected benefit from switching the current routing assignment. $\Delta x^{\text{env}}$ signals that the input distribution has shifted, making the current expert's representational basis less reliable — an environmental prior that a transition would reduce epistemic mismatch. $\Delta x^{\text{err}}$ captures relative prediction degradation: it is positive only when current error *exceeds the model's own recent trend*, functioning as a signal that the current expert has lost predictive coverage. $\mathcal{L}_{\text{task}}$ provides an absolute task-loss signal: high loss indicates the current routing configuration is informationally insufficient. $\text{gap}_t$ is the most direct term — it measures the *counterfactual gain* available from switching to the best-performing expert, and is structurally equivalent to a lower bound on expected information gain from a routing transition.
+This establishes Φ as a **continuous transition gate** rather than a binary switching trigger.
 
-Computing true information gain would require tracking parameter posteriors across experts, which is computationally prohibitive in this setting. The four-term composite is therefore a tractable behavioral proxy: it preserves the directional question of information gain — *is there reason to believe a different internal representation would better account for the current input?* — without requiring explicit posterior inference. Critically, this proxy inverts the typical role of prediction error: rather than treating Δx as noise to be suppressed, the composite uses it as navigational signal — a system that responds to high Φ by exploring alternative routing is one that treats distributional difference as evidence for a routing transition rather than as residual to be minimized.
+#### Why Not Information-Geometric Φ?
 
-The empirical preference for this design over pure information-geometric alternatives (JSD, KL; see §4.7) stems from a structural property: when the gate fixates, $\bar{g}_t \approx \bar{g}_{t-1}$ and divergence-based signals collapse to zero precisely when the dwell-time regularizer requires sustained switching pressure. The $\text{gap}_t$ term in the composite avoids this collapse by measuring the task-level explanation deficit directly rather than routing distribution distance. The formal relationship between Φ and mutual information or a proper Bayesian posterior update has not been established and remains an open theoretical question.
+Divergence-based alternatives (e.g., KL or JSD between gate distributions) fail under stable fixation:
 
-We treat $\beta_\phi$ as a hyperparameter scaling the contribution of Φ to the gating objective. Empirical sweep results are reported in §4.2.
+$$\bar{g}_t \approx \bar{g}_{t-1} \;\Rightarrow\; D(\bar{g}_t \,\|\, \bar{g}_{t-1}) \approx 0$$
+
+This causes switching pressure to collapse precisely when the dwell-time constraint requires it. The inclusion of $\text{gap}_t$ resolves this issue by providing a **task-level signal** that remains informative even when routing distributions are stationary. Empirical comparison against JSD, KL, and heterogeneity-based variants is reported in §4.7.
+
+#### Limitations
+
+The relationship between Φ and a formally derived Bayesian posterior or mutual information objective is not exact and remains an open question. We therefore interpret Φ as a **structured approximation** to the decision variable governing routing transitions, rather than a fully derived probabilistic quantity (see §5.3). We treat $\beta_\phi$ as a hyperparameter scaling Φ's contribution to the gating objective; empirical sweep results are reported in §4.2.
 
 ### 2.4 Dynamic Dwell-Time Constraint (τₖ)
 
@@ -152,6 +224,8 @@ where:
 - $\mathcal{L}_{\text{sep}}$: gate centroid separation loss, encouraging regime-differentiated routing (λ = 0.08)
 - $\mathcal{L}_{\text{cons}}$: within-regime gate consistency loss (λ = 0.03)
 - $\mathcal{L}_{\text{policy}}$: cross-entropy on PolicyNet's three output heads
+
+The switching signal Φ enters the objective indirectly: it modulates the routing temperature (§2.3), shaping the gate distribution that all loss terms act upon, and contributes to the gating objective scaled by $\beta_\phi$ (§4.2).
 
 ---
 
@@ -321,6 +395,8 @@ Sharing patterns differ by seed but are internally consistent within each run, i
 
 ### 4.5 Preliminary: Signal Transfer to LLMs (Gemma-4-E2B and Gemma-4-26B)
 
+These results should not be interpreted as improvements in language modeling performance, but as evidence that the proposed signal produces consistent behavioral patterns across scales.
+
 The experiments in §4.1–4.4 establish Nomadic Intelligence's behavior in a controlled synthetic setting. A natural next question is whether the core signal layer generalizes to large-scale autoregressive models — a direction we treat here as a **preliminary proof-of-concept, not a performance claim**. The experiments in this section and §4.6 are exploratory: they ask whether the Nomadic signal components can be transplanted onto existing LLMs and produce behaviorally interpretable outputs across model scales. Rigorous benchmarking, ground-truth phase labeling, and parameter-matched LLM comparisons are deferred to future work.
 
 We conducted two experiments: (1) signal transplant onto Gemma-4-E2B (2B parameters, 4-bit NF4, Colab T4) with heuristic stable/transition/creative prompt categories; (2) signal transplant onto Gemma-4-26B (A4B, 4-bit NF4, Colab A100) with task-domain LoRA experts (math / code / language). In both cases, the hidden state of the final token at each generation step serves as `current_x`, and model uncertainty (1 − top1 probability) serves as `current_err`. All Nomadic components operate as a lightweight wrapper with no architectural modification to the base model.
@@ -413,7 +489,7 @@ Phi_JSD_v2 partially addresses this by computing per-sample routing heterogeneit
 
 Phi_Switch (end-to-end learned Φ) collapses across seeds (Seq MSE 0.441 ± 0.181) with the PolicyNet switch head saturating at switch probability 1.0 within the first 25 epochs — confirming the training instability noted in §5.3 and motivating RL-based policy learning as future work.
 
-The experiment provides post-hoc empirical justification for the EMA composite design: the combination of environment change detection ($\Delta x^\text{env}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_\text{task}$) is necessary for sustained switching pressure during stable phases. Neither component alone suffices. The remaining theoretical gap — formalizing Φ's relationship to mutual information or a proper Bayesian posterior — is deferred to future work (see §5.3).
+The experiment provides post-hoc empirical justification for the EMA composite design: the combination of environment change detection ($\Delta x^\text{env}$) and task-level explanation deficit ($\text{gap}_t + \mathcal{L}_\text{task}$) is necessary for sustained switching pressure during stable phases. Neither component alone suffices. The remaining theoretical gap — establishing the precise conditions under which the four-term composite constitutes a valid lower bound on expected free energy reduction from a routing transition — is deferred to future work (see §5.3).
 
 ### 4.8 Task Generalization
 
@@ -512,6 +588,12 @@ The experiments in §4.1–4.9 establish that temporal structure improves routin
 
 **Interpretation.** The GRU baseline establishes that implicit temporal learning is *sufficient for Seq MSE improvement* but *insufficient for homeomorphic fixation*. The distinction is not merely quantitative: GRU's partial entropy reduction (ΔH 0.354, Stable H 0.365) represents a model that has learned to hedge across experts during transitions but cannot commit to a single expert during stable phases. Nomadic's explicit dwell-time regularizer and PolicyNet create the pressure for stable-phase fixation that GRU's gradient-only learning does not achieve. This confirms the central design claim: the behavioral signature of structured adaptive fixation requires explicit transition dynamics control, not just temporal information.
 
+Although GRU achieves lower Seq MSE, this result highlights a key distinction:implicit temporal encoding is sufficient for prediction, but insufficient for producing structured transition behavior.
+
+GRU learns to interpolate across regimes, whereas Nomadic Routing enforces explicit transition dynamics, leading to faster switching, stronger fixation, and higher entropy differentiation. This suggests that predictive accuracy and transition structure are separable objectives, requiring different inductive biases.
+
+This result highlights a fundamental trade-off: models optimized for prediction accuracy may implicitly smooth over transitions, whereas explicit transition control preserves structural interpretability of regime changes.
+
 ---
 
 ### 4.11 Real Non-Stationary Time Series
@@ -548,7 +630,7 @@ On **Bitcoin**, log-return prediction is near-random (MSE ≈ 1.0, consistent wi
 
 The 24-step ETTh1 result occupies a middle regime: prediction error is large enough to activate Δx_err, and the physical system (transformer load) has sufficiently structured regime transitions (avg. stable run ~85 steps) to permit partial regime discrimination. The MSE gain under this condition suggests that the Φ mechanism contributes to routing quality even when full homeomorphic fixation is not achieved.
 
-Across all three real-world conditions, no negative transfer is observed in the MSE-favorable cases, and the failure modes are consistent with those identified in synthetic task generalization (§4.8). We make no claim that the current Δx design is calibrated for real-world deployment; the results establish the boundary of its operating regime rather than its general applicability.
+Across all three real-world conditions, no negative transfer is observed in the MSE-favorable cases, and the failure modes are consistent with those identified in synthetic task generalization (§4.8). These results identify the operational regime of the method rather than its limitations.
 
 ---
 
@@ -583,6 +665,8 @@ To isolate which components drive the MSE improvement observed in §4.11, we per
 
 **Summary.** The ETTh1 ablation confirms that Δx_err is the most robust contributor across all conditions. PolicyNet and L_cons contribute conditionally, with their effectiveness depending on signal quality and intra-regime variation structure. L_dwell requires redesign for continuous time series settings. The hyperparameter values validated on synthetic data (λ_cons=0.03, τₖ_min=3) are not directly transferable to real environments — finding optimal values for each deployment context is deferred to future work.
 
+The inactivity of L_dwell in continuous environments highlights that dwell-time constraints are most relevant in discretely structured regimes, and suggests that alternative formulations are needed for continuous domains.
+
 ---
 
 ## 5 Discussion
@@ -597,13 +681,15 @@ This observation suggests that the framework operates within a specific regime o
 
 ### 5.2 Routing as a control problem
 
-The results support a reinterpretation of expert routing as a control problem over transitions. Instead of focusing solely on selecting the best expert at each step, the framework emphasizes managing the timing and structure of transitions between experts. The hybrid signal Δx serves as an indicator of change, while dwell-time constraints regulate commitment, enabling a balance between stability and adaptability.
+The results support a reinterpretation of expert routing as a control problem over transitions. Instead of focusing solely on selecting the best expert at each step, the framework emphasizes managing the timing and structure of transitions between experts.
 
-This perspective differs from approaches that rely primarily on static gating or weight-based adaptation, and suggests that temporal structure plays a meaningful role in routing behavior under non-stationary conditions.
+Central to this reinterpretation is the structural separation between Δx and Φ. Δx functions as an environmental sensor — it detects that the world has changed. Φ functions as a decision variable — it determines whether that change is informative enough to warrant revising the current routing policy, approximating the free energy differential between staying and switching. This separation allows the system to distinguish between noise (high Δx, low Φ) and genuine regime transitions (high Δx, high Φ), a distinction that stateless gating cannot make. Dwell-time constraints then regulate commitment, enabling a balance between stability and adaptability.
+
+This perspective differs from approaches that rely primarily on static gating or weight-based adaptation, and suggests that temporal structure — specifically, the explicit modeling of transition timing as a separate control objective — plays a meaningful role in routing behavior under non-stationary conditions.
 
 ---
 
-### 5.2b Homeomorphic Fixation as Empirical Signature
+### 5.3 Homeomorphic Fixation as Empirical Signature
 
 The most striking result in Table 1 is the collapse of Stable Entropy to 0.108 in Nomadic Full. During stable phases, the gate becomes near-deterministic — converging to a single expert with high confidence. During transition phases, it reverts to high entropy (0.896), exploring across experts.
 
@@ -623,7 +709,7 @@ Standard MoE shows almost no entropy differentiation (ΔH = 0.033), confirming t
 
 **Oracle upper bound is not tight.** The regime-specialist Oracle (§4.10) trains each expert on stable-phase data only and routes via dominant regime labels. Because transition batches carry linearly-interpolated labels that no single regime expert can optimally approximate, Oracle MSE (0.330) exceeds Nomadic Full's (0.215). A stronger Oracle using α-weighted expert mixtures for transition batches would provide a tighter upper bound and is deferred to future work.
 
-**Φ design: theoretical gap.** Φ is operationalized as a composite behavioral proxy for expected information gain (§2.3). The comparative experiment (§4.7) provides post-hoc empirical justification: pure information-geometric variants (JSD, KL) fail to maintain switching pressure during stable phases because gate divergence vanishes when the system fixates, while the EMA composite sustains nonzero Φ through the task-aware gap_t term. However, the formal relationship between the composite Φ and mutual information or a proper Bayesian posterior update under a specified generative model has not been established. Formalizing this connection — specifically, whether std_i[JSD(g_i ‖ ḡ_t)] can be interpreted as a lower bound on expected information gain from a policy revision — is deferred to future work.
+**Φ design: theoretical gap.** Φ is operationalized as a composite approximation of the free energy differential between staying with the current routing policy and transitioning to a new one (§2.3). The comparative experiment (§4.7) provides post-hoc empirical justification: pure information-geometric variants (JSD, KL) fail to maintain switching pressure during stable phases because gate divergence vanishes when the system fixates, while the EMA composite sustains nonzero Φ through the task-aware $\text{gap}_t$ term. The conceptual motivation — treating Φ as a Bayesian cost-benefit comparison rather than a raw uncertainty measure — is laid out in §2.3; however, the formal derivation of this correspondence under a specified generative model has not been established. In particular, the precise conditions under which the four-term composite constitutes a valid lower bound on expected free energy reduction from a routing transition remain an open question. Formalizing this connection is deferred to future work.
 
 ---
 
@@ -631,7 +717,7 @@ Standard MoE shows almost no entropy differentiation (ΔH = 0.033), confirming t
 
 Future work may explore extensions of the framework in several directions.
 
-**Principled transition signal formulation.** The current Φ composite is empirically motivated (§4.7); formalizing its relationship to mutual information or Bayesian posterior updates under a specified generative model remains an open theoretical problem. One concrete avenue is deriving Φ from a per-sample routing heterogeneity measure, connecting $\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$ to expected information gain from a policy revision.
+**Principled transition signal formulation.** The current Φ composite is empirically motivated (§4.7) and conceptually framed as a free energy differential (§2.3); formalizing this correspondence under a specified generative model remains an open theoretical problem. One concrete avenue is deriving Φ from a per-sample routing heterogeneity measure, connecting $\text{std}_i[\text{JSD}(g_i \| \bar{g}_t)]$ to expected free energy reduction from a policy revision, and establishing whether the four-term composite constitutes a valid lower bound on this quantity.
 
 **RL-based policy learning.** The current PolicyNet is trained via a heuristic teacher signal. A natural extension is to replace this with a reinforcement learning objective that directly optimizes transition timing. One formulation treats routing as a three-term reward problem:
 
@@ -647,15 +733,17 @@ where $R_{\text{sync}}$ rewards low-latency response to Δx, $P_{\text{dogma}}$ 
 
 ## 6 Conclusion
 
-We introduced Nomadic Routing, a framework that treats expert routing as a temporal transition dynamics control problem. The core contribution is architectural: by treating Δx as an energy source, introducing dynamic dwell-time constraints, and enabling explicit meta-level switching decisions via PolicyNet, the system learns to differentiate its routing behavior between stable and transitional phases of the environment.
+In this work, we reformulate expert routing in mixture-of-experts models as a control problem over transition dynamics, rather than a stateless selection mechanism. This shift in perspective allows routing to be understood not only in terms of which expert to select, but in terms of when to remain, when to switch, and how to structure transitions under non-stationary conditions.
 
-The key empirical finding is that the largest performance gains come not from model capacity but from temporal structure. Δx-based meta-control alone reduces Seq MSE by 38% over standard MoE (0.410 → 0.255). PolicyNet adds a further 36% reduction (0.255 → 0.162), accompanied by a distinctive collapse in stable-phase gate entropy — the behavioral signature of *homeomorphic fixation*. A parameter-matched Standard MoE (23,538 params vs. Nomadic Full's 23,053) achieves 28× less entropy differentiation, confirming that the gains stem from temporal control rather than capacity. A GRU-gated baseline with more parameters (26,502) achieves lower raw Seq MSE through implicit temporal learning (0.105 vs. 0.215) but produces ΔH of only 0.354 vs. Nomadic's 0.755 — establishing that implicit recurrence is sufficient for prediction improvement but insufficient for homeomorphic fixation, which requires explicit transition dynamics control.
+Central to this reformulation is a structural separation between two signals. The hybrid change signal Δx measures whether the environment has shifted — it is an environmental sensor. The switching signal Φ determines whether that shift is informative enough to warrant a routing revision, approximating the free energy differential between maintaining and revising the current policy. This separation allows the system to distinguish noise from genuine regime transitions, enabling adaptive switching when warranted and stable fixation otherwise. A dynamic dwell-time constraint and PolicyNet complete the framework, regulating commitment and meta-level routing decisions over time.
 
-LLM experiments on Gemma-4-E2B and Gemma-4-26B confirm mechanical transferability of the signal layer. On Gemma-4-26B with task-domain LoRA experts, Nomadic Full achieves the lowest Stable Entropy (0.177) and 19.4% lower language-domain perplexity than DynamicTemp alone (1.948 vs. 2.399), with a 22.8% reduction in repetition rate in the stable domain — confirming that generation quality improvement comes from temporal routing structure rather than entropy magnitude alone. These results are treated as directional evidence of transferability, not performance claims.
+Across synthetic and real-world experiments, we show that the effectiveness of this formulation depends on an intermediate regime of change pressure. Under these conditions, the model exhibits structured transition behavior characterized by near-deterministic fixation during stable phases and adaptive switching during transitions — a pattern we term *homeomorphic fixation*, in which routing identity is preserved as a consistent response law rather than a fixed assignment.
 
-Real time series experiments reveal a prediction pressure boundary condition. On ETTh1 24-step-ahead prediction — where error is sustained and structured regime transitions exist — Nomadic Full achieves 13.9% lower Seq MSE than Standard MoE without hyperparameter adjustment. On ETTh1 1-step-ahead and Bitcoin, where prediction error is near-zero or structurally irreducible, the Φ signal fails to activate. This boundary is consistent with the synthetic task generalization failures (§4.8) and places an empirical lower bound on the environmental conditions required for transition dynamics control to operate.
+Our results further demonstrate that predictive accuracy and transition structure are separable objectives. While recurrent approaches such as GRU-based routing achieve lower prediction error through implicit temporal encoding, they do not produce the same degree of structured transition behavior. Explicit control over transition dynamics — through the Δx/Φ separation, dwell constraints, and policy-level routing — introduces a distinct inductive bias that implicit temporal learning does not replicate.
 
-These findings suggest that routing performance is influenced not only by representational capacity, but also by how transition dynamics are utilized. Rather than proposing a universal replacement for existing MoE methods, our results highlight a complementary perspective: temporally aware routing provides benefits when the underlying dynamics are sufficiently structured. We hope this work motivates further exploration of routing as a control problem and encourages investigation of the conditions under which such approaches are most effective.
+The empirical findings identify the operational regime of the framework. In environments with insufficient or excessive change — continuous drift, high-frequency volatility, or noise-dominated signals — the free energy differential collapses, and the benefits of explicit control diminish. These results delineate the conditions under which transition-aware routing is meaningful, rather than representing failures of the framework.
+
+Finally, this work opens several directions for future research. Formalizing the relationship between the Φ composite and a proper Bayesian posterior update, extending dwell-time constraints to continuous domains, and integrating transition-aware routing into large-scale architectures remain open problems. More broadly, viewing routing as a control problem over free energy differentials suggests a shift in how adaptive systems are designed: from optimizing static selection rules toward regulating the dynamics of change itself.
 
 ---
 
