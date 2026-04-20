@@ -195,7 +195,7 @@ If that commitment is shared, the framework is open. If it is not, that disagree
 
 | Framework | Core claim | Relation to Nomadic Intelligence |
 |---|---|---|
-| Friston's Active Inference | Intelligence minimizes free energy (prediction error) | Direct contrast: NI treats Δx as energy source, not error to suppress |
+| Friston's Active Inference | Intelligence minimizes free energy (prediction error) | Generalization: NI incorporates FEP as a boundary case for stable environments while utilizing $\Delta x$ as a navigational signal for transitions. |
 | Deleuze's Nomadology | Thought as movement across smooth space | Philosophical ancestor; NI formalizes the mechanism |
 | Buddhist dependent origination | Identity through relational arising | Structural parallel: identity as transformation law, not fixed essence |
 | MoE / Meta-learning | Improve selection or adaptation speed | NI extends these by adding explicit transition dynamics |
