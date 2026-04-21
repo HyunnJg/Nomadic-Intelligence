@@ -1,7 +1,0 @@
-model,corr_gap_switch_rate,corr_finalSwitch_switch_rate,corr_rawSwitch_switch_rate
-Vanilla,,,
-DynamicTemp,,,
-StaticLoRA,,,
-FixedRouting,,,
-Nomadic_NoDx,,,
-Nomadic_Full,-0.1089,0.9555,0.9512

@@ -1,6 +1,0 @@
-{
-  "MODEL_KEY": "llama_8b",
-  "MODEL_PATH": "/content/drive/MyDrive/models/Meta-Llama-3.1-8B-base",
-  "RUN_DIR": "/content/drive/MyDrive/nomadic_llm_results/llama_8b_20260420_154642",
-  "HIDDEN_DIM": 4096
-}
