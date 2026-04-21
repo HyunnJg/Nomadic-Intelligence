@@ -1,0 +1,7 @@
+model,raw_stable,raw_transition,ΔRawSwitch,final_stable,final_transition,ΔFinalSwitch,gap_stable,gap_transition,ΔGap
+DynamicTemp,,,,,,,,,
+FixedRouting,,,,,,,,,
+Nomadic_Full,0.2808,0.3237,0.042899999999999994,0.2954,0.3393,0.043899999999999995,0.1018,0.1565,0.0547
+Nomadic_NoDx,,,,,,,,,
+StaticLoRA,,,,,,,,,
+Vanilla,,,,,,,,,

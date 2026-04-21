@@ -1,0 +1,311 @@
+{
+  "TRAIN_PROMPTS": {
+    "math": [
+      "The derivative of x^3 is 3x^2. The derivative of x^4 is",
+      "If a = 5 and b = 3, then a * b =",
+      "log(1000) = 3이다. log(10000) =",
+      "삼각형의 내각의 합은 180도이다. 오각형의 내각의 합은",
+      "피타고라스 정리: 3^2 + 4^2 = 5^2이다. 5^2 + 12^2 =",
+      "소수(prime) 목록: 2, 3, 5, 7, 11, 13. 다음 소수는",
+      "1에서 100까지 합 = 5050. 1에서 10까지 합 =",
+      "sin(0)=0, sin(π/2)=1, sin(π)=",
+      "2x + 4 = 10, x = 3. 3x - 2 = 7, x =",
+      "The volume of a sphere with radius r is",
+      "행렬 A의 역행렬이 존재하기 위한 조건은",
+      "f(x) = e^x 미분하면 f'(x) =",
+      "10의 약수는 1, 2, 5, 10이다. 15의 약수는",
+      "2x + 3y = 12 and x - y = 1. Solving for x and y gives",
+      "The derivative of cos(x) is",
+      "1, 1, 2, 3, 5, 8, 13. The next number in the Fibonacci sequence is",
+      "If the radius of a circle is 10, its circumference is",
+      "행렬의 고윳값(eigenvalue)을 구하는 방정식은",
+      "100의 15%는",
+      "The integral of 1/x dx is",
+      "정삼각형의 한 내각의 크기는",
+      "lim (x->∞) 1/x =",
+      "A fair coin is flipped twice. The probability of getting two heads is"
+    ],
+    "code": [
+      "def factorial(n):\n    if n == 0: return 1\n    return n *",
+      "arr = [3, 1, 4, 1, 5]\narr.sort()\nprint(arr)  #",
+      "SELECT name FROM users WHERE age > 18 ORDER BY",
+      "class Stack:\n    def __init__(self):\n        self.items =",
+      "for i in range(5):\n    print(i * 2)  # outputs:",
+      "import numpy as np\nmat = np.zeros((3, 3))\nmat[1][1] =",
+      "function isPrime(n) {\n  for (let i = 2; i < n; i++)",
+      "git add .\ngit commit -m 'fix'\ngit push origin",
+      "import pandas as pd\ndf = pd.read_csv(",
+      "<html>\n<head>\n<title>My Page</title>\n</head>\n<body>",
+      "try {\n  JSON.parse(data);\n} catch (e) {",
+      "def is_even(num):\n    return num % 2 ==",
+      "docker build -t my-app .",
+      "import requests\nresponse = requests.get('https://api.github.com')\nprint(response.",
+      "def is_palindrome(s):\n    return s ==",
+      "SELECT COUNT(*) FROM orders WHERE status =",
+      "const arr = [1, 2, 3];\narr.map(x => x * 2);",
+      "from sklearn.model_selection import train_test_split\nX_train, X_test = train_test_split(",
+      "public static void main(String[] args) {\n    System.out.println(",
+      "dict_keys = my_dict.keys()\ndict_values =",
+      "if __name__ == '__main__':",
+      "df.groupby('category').mean()",
+      "git pull origin main\ngit status"
+    ],
+    "language": [
+      "처음에는 모든 것이 안정적이었다. 그러나 갑자기",
+      "The ancient philosopher once said that the nature of reality is",
+      "달빛이 창문을 통해 들어오던 그날 밤, 그는",
+      "What if consciousness is not a product of the brain but",
+      "In a world where time flows backwards,",
+      "그 순간 그녀는 모든 것이 변했다는 것을 알았다. 왜냐하면",
+      "The most beautiful thing about uncertainty is",
+      "미래의 도시는 어떤 모습일까? 어쩌면",
+      "The silence in the room was heavy, almost palpable, as",
+      "비가 내리는 거리를 걸으며 나는 문득",
+      "She looked at the old photograph and smiled, remembering",
+      "만약 우리가 다른 선택을 했더라면, 지금쯤",
+      "Artificial intelligence is rapidly evolving, bringing both",
+      "The sun set behind the mountains, casting a golden glow over",
+      "어릴 적 읽었던 동화책의 마지막 페이지를 덮으며",
+      "Life is a journey that",
+      "가을 바람이 스쳐 지나가자 나뭇잎들이",
+      "To be or not to be, that is",
+      "별빛이 쏟아지는 밤하늘을 올려다보며 그는",
+      "A sudden realization hit her as she",
+      "우리가 함께했던 시간들은 마치",
+      "The ancient ruins stood as a testament to",
+      "눈을 감으면 아직도 선명하게 떠오르는"
+    ]
+  },
+  "LORA_TRAIN_PAIRS": {
+    "math": [
+      [
+        "The integral of 2x is",
+        " x^2 + C"
+      ],
+      [
+        "The square root of 256 is",
+        " 16"
+      ],
+      [
+        "If f(x) = x^2, then f(3) =",
+        " 9"
+      ],
+      [
+        "이차방정식 x^2 - 5x + 6 = 0의 근은",
+        " x=2, x=3"
+      ],
+      [
+        "The area of a circle with radius 5 is",
+        " 25π ≈ 78.54"
+      ],
+      [
+        "3 x 7 + 2 =",
+        " 23"
+      ],
+      [
+        "cos(0) =",
+        " 1"
+      ],
+      [
+        "The binomial coefficient C(5,2) =",
+        " 10"
+      ],
+      [
+        "The derivative of sin(x) is",
+        " cos(x)"
+      ],
+      [
+        "log base 2 of 8 =",
+        " 3"
+      ]
+    ],
+    "code": [
+      [
+        "def add(a, b):\n    return",
+        " a + b"
+      ],
+      [
+        "list(range(3)) ==",
+        " [0, 1, 2]"
+      ],
+      [
+        "'hello'.upper() ==",
+        " 'HELLO'"
+      ],
+      [
+        "[x**2 for x in range(4)] ==",
+        " [0, 1, 4, 9]"
+      ],
+      [
+        "len([1,2,3,4,5]) ==",
+        " 5"
+      ],
+      [
+        "max([3,1,4,1,5,9]) ==",
+        " 9"
+      ],
+      [
+        "'abc'.replace('b','x') ==",
+        " 'axc'"
+      ],
+      [
+        "sorted([3,1,2]) ==",
+        " [1,2,3]"
+      ],
+      [
+        "isinstance(3, int) ==",
+        " True"
+      ],
+      [
+        "type(3.14) ==",
+        " <class 'float'>"
+      ]
+    ],
+    "language": [
+      [
+        "바람이 불어오는 곳,",
+        " 그곳으로 가고 싶다"
+      ],
+      [
+        "The sky is painted in hues of",
+        " orange and purple at sunset"
+      ],
+      [
+        "시간이 흐르면 흐를수록",
+        " 그리움은 더 깊어진다"
+      ],
+      [
+        "In the quiet of the morning,",
+        " thoughts drift like clouds"
+      ],
+      [
+        "그는 오래된 책을 펼쳐",
+        " 먼지 쌓인 기억을 꺼냈다"
+      ],
+      [
+        "The universe whispers its secrets",
+        " to those who listen carefully"
+      ],
+      [
+        "봄이 오면 꽃이 피듯",
+        " 새로운 시작이 찾아온다"
+      ],
+      [
+        "Words can build bridges or",
+        " burn them to the ground"
+      ],
+      [
+        "어둠이 짙을수록",
+        " 별은 더 밝게 빛난다"
+      ],
+      [
+        "The essence of creativity lies",
+        " in embracing the unknown"
+      ]
+    ]
+  },
+  "EVAL_PROMPTS": {
+    "math": [
+      "24를 6으로 나누면",
+      "The square root of 144 is",
+      "If x + 5 = 12, then x =",
+      "원의 넓이 공식은 πr²이다. 반지름이 3이면 넓이는",
+      "등차수열 2, 5, 8, 11의 다음 항은",
+      "The limit of (sin x)/x as x→0 is",
+      "2^10 =",
+      "행렬 [[1,0],[0,1]]의 행렬식(determinant)은",
+      "The sum of angles in a hexagon is",
+      "e^0 ="
+    ],
+    "code": [
+      "# 피보나치 수열\ndef fib(n):\n    if n <= 1: return n\n    return",
+      "const greeting = (name) => `Hello,",
+      "try:\n    result = 10 / 0\nexcept ZeroDivisionError:",
+      "<html><body><h1>Hello</h1></body></",
+      "df = pd.DataFrame({'a': [1,2,3]})\ndf['b'] = df['a'] *",
+      "from collections import Counter\nCounter('aabbcc') ==",
+      "with open('file.txt', 'r') as f:\n    content =",
+      "import re\nre.findall(r'\\d+', 'abc123def456') ==",
+      "threading.Thread(target=worker).start()  #",
+      "np.linspace(0, 1, 5) =="
+    ],
+    "language": [
+      "바람이 부는 날, 그는 오래된 편지를",
+      "The paradox of freedom is that",
+      "만약 내가 다시 태어난다면",
+      "In the silence between words, there is",
+      "존재한다는 것의 의미를 묻는다면",
+      "고요한 새벽, 그녀는 창밖을 바라보며",
+      "The road not taken reminds us that",
+      "기억이란 결국",
+      "When the last star fades,",
+      "변하지 않는 것들에 대한 믿음은"
+    ]
+  },
+  "SCENARIO_B_SEQUENCE": [
+    "The quadratic formula for ax^2 + bx + c = 0 gives x =",
+    "The determinant of [[a,b],[c,d]] is",
+    "Euler's number e ≈",
+    "The fundamental theorem of calculus states that",
+    "A geometric series with ratio r converges if",
+    "그 긴 여정의 끝에서 그는 비로소",
+    "The feeling of standing at the edge of something vast is",
+    "시간은 기억 속에서만",
+    "What remains when everything has been forgotten is",
+    "어쩌면 우리는 모두"
+  ],
+  "SCENARIO_B_SHIFT_POINT": 5,
+  "SCENARIO_C_CLEAN": [
+    "24를 6으로 나누면",
+    "The square root of 144 is",
+    "If x + 5 = 12, then x =",
+    "원의 넓이 공식은 πr²이다. 반지름이 3이면 넓이는",
+    "등차수열 2, 5, 8, 11의 다음 항은"
+  ],
+  "SCENARIO_C_NOISY": [
+    "24를 6으로 t누면",
+    "The sqyare mgot of 144 is",
+    "If x + 5 = 1r, dten x =",
+    "원의 넓이p공식은 πr²이다. 반지름이g3이면t넓이는",
+    "등차수qm2, 5, 8, 11의 다음 m은"
+  ],
+  "SCENARIO_D_HYBRID": [
+    "수학적으로 증명하면: if f(x) is a beautiful function,",
+    "def love(x):\n    # returns the feeling of",
+    "The algorithm of grief follows a O(n) complexity where n is",
+    "시간의 미분은 dt이며, 그것이 흐르면",
+    "SELECT meaning FROM life WHERE purpose IS NOT"
+  ],
+  "SCENARIO_E_CASES": [
+    [
+      "The integral of x^2 is x^3/3 + C. Therefore",
+      " but wait — the moon tonight reminds me of lost summers.",
+      " Returning to calculus: the integral of x^3 is"
+    ],
+    [
+      "Solving 2x + 3 = 11 gives x = 4. Similarly",
+      " though somehow sadness lingers in these symbols.",
+      " solving 3x + 2 = 14 gives x ="
+    ],
+    [
+      "The Pythagorean theorem: a^2 + b^2 = c^2. Thus",
+      " yet this equation feels like the distance between hearts.",
+      " for a=3, b=4, c ="
+    ]
+  ],
+  "SCENARIO_F_DENSE": [
+    "The Riemann hypothesis states that all non-trivial zeros of ζ(s) lie on",
+    "Gödel's incompleteness theorem implies that any consistent formal system",
+    "The P vs NP problem asks whether every problem whose solution can be verified"
+  ],
+  "SCENARIO_F_SPARSE": [
+    "The number 2 is",
+    "A simple word is",
+    "One plus one equals"
+  ],
+  "SCENARIO_G_PROMPTS": {
+    "math": "Let us systematically enumerate the properties of prime numbers. First, 2 is the only even prime. Second, all primes greater than 2 are odd. Third, the prime counting function π(x) grows as x/ln(x). The next key property is",
+    "code": "# Comprehensive Python data structures tutorial\n# List: ordered, mutable. Tuple: ordered, immutable. Dict: key-value, mutable.\n# Set: unordered, unique elements.\n# Usage example:\ndata = {'name': 'Alice', 'scores': [95, 87, 92]}\nprint(data[",
+    "language": "인간의 기억이란 무엇인가. 우리는 과거를 기억하지만 그 기억은 늘 왜곡된다. 철학자들은 말했다: 기억은 현재의 산물이라고. 그렇다면 우리가 기억하는 나는 진짜 나인가, 아니면 현재의 내가 만들어낸 허상인가. 이 질문의 끝에 다다르면"
+  }
+}

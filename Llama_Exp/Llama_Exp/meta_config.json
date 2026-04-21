@@ -1,0 +1,7 @@
+{
+  "META_DIM": 12,
+  "NUM_EXPERTS": 3,
+  "SWITCH_COST": 0.08,
+  "HARD_MARGIN": 0.15,
+  "policy_net_version": "v2_B_direction"
+}
