@@ -1,0 +1,9 @@
+[WARN] Nomadic_Full ΔH (0.164) vs DynamicTemp ΔH (0.542) 차이가 작음 (< 0.05). LoRA+PolicyNet의 추가 기여가 미미할 수 있음.
+
+[WARN] Nomadic_Full ΔH (0.164) < FixedRouting ΔH (0.244). 동적 라우팅이 정적 라우팅보다 나쁜 결과. PolicyNet 학습 실패 또는 도메인 라우팅이 이미 최적일 가능성.
+
+[WARN] DynamicTemp: mean std_entropy = 0.178 (> 0.15). 결과 재현성이 낮음. N_RUNS 증가 권장.
+
+[WARN] StaticLoRA: mean std_entropy = 0.152 (> 0.15). 결과 재현성이 낮음. N_RUNS 증가 권장.
+
+[WARN] Vanilla: mean std_entropy = 0.265 (> 0.15). 결과 재현성이 낮음. N_RUNS 증가 권장.

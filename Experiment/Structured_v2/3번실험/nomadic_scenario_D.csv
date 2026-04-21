@@ -1,0 +1,7 @@
+﻿model,prompt,oscillation,dominant_expert,switch_rate,mean_dx
+Nomadic_Full,"수학적으로 증명하면: if f(x) is a beautiful function,",0.0,math,0.0,0.4269532083533704
+Nomadic_Full,"def love(x):
+    # returns the feeling of",0.0,math,0.025,0.536297679785639
+Nomadic_Full,The algorithm of grief follows a O(n) complexity w,0.0,math,0.0,0.4196808401422459
+Nomadic_Full,"시간의 미분은 dt이며, 그것이 흐르면",0.0,math,0.0,0.4860938479192555
+Nomadic_Full,SELECT meaning FROM life WHERE purpose IS NOT,0.0,math,0.0,0.41277346923889124

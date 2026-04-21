@@ -1,0 +1,3 @@
+model,condition,mean_entropy,perplexity
+Nomadic_Full,clean,0.1594016452274127,1.2729253670941678
+Nomadic_Full,noisy,0.16373275472942167,1.152004522301633
