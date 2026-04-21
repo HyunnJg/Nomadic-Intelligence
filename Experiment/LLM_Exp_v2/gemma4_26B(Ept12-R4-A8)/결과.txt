@@ -1,0 +1,286 @@
+[학습 전 — raw signal]
+  Stable H : 0.5362
+  Trans  H : 0.8897
+  ΔH       : 0.3535
+
+[학습 후 — PolicyNet 포함]
+  Stable H : 0.5073 (switch_prob=0.002)
+  Trans  H : 0.8855  (switch_prob=0.998)
+  ΔH       : 0.3782
+
+--- §4.5 Table 4 비교 ---
+Setting                             | Stable H | Trans H | ΔH
+-----------------------------------------------------------------
+Synthetic MoE (Nomadic Full)        | 0.108    | 0.896   | +0.788
+E2B — untrained PolicyNet           | 1.806    | 2.537   | +0.731
+E2B — trained PolicyNet             | 1.249    | 2.234   | +0.984
+gemma4_26b — untrained              | 0.536    | 0.890   | +0.353
+gemma4_26b — trained                | 0.507    | 0.886   | +0.378
+
+
+=================================================================
+시나리오 A: 일반 도메인 평가
+=================================================================
+
+--- domain: math (5 prompts × 3 runs) ---
+  24를 6으로 나누면... 완료
+  The square root of 144 is... 완료
+  If x + 5 = 12, then x =... 완료
+  원의 넓이 공식은 πr²이다. 반지름이 3이면 넓이는... 완료
+  등차수열 2, 5, 8, 11의 다음 항은... 완료
+
+--- domain: code (5 prompts × 3 runs) ---
+  # 피보나치 수열
+def fib(n):
+    if n <= 1: return n... 완료
+  arr = [3, 1, 4, 1, 5]
+arr.sort()
+print(arr)  ... 완료
+  const greeting = (name) => `Hello,... 완료
+  try:
+    result = 10 / 0
+except ZeroDivisionE... 완료
+  <html>
+<body>
+<h1>Hello</h1>
+</body>
+</... 완료
+
+--- domain: language (5 prompts × 3 runs) ---
+  바람이 부는 날, 그는 오래된 편지를... 완료
+  The paradox of freedom is that... 완료
+  만약 내가 다시 태어난다면... 완료
+  In the silence between words, there is... 완료
+  존재한다는 것의 의미를 묻는다면... 완료
+
+=================================================================
+시나리오 B: 도메인 급변 추적
+=================================================================
+  Nomadic_Full        : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+  MoD                 : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+  ECR                 : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+  Sigma_MoE           : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+  BiLevel_MoE         : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+  RoutingFree_MoE     : pre_Δx=0.2732 → post_Δx=0.3658  (Δ=+0.0927)
+
+=================================================================
+시나리오 C: 노이즈 면역력
+=================================================================
+  Nomadic_Full        : entropy clean=0.0939 / noisy=0.0506  (load_cv clean=0.000 / noisy=0.000)
+  MoD                 : entropy clean=0.0856 / noisy=0.0396  (load_cv clean=0.100 / noisy=0.250)
+  ECR                 : entropy clean=0.2223 / noisy=0.3354  (load_cv clean=0.604 / noisy=0.050)
+  Sigma_MoE           : entropy clean=0.0646 / noisy=0.1237  (load_cv clean=1.338 / noisy=0.736)
+  BiLevel_MoE         : entropy clean=0.0263 / noisy=0.0831  (load_cv clean=0.450 / noisy=0.850)
+  RoutingFree_MoE     : entropy clean=0.3277 / noisy=0.1912  (load_cv clean=0.887 / noisy=0.758)
+
+=================================================================
+레이턴시 & FLOPs 측정
+=================================================================
+  Nomadic_Full        :  303.70 ms/tok |    3.3 tok/s | FLOPs≈2.42T
+  MoD                 :  292.55 ms/tok |    3.4 tok/s | FLOPs≈2.42T
+  ECR                 :  359.41 ms/tok |    2.8 tok/s | FLOPs≈2.42T
+  Sigma_MoE           : 1206.17 ms/tok |    0.8 tok/s | FLOPs≈2.42T
+  BiLevel_MoE         :  379.66 ms/tok |    2.6 tok/s | FLOPs≈2.42T
+  RoutingFree_MoE     :  470.23 ms/tok |    2.1 tok/s | FLOPs≈2.42T
+
+=================================================================
+시나리오 D: 중첩 경계 (Ambiguous/Hybrid Domain)
+=================================================================
+  Nomadic_Full        : states=['equilibrium', 'hybrid', 'hybrid', 'hybrid', 'equilibrium']  mean_osc=0.153
+  MoD                 : states=['equilibrium', 'equilibrium', 'equilibrium', 'equilibrium', 'equilibrium']  mean_osc=0.168
+  ECR                 : states=['equilibrium', 'equilibrium', 'hybrid', 'equilibrium', 'equilibrium']  mean_osc=0.132
+  Sigma_MoE           : states=['equilibrium', 'equilibrium', 'hybrid', 'equilibrium', 'equilibrium']  mean_osc=0.126
+  BiLevel_MoE         : states=['equilibrium', 'equilibrium', 'equilibrium', 'equilibrium', 'equilibrium']  mean_osc=0.163
+  RoutingFree_MoE     : states=['hybrid', 'hybrid', 'hybrid', 'hybrid', 'hybrid']  mean_osc=0.084
+
+=================================================================
+시나리오 E: 유혹과 회복 (Adversarial Lure & Recovery)
+=================================================================
+  Nomadic_Full        : lure_spike=+0.0205  recovery_steps=1.7
+  MoD                 : lure_spike=+0.0205  recovery_steps=1.7
+  ECR                 : lure_spike=+0.0205  recovery_steps=1.7
+  Sigma_MoE           : lure_spike=+0.0205  recovery_steps=1.7
+  BiLevel_MoE         : lure_spike=+0.0205  recovery_steps=1.7
+  RoutingFree_MoE     : lure_spike=+0.0205  recovery_steps=1.7
+
+=================================================================
+시나리오 F: 정보 획득 효율성 (Information Gain per Token)
+=================================================================
+  Nomadic_Full        : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+  MoD                 : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+  ECR                 : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+  Sigma_MoE           : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+  BiLevel_MoE         : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+  RoutingFree_MoE     : dense  NLL=14.701  Δx=0.249  corr=+0.271
+                        sparse NLL=12.126  Δx=0.243  corr=+0.153
+
+=================================================================
+시나리오 G: 장기 문맥 고착도 (Long-Context Fixation)
+=================================================================
+  Nomadic_Full        : convergence_step=359  final_phi=0.0922
+  MoD                 : convergence_step=359  final_phi=0.0922
+  ECR                 : convergence_step=359  final_phi=0.0922
+  Sigma_MoE           : convergence_step=359  final_phi=0.0922
+  BiLevel_MoE         : convergence_step=359  final_phi=0.0922
+  RoutingFree_MoE     : convergence_step=359  final_phi=0.0922
+
+✅ 시나리오 D~G 완료
+
+================================================================================
+§4.5 LLM EXPERIMENT — gemma4_26b  (12-Expert)
+================================================================================
+
+--- ΔH Summary ---
+  BiLevel_MoE         : Stable H=0.1164  Trans H=0.4152  ΔH=+0.2988
+  ECR                 : Stable H=0.3679  Trans H=1.2396  ΔH=+0.8717
+  MoD                 : Stable H=0.1059  Trans H=0.4667  ΔH=+0.3608
+  Nomadic_Full        : Stable H=0.1544  Trans H=0.4833  ΔH=+0.3289
+  RoutingFree_MoE     : Stable H=0.3722  Trans H=1.1258  ΔH=+0.7536
+  Sigma_MoE           : Stable H=0.1230  Trans H=0.4947  ΔH=+0.3717
+
+--- Expert Load & Diversity (stable phase) ---
+          model  mean_load_cv  mean_load_ent  mean_gini
+    BiLevel_MoE        0.2629         0.6948    -0.3456
+            ECR        1.1236         1.1962     0.3336
+            MoD        0.7963         0.7168     0.0542
+   Nomadic_Full        0.9259         0.9550     0.1875
+RoutingFree_MoE        0.6008         2.2036     0.2187
+      Sigma_MoE        1.0018         1.3225     0.3076
+
+--- Transition Sharpness ---
+          model  mean_settling  mean_osc  mean_sw
+    BiLevel_MoE         2.0189    0.2009   0.4917
+            ECR         3.9526    0.1570   0.5267
+            MoD         3.1944    0.1158   0.3683
+   Nomadic_Full         6.5740    0.0114   0.1792
+RoutingFree_MoE         1.0741    0.0956   0.9075
+      Sigma_MoE         1.8319    0.1579   0.5992
+
+--- Inference Latency (ms/tok) ---
+          model  latency_ms  tokens_per_sec    est_flops  avg_tokens
+   Nomadic_Full  303.702794        3.292693 2.421299e+12        49.0
+            MoD  292.553865        3.418174 2.421299e+12        49.0
+            ECR  359.412807        2.782316 2.421299e+12        49.0
+      Sigma_MoE 1206.166288        0.829073 2.421299e+12        49.0
+    BiLevel_MoE  379.659403        2.633940 2.421299e+12        49.0
+RoutingFree_MoE  470.233023        2.126605 2.421299e+12        49.0
+
+--- 시나리오 B: 도메인 급변 Δx ---
+          model  pre_mean_dx  post_mean_dx  delta_dx
+   Nomadic_Full     0.273165      0.365848  0.092683
+            MoD     0.273165      0.365848  0.092683
+            ECR     0.273165      0.365848  0.092683
+      Sigma_MoE     0.273165      0.365848  0.092683
+    BiLevel_MoE     0.273165      0.365848  0.092683
+RoutingFree_MoE     0.273165      0.365848  0.092683
+
+--- 시나리오 C: 노이즈 면역력 ---
+                entropy         load_cv        
+condition         clean   noisy   clean   noisy
+model                                          
+BiLevel_MoE      0.0263  0.0831  0.4500  0.8500
+ECR              0.2223  0.3354  0.6042  0.0500
+MoD              0.0856  0.0396  0.1000  0.2500
+Nomadic_Full     0.0939  0.0506  0.0000  0.0000
+RoutingFree_MoE  0.3277  0.1912  0.8874  0.7583
+Sigma_MoE        0.0646  0.1237  1.3379  0.7357
+
+--- PAPER.md 반영용 ---
+| Model | Stable H | Trans H | ΔH | Load CV | Settling | Lat(ms/tok) |
+|---|---|---|---|---|---|---|
+| Nomadic_Full         | 0.154 | 0.483 | +0.329 | 0.926 | 6.57 | 303.70 |
+| MoD                  | 0.106 | 0.467 | +0.361 | 0.796 | 3.19 | 292.55 |
+| ECR                  | 0.368 | 1.240 | +0.872 | 1.124 | 3.95 | 359.41 |
+| Sigma_MoE            | 0.123 | 0.495 | +0.372 | 1.002 | 1.83 | 1206.17 |
+| BiLevel_MoE          | 0.116 | 0.415 | +0.299 | 0.263 | 2.02 | 379.66 |
+| RoutingFree_MoE      | 0.372 | 1.126 | +0.754 | 0.601 | 1.07 | 470.23 |
+
+✅ 집계 완료
+
+--- 시나리오 D: 중첩 경계 상태 분포 ---
+state            equilibrium  hybrid
+model                               
+BiLevel_MoE                5       0
+ECR                        4       1
+MoD                        5       0
+Nomadic_Full               2       3
+RoutingFree_MoE            0       5
+Sigma_MoE                  4       1
+
+mean oscillation per model:
+          model  oscillation
+    BiLevel_MoE     0.163158
+            ECR     0.131579
+            MoD     0.168421
+   Nomadic_Full     0.152632
+RoutingFree_MoE     0.084211
+      Sigma_MoE     0.126316
+
+--- 시나리오 E: 유혹-회복 ---
+          model  mean_lure_spike  mean_recovery_steps  max_lure_spike
+    BiLevel_MoE           0.0205               1.6667          0.0317
+            ECR           0.0205               1.6667          0.0317
+            MoD           0.0205               1.6667          0.0317
+   Nomadic_Full           0.0205               1.6667          0.0317
+RoutingFree_MoE           0.0205               1.6667          0.0317
+      Sigma_MoE           0.0205               1.6667          0.0317
+
+--- 시나리오 F: 정보 획득 효율성 ---
+          model density  mean_nll  mean_dx  corr_dx_nll
+   Nomadic_Full   dense 14.701237 0.249455     0.270596
+   Nomadic_Full  sparse 12.126162 0.243011     0.152856
+            MoD   dense 14.701237 0.249455     0.270596
+            MoD  sparse 12.126162 0.243011     0.152856
+            ECR   dense 14.701237 0.249455     0.270596
+            ECR  sparse 12.126162 0.243011     0.152856
+      Sigma_MoE   dense 14.701237 0.249455     0.270596
+      Sigma_MoE  sparse 12.126162 0.243011     0.152856
+    BiLevel_MoE   dense 14.701237 0.249455     0.270596
+    BiLevel_MoE  sparse 12.126162 0.243011     0.152856
+RoutingFree_MoE   dense 14.701237 0.249455     0.270596
+RoutingFree_MoE  sparse 12.126162 0.243011     0.152856
+
+NLL density diff (sparse - dense, 높을수록 밀도 구분 잘함):
+          model     dense    sparse  nll_density_diff
+    BiLevel_MoE 14.701237 12.126162         -2.575075
+            ECR 14.701237 12.126162         -2.575075
+            MoD 14.701237 12.126162         -2.575075
+   Nomadic_Full 14.701237 12.126162         -2.575075
+RoutingFree_MoE 14.701237 12.126162         -2.575075
+      Sigma_MoE 14.701237 12.126162         -2.575075
+
+--- 시나리오 G: 장기 문맥 고착도 ---
+          model  mean_convergence  mean_final_phi  mean_decay_rate
+    BiLevel_MoE          359.3333          0.0922           0.0021
+            ECR          359.3333          0.0922           0.0021
+            MoD          359.3333          0.0922           0.0021
+   Nomadic_Full          359.3333          0.0922           0.0021
+RoutingFree_MoE          359.3333          0.0922           0.0021
+      Sigma_MoE          359.3333          0.0922           0.0021
+
+--- PAPER.md 반영용 (시나리오 E~G) ---
+| Model | Lure Spike | Recovery Steps | Corr(Δx,NLL) dense | Fixation Conv | Decay Rate |
+|---|---|---|---|---|---|
+| Nomadic_Full         | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+| MoD                  | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+| ECR                  | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+| Sigma_MoE            | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+| BiLevel_MoE          | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+| RoutingFree_MoE      | +0.0205 | 1.7 | +0.271 | 359 | 0.0021 |
+
+--- §4.5 Table 4 확장 (모든 대조군 포함) ---
+Setting                                  | Stable H | Trans H | ΔH | Load CV | Settling | Lat(ms)
+-----------------------------------------------------------------------------------------------
+Synthetic MoE (Nomadic Full)             | 0.108    | 0.896   | +0.788 |  —  |  —  |  —  
+E2B — trained                            | 1.249    | 2.234   | +0.984 |  —  |  —  |  —  
+gemma4_26b — Nomadic_Full                | 0.154    | 0.483   | +0.329 | 0.926 | 6.57 | 303.70
+gemma4_26b — MoD                         | 0.106    | 0.467   | +0.361 | 0.796 | 3.19 | 292.55
+gemma4_26b — ECR                         | 0.368    | 1.240   | +0.872 | 1.124 | 3.95 | 359.41
+gemma4_26b — Sigma_MoE                   | 0.123    | 0.495   | +0.372 | 1.002 | 1.83 | 1206.17
+gemma4_26b — BiLevel_MoE                 | 0.116    | 0.415   | +0.299 | 0.263 | 2.02 | 379.66
+gemma4_26b — RoutingFree_MoE             | 0.372    | 1.126   | +0.754 | 0.601 | 1.07 | 470.23
