@@ -1,0 +1,4 @@
+model,domain,convergence_step,final_phi_mean,decay_rate
+Nomadic_Full_V2,math,0,0.46161435842514037,0.00016516731952599816
+Nomadic_Full_V2,code,60,0.4526382803916931,-0.0010030674706977868
+Nomadic_Full_V2,language,60,0.5659225821495056,0.000671550955920454
