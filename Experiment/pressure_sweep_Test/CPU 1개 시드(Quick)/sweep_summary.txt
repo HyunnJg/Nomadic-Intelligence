@@ -1,0 +1,29 @@
+====================================================================
+PRESSURE SWEEP — Summary for §5.1
+====================================================================
+
+Sweep A: Noise σ (transition_steps=8 fixed)
+--------------------------------------------------
+     σ    StdMSE    NomMSE    Impr%       ΔH   StableH
+  0.30    0.0953    0.0695    +27.0%    0.638     0.321
+  0.90    0.4215    0.4015     +4.7%    0.391     0.506
+  1.50    1.3253    0.5072    +61.7%    0.296     0.561
+
+Peak ΔH at σ=0.30 (ΔH=0.638, Impr=+27.0%)
+→ This σ defines the center of the 'intermediate regime'.
+
+Sweep B: Transition Steps (σ=0.9 fixed)
+--------------------------------------------------
+  steps    StdMSE    NomMSE    Impr%       ΔH
+      2    0.3509    0.6262    -78.5%    0.014
+      8    0.4215    0.4015     +4.7%    0.391
+     24    0.3951    0.2763    +30.0%    0.183
+
+→ Compare steps=24 result to §4.8 Gradual finding.
+
+====================================================================
+Concept.md interpretation:
+  σ low  → Δx≈0, R_sync starvation → spiral collapses to point
+  σ mid  → three forces (Sync/Dogma/Trans) balanced → fixation emerges
+  σ high → Φ signal corrupted by noise → spiral diverges
+====================================================================

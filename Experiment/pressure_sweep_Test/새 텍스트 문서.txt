@@ -1,0 +1,74 @@
+
+============================================================
+Nomadic Routing — Prediction Pressure Sweep
+  seeds=[42, 123, 456]  device=cuda  quick=False
+============================================================
+
+
+▶ Sweep B: Transition Steps (σ=0.9 fixed)
+  [transition sweep] steps=2 ... MSE_impr=-129.2%  ΔH=0.077  (2173s)
+  [transition sweep] steps=4 ... MSE_impr=+18.0%  ΔH=0.395  (3652s)
+  [transition sweep] steps=8 ... MSE_impr=+43.0%  ΔH=0.509  (6559s)
+  [transition sweep] steps=16 ... MSE_impr=-6.8%  ΔH=0.195  (12390s)
+  [transition sweep] steps=24 ... MSE_impr=+12.4%  ΔH=-0.014  (17976s)
+  → saved: outputs_sweep/transition_sweep_results.csv
+  → figure saved: outputs_sweep/fig_transition_sweep.png
+  → summary saved: outputs_sweep/sweep_summary.txt
+
+✅ Sweep complete.
+   outputs_sweep/
+     transition_sweep_results.csv
+     fig_transition_sweep.png   ← §5.1 figure (transition sweep)
+     sweep_summary.txt
+
+--
+
+
+============================================================
+Nomadic Routing — Prediction Pressure Sweep
+  seeds=[42, 123, 456]  device=cuda  quick=False
+============================================================
+
+▶ Sweep A: Noise σ
+  [sigma sweep] σ=0.1 ... MSE_impr=-240.7%  ΔH=0.387  (6586s)
+  [sigma sweep] σ=0.3 ... MSE_impr=+50.7%  ΔH=0.418  (6554s)
+  [sigma sweep] σ=0.5 ... MSE_impr=+12.8%  ΔH=0.670  (6568s)
+  [sigma sweep] σ=0.7 ... MSE_impr=+35.1%  ΔH=0.668  (6646s)
+  [sigma sweep] σ=0.9 ... MSE_impr=+43.0%  ΔH=0.509  (6704s)
+  [sigma sweep] σ=1.2 ... MSE_impr=+36.4%  ΔH=0.264  (6608s)
+  [sigma sweep] σ=1.5 ... MSE_impr=+50.7%  ΔH=0.202  (6571s)
+  [sigma sweep] σ=2.0 ... MSE_impr=+56.6%  ΔH=0.152  (6596s)
+  → saved: outputs_sweep/sigma_sweep_results.csv
+  → figure saved: outputs_sweep/fig_sigma_sweep.png
+  → summary saved: outputs_sweep/sweep_summary.txt
+
+✅ Sweep complete.
+   outputs_sweep/
+     sigma_sweep_results.csv
+     fig_sigma_sweep.png        ← §5.1 figure (σ sweep)
+     sweep_summary.txt
+
+--
+
+
+============================================================
+Nomadic Routing — Prediction Pressure Sweep
+  seeds=[42, 123, 456]  device=cpu  quick=False
+============================================================
+
+
+▶ Sweep B: Transition Steps (σ=0.9 fixed)
+  [transition sweep] steps=2 ... MSE_impr=-116.6%  ΔH=0.040  (2544s)
+  [transition sweep] steps=4 ... MSE_impr=+28.4%  ΔH=0.472  (4334s)
+  [transition sweep] steps=8 ... MSE_impr=+28.5%  ΔH=0.457  (7538s)
+  [transition sweep] steps=16 ... MSE_impr=+24.0%  ΔH=0.241  (13987s)
+  [transition sweep] steps=24 ... MSE_impr=+18.5%  ΔH=0.196  (21217s)
+  → saved: outputs_sweep/transition_sweep_results.csv
+  → figure saved: outputs_sweep/fig_transition_sweep.png
+  → summary saved: outputs_sweep/sweep_summary.txt
+
+✅ Sweep complete.
+   outputs_sweep/
+     transition_sweep_results.csv
+     fig_transition_sweep.png   ← §5.1 figure (transition sweep)
+     sweep_summary.txt

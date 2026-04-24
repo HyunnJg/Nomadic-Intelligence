@@ -1,0 +1,32 @@
+====================================================================
+PRESSURE SWEEP — Summary for §5.1
+====================================================================
+
+Sweep A: Noise σ (transition_steps=8 fixed)
+--------------------------------------------------
+     σ    StdMSE    NomMSE    Impr%       ΔH   StableH
+  0.10    0.0232    0.0792   -240.7%    0.387     0.637
+  0.30    0.2556    0.1261    +50.7%    0.418     0.555
+  0.50    0.1407    0.1227    +12.8%    0.670     0.218
+  0.70    0.2475    0.1607    +35.1%    0.668     0.165
+  0.90    0.4115    0.2346    +43.0%    0.509     0.343
+  1.20    0.7705    0.4902    +36.4%    0.264     0.534
+  1.50    1.2756    0.6289    +50.7%    0.202     0.564
+  2.00    2.4379    1.0591    +56.6%    0.152     0.692
+
+Peak ΔH at σ=0.50 (ΔH=0.670, Impr=+12.8%)
+→ This σ defines the center of the 'intermediate regime'.
+
+
+============================================================
+Nomadic Routing — Prediction Pressure Sweep
+  seeds=[42, 123, 456]  device=cuda  quick=False
+============================================================
+
+
+▶ Sweep B: Transition Steps (σ=0.9 fixed)
+  [transition sweep] steps=2 ... MSE_impr=-129.2%  ΔH=0.077  (2155s)
+  [transition sweep] steps=4 ... MSE_impr=+18.0%  ΔH=0.395  (3611s)
+  [transition sweep] steps=8 ... MSE_impr=+43.0%  ΔH=0.509  (6544s)
+  [transition sweep] steps=16 ... MSE_impr=-6.8%  ΔH=0.195  (12324s)
+  [transition sweep] steps=24 ... MSE_impr=+12.4%  ΔH=-0.014  (18098s)
