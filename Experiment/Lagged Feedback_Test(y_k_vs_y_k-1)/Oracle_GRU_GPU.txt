@@ -1,0 +1,55 @@
+PyTorch: 2.10.0+cu128
+CUDA: True
+GPU: NVIDIA L4
+VRAM: 23.7 GB
+
+========== Seed 42 ==========
+--- Standard MoE ---
+--- GRU MoE ---
+--- Nomadic Full (Lagged) ---
+  [Nomadic] Ep001 MSE=0.3635 ΔH=0.200 StH=0.734
+  [Nomadic] Ep055 MSE=0.2663 ΔH=0.534 StH=0.406
+  [Nomadic] Ep110 MSE=0.2466 ΔH=0.580 StH=0.356
+  [Nomadic] Ep165 MSE=0.2353 ΔH=0.581 StH=0.388
+  [Nomadic] Ep220 MSE=0.2515 ΔH=0.625 StH=0.351
+--- Oracle (Label-conditioned) ---
+  Seed 42 done (5493s)
+
+========== Seed 123 ==========
+--- Standard MoE ---
+--- GRU MoE ---
+--- Nomadic Full (Lagged) ---
+  [Nomadic] Ep001 MSE=0.3932 ΔH=0.281 StH=0.629
+  [Nomadic] Ep055 MSE=0.3707 ΔH=0.354 StH=0.637
+  [Nomadic] Ep110 MSE=0.4688 ΔH=0.428 StH=0.567
+  [Nomadic] Ep165 MSE=0.3067 ΔH=0.477 StH=0.520
+  [Nomadic] Ep220 MSE=0.2336 ΔH=0.518 StH=0.478
+--- Oracle (Label-conditioned) ---
+  Seed 123 done (5532s)
+
+========== Seed 456 ==========
+--- Standard MoE ---
+--- GRU MoE ---
+--- Nomadic Full (Lagged) ---
+  [Nomadic] Ep001 MSE=0.4911 ΔH=0.225 StH=0.648
+  [Nomadic] Ep055 MSE=0.3371 ΔH=0.459 StH=0.499
+  [Nomadic] Ep110 MSE=0.5554 ΔH=0.328 StH=0.650
+  [Nomadic] Ep165 MSE=0.2600 ΔH=0.340 StH=0.652
+  [Nomadic] Ep220 MSE=0.2632 ΔH=0.235 StH=0.764
+--- Oracle (Label-conditioned) ---
+  Seed 456 done (5510s)
+
+=== All seeds complete ===
+
+===========================================================================
+§4.10 RECURRENT GATE + ORACLE BASELINE (Lagged v3)
+===========================================================================
+  Model  Seq MSE     ΔH  Stable H  Trans H
+ StdMoE   0.4151 0.0328    0.9793   1.0120
+    GRU   0.1052 0.3535    0.3652   0.7187
+Nomadic   0.2495 0.4592    0.5309   0.9901
+ Oracle   0.3296 0.0000    0.0000   0.0000
+
+--- 핵심 비교 ---
+  GRU MoE vs Nomadic: MSE 0.1052 vs 0.2495
+  Nomadic / Oracle ratio:  0.757  (1.0 = Oracle)
