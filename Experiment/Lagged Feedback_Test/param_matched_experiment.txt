@@ -1,0 +1,22 @@
+================================================================================
+PARAMETER-MATCHED BASELINE EXPERIMENT: Final Results (Lagged v3) / CPU
+================================================================================
+       Variant  hidden_dim  Seq MSE mean  ΔH mean  Stable Ent  Trans Ent
+    Fixed_orig          64        0.4114      NaN         NaN        NaN
+   StdMoE_orig          64        0.4128   0.0493      1.0090     1.0583
+ Fixed_matched         150        0.4112      NaN         NaN        NaN
+StdMoE_matched          74        0.4136   0.0377      0.9942     1.0319
+ NoPolicy_orig          64        0.3027   0.3265      0.6194     0.9459
+  Nomadic_Full          64        0.2890   0.0557      0.8786     0.9343
+
+
+================================================================================
+PARAMETER-MATCHED BASELINE EXPERIMENT: Final Results (Lagged v3) / CUDA
+================================================================================
+       Variant  hidden_dim  Seq MSE mean  ΔH mean  Stable Ent  Trans Ent
+    Fixed_orig          64        0.4091      NaN         NaN        NaN
+   StdMoE_orig          64        0.4090   0.0174      0.9518     0.9692
+ Fixed_matched         150        0.4095      NaN         NaN        NaN
+StdMoE_matched          74        0.4097   0.0266      0.9611     0.9877
+ NoPolicy_orig          64        0.2841   0.4185      0.5405     0.9591
+  Nomadic_Full          64        0.3472   0.0786      0.8771     0.9557
