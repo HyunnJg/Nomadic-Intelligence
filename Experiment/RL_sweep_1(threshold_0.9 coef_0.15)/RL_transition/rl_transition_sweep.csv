@@ -1,6 +1,0 @@
-transition_steps,rl_mse_mean,rl_mse_std,rl_dh_mean,rl_dh_std,std_mse_mean,sl_mse_mean,sl_impr_pct,sl_dh_mean,rl_impr_pct,rl_vs_sl_pct
-2,0.34355,0.07011,0.05380,0.01771,0.32018,nan,nan,nan,-7.29785,nan
-4,0.49233,0.11363,0.24152,0.01824,0.41568,nan,nan,nan,-18.43957,nan
-8,0.34809,0.02501,0.38044,0.08164,0.41136,nan,nan,nan,15.37968,nan
-16,0.27301,0.02155,0.11418,0.01043,0.40439,nan,nan,nan,32.48766,nan
-24,0.39982,0.09380,0.00753,0.04006,0.54371,nan,nan,nan,26.46420,nan
