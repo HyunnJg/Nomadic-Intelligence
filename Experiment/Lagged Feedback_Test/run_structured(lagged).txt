@@ -1,0 +1,115 @@
+Using device: cuda
+[Fixed] Epoch 001/220 | Train MSE: 1.0139 | Test MSE: 0.5261
+[Fixed] Epoch 025/220 | Train MSE: 0.4395 | Test MSE: 0.4227
+[Fixed] Epoch 050/220 | Train MSE: 0.4345 | Test MSE: 0.4188
+[Fixed] Epoch 075/220 | Train MSE: 0.4247 | Test MSE: 0.4159
+[Fixed] Epoch 100/220 | Train MSE: 0.4222 | Test MSE: 0.4161
+[Fixed] Epoch 125/220 | Train MSE: 0.4214 | Test MSE: 0.4145
+[Fixed] Epoch 150/220 | Train MSE: 0.4200 | Test MSE: 0.4145
+[Fixed] Epoch 175/220 | Train MSE: 0.4193 | Test MSE: 0.4144
+[Fixed] Epoch 200/220 | Train MSE: 0.4186 | Test MSE: 0.4141
+[Standard MoE] Epoch 001/220 | Train Loss: 1.2006 | Test Static MSE: 0.6461 | Test Seq MSE: 0.6461 | Test GateDist: 0.5374
+[Standard MoE] Epoch 025/220 | Train Loss: 0.4843 | Test Static MSE: 0.4181 | Test Seq MSE: 0.4181 | Test GateDist: 0.2324
+[Standard MoE] Epoch 050/220 | Train Loss: 0.4808 | Test Static MSE: 0.5012 | Test Seq MSE: 0.5012 | Test GateDist: 0.2386
+[Standard MoE] Epoch 075/220 | Train Loss: 0.4814 | Test Static MSE: 0.4230 | Test Seq MSE: 0.4230 | Test GateDist: 0.2188
+[Standard MoE] Epoch 100/220 | Train Loss: 0.4711 | Test Static MSE: 0.4155 | Test Seq MSE: 0.4155 | Test GateDist: 0.2126
+[Standard MoE] Epoch 125/220 | Train Loss: 0.4669 | Test Static MSE: 0.4141 | Test Seq MSE: 0.4141 | Test GateDist: 0.2146
+[Standard MoE] Epoch 150/220 | Train Loss: 0.4702 | Test Static MSE: 0.4140 | Test Seq MSE: 0.4140 | Test GateDist: 0.2106
+[Standard MoE] Epoch 175/220 | Train Loss: 0.4651 | Test Static MSE: 0.4136 | Test Seq MSE: 0.4136 | Test GateDist: 0.2086
+[Standard MoE] Epoch 200/220 | Train Loss: 0.4649 | Test Static MSE: 0.4142 | Test Seq MSE: 0.4142 | Test GateDist: 0.2071
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.0743 | Test Static MSE: 1.3663 | Test Seq MSE: 0.6815 | Test GateDist: 0.6889
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.4546 | Test Static MSE: 1.0619 | Test Seq MSE: 0.3107 | Test GateDist: 0.4335
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.4304 | Test Static MSE: 1.3170 | Test Seq MSE: 0.3012 | Test GateDist: 0.4764
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.4657 | Test Static MSE: 1.2512 | Test Seq MSE: 0.3056 | Test GateDist: 0.5233
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.3617 | Test Static MSE: 1.1298 | Test Seq MSE: 0.3078 | Test GateDist: 0.6125
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.3693 | Test Static MSE: 1.2133 | Test Seq MSE: 0.2769 | Test GateDist: 0.6030
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.3718 | Test Static MSE: 1.2518 | Test Seq MSE: 0.2687 | Test GateDist: 0.6249
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.3465 | Test Static MSE: 1.0994 | Test Seq MSE: 0.2797 | Test GateDist: 0.6056
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.3396 | Test Static MSE: 1.2253 | Test Seq MSE: 0.2805 | Test GateDist: 0.6011
+[Nomadic] Epoch 001/220 | Train MSE: 1.0198 | Test Static MSE: 1.3526 | Test Seq MSE: 0.4969 | Switch Latency: 0.3333
+[Nomadic] Epoch 025/220 | Train MSE: 0.3147 | Test Static MSE: 1.0097 | Test Seq MSE: 0.2734 | Switch Latency: 1.5556
+[Nomadic] Epoch 050/220 | Train MSE: 0.4014 | Test Static MSE: 1.6632 | Test Seq MSE: 0.3991 | Switch Latency: 1.0278
+[Nomadic] Epoch 075/220 | Train MSE: 0.2662 | Test Static MSE: 1.5919 | Test Seq MSE: 0.1872 | Switch Latency: 1.2500
+[Nomadic] Epoch 100/220 | Train MSE: 0.2348 | Test Static MSE: 2.2380 | Test Seq MSE: 0.1990 | Switch Latency: 1.4444
+[Nomadic] Epoch 125/220 | Train MSE: 0.2506 | Test Static MSE: 2.0516 | Test Seq MSE: 0.2226 | Switch Latency: 0.0000
+[Nomadic] Epoch 150/220 | Train MSE: 0.2355 | Test Static MSE: 2.1920 | Test Seq MSE: 0.2030 | Switch Latency: 0.7222
+[Nomadic] Epoch 175/220 | Train MSE: 0.2476 | Test Static MSE: 2.2134 | Test Seq MSE: 0.2147 | Switch Latency: 0.3056
+[Nomadic] Epoch 200/220 | Train MSE: 0.3208 | Test Static MSE: 1.6218 | Test Seq MSE: 0.2549 | Switch Latency: 0.2222
+
+C:\Users\JHY\Nomadic-Intelligence>python run_structured.py --config config.yaml --seed 123
+Using device: cuda
+[Fixed] Epoch 001/220 | Train MSE: 1.0153 | Test MSE: 0.6268
+[Fixed] Epoch 025/220 | Train MSE: 0.4379 | Test MSE: 0.4104
+[Fixed] Epoch 050/220 | Train MSE: 0.4295 | Test MSE: 0.4056
+[Fixed] Epoch 075/220 | Train MSE: 0.4279 | Test MSE: 0.4040
+[Fixed] Epoch 100/220 | Train MSE: 0.4269 | Test MSE: 0.4035
+[Fixed] Epoch 125/220 | Train MSE: 0.4233 | Test MSE: 0.4036
+[Fixed] Epoch 150/220 | Train MSE: 0.4210 | Test MSE: 0.4035
+[Fixed] Epoch 175/220 | Train MSE: 0.4220 | Test MSE: 0.4037
+[Fixed] Epoch 200/220 | Train MSE: 0.4197 | Test MSE: 0.4032
+[Standard MoE] Epoch 001/220 | Train Loss: 1.1747 | Test Static MSE: 0.5012 | Test Seq MSE: 0.5012 | Test GateDist: 0.4789
+[Standard MoE] Epoch 025/220 | Train Loss: 0.4811 | Test Static MSE: 0.4112 | Test Seq MSE: 0.4112 | Test GateDist: 0.2296
+[Standard MoE] Epoch 050/220 | Train Loss: 0.4768 | Test Static MSE: 0.4082 | Test Seq MSE: 0.4082 | Test GateDist: 0.2256
+[Standard MoE] Epoch 075/220 | Train Loss: 0.4678 | Test Static MSE: 0.4077 | Test Seq MSE: 0.4077 | Test GateDist: 0.2176
+[Standard MoE] Epoch 100/220 | Train Loss: 0.4684 | Test Static MSE: 0.4059 | Test Seq MSE: 0.4059 | Test GateDist: 0.2168
+[Standard MoE] Epoch 125/220 | Train Loss: 0.4627 | Test Static MSE: 0.4067 | Test Seq MSE: 0.4067 | Test GateDist: 0.2171
+[Standard MoE] Epoch 150/220 | Train Loss: 0.4583 | Test Static MSE: 0.4068 | Test Seq MSE: 0.4068 | Test GateDist: 0.2159
+[Standard MoE] Epoch 175/220 | Train Loss: 0.4564 | Test Static MSE: 0.4068 | Test Seq MSE: 0.4068 | Test GateDist: 0.2096
+[Standard MoE] Epoch 200/220 | Train Loss: 0.4581 | Test Static MSE: 0.4093 | Test Seq MSE: 0.4093 | Test GateDist: 0.2081
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.1040 | Test Static MSE: 1.0144 | Test Seq MSE: 0.5644 | Test GateDist: 0.5739
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.4476 | Test Static MSE: 0.8847 | Test Seq MSE: 0.3251 | Test GateDist: 0.5321
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.4185 | Test Static MSE: 1.1360 | Test Seq MSE: 0.3173 | Test GateDist: 0.6159
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.3946 | Test Static MSE: 1.2838 | Test Seq MSE: 0.3280 | Test GateDist: 0.5296
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.4004 | Test Static MSE: 1.3663 | Test Seq MSE: 0.2996 | Test GateDist: 0.6025
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.3840 | Test Static MSE: 1.6016 | Test Seq MSE: 0.2877 | Test GateDist: 0.5785
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.3532 | Test Static MSE: 1.4853 | Test Seq MSE: 0.2904 | Test GateDist: 0.5919
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.3445 | Test Static MSE: 1.6345 | Test Seq MSE: 0.2798 | Test GateDist: 0.5940
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.3515 | Test Static MSE: 1.4999 | Test Seq MSE: 0.2907 | Test GateDist: 0.6301
+[Nomadic] Epoch 001/220 | Train MSE: 1.0375 | Test Static MSE: 2.4266 | Test Seq MSE: 0.5702 | Switch Latency: 1.7778
+[Nomadic] Epoch 025/220 | Train MSE: 0.2859 | Test Static MSE: 2.6295 | Test Seq MSE: 0.7188 | Switch Latency: 0.5833
+[Nomadic] Epoch 050/220 | Train MSE: 0.3249 | Test Static MSE: 1.8807 | Test Seq MSE: 0.2206 | Switch Latency: 0.1389
+[Nomadic] Epoch 075/220 | Train MSE: 0.3566 | Test Static MSE: 2.0633 | Test Seq MSE: 0.2673 | Switch Latency: 0.3333
+[Nomadic] Epoch 100/220 | Train MSE: 0.2266 | Test Static MSE: 2.7541 | Test Seq MSE: 0.3455 | Switch Latency: 0.8333
+[Nomadic] Epoch 125/220 | Train MSE: 0.2389 | Test Static MSE: 2.8722 | Test Seq MSE: 0.2963 | Switch Latency: 0.4444
+[Nomadic] Epoch 150/220 | Train MSE: 0.2582 | Test Static MSE: 3.0168 | Test Seq MSE: 0.3064 | Switch Latency: 0.7500
+[Nomadic] Epoch 175/220 | Train MSE: 0.2578 | Test Static MSE: 2.8851 | Test Seq MSE: 0.2669 | Switch Latency: 0.3611
+[Nomadic] Epoch 200/220 | Train MSE: 0.2604 | Test Static MSE: 2.7503 | Test Seq MSE: 0.2344 | Switch Latency: 0.1389
+
+C:\Users\JHY\Nomadic-Intelligence>python run_structured.py --config config.yaml --seed 456
+Using device: cuda
+[Fixed] Epoch 001/220 | Train MSE: 0.9615 | Test MSE: 0.5606
+[Fixed] Epoch 025/220 | Train MSE: 0.4361 | Test MSE: 0.4164
+[Fixed] Epoch 050/220 | Train MSE: 0.4262 | Test MSE: 0.4140
+[Fixed] Epoch 075/220 | Train MSE: 0.4231 | Test MSE: 0.4131
+[Fixed] Epoch 100/220 | Train MSE: 0.4232 | Test MSE: 0.4131
+[Fixed] Epoch 125/220 | Train MSE: 0.4240 | Test MSE: 0.4126
+[Fixed] Epoch 150/220 | Train MSE: 0.4254 | Test MSE: 0.4119
+[Fixed] Epoch 175/220 | Train MSE: 0.4187 | Test MSE: 0.4113
+[Fixed] Epoch 200/220 | Train MSE: 0.4181 | Test MSE: 0.4114
+[Standard MoE] Epoch 001/220 | Train Loss: 1.1618 | Test Static MSE: 0.5941 | Test Seq MSE: 0.5941 | Test GateDist: 0.3969
+[Standard MoE] Epoch 025/220 | Train Loss: 0.4907 | Test Static MSE: 0.4136 | Test Seq MSE: 0.4136 | Test GateDist: 0.2290
+[Standard MoE] Epoch 050/220 | Train Loss: 0.4849 | Test Static MSE: 0.4125 | Test Seq MSE: 0.4125 | Test GateDist: 0.2116
+[Standard MoE] Epoch 075/220 | Train Loss: 0.4777 | Test Static MSE: 0.4107 | Test Seq MSE: 0.4107 | Test GateDist: 0.2023
+[Standard MoE] Epoch 100/220 | Train Loss: 0.4754 | Test Static MSE: 0.4091 | Test Seq MSE: 0.4091 | Test GateDist: 0.1996
+[Standard MoE] Epoch 125/220 | Train Loss: 0.4688 | Test Static MSE: 0.4098 | Test Seq MSE: 0.4098 | Test GateDist: 0.1925
+[Standard MoE] Epoch 150/220 | Train Loss: 0.4682 | Test Static MSE: 0.4102 | Test Seq MSE: 0.4102 | Test GateDist: 0.1863
+[Standard MoE] Epoch 175/220 | Train Loss: 0.4731 | Test Static MSE: 0.4092 | Test Seq MSE: 0.4092 | Test GateDist: 0.1841
+[Standard MoE] Epoch 200/220 | Train Loss: 0.4617 | Test Static MSE: 0.4102 | Test Seq MSE: 0.4102 | Test GateDist: 0.1805
+[Nomadic NoPolicy] Epoch 001/220 | Train Loss: 1.0534 | Test Static MSE: 2.0846 | Test Seq MSE: 0.7308 | Test GateDist: 0.6561
+[Nomadic NoPolicy] Epoch 025/220 | Train Loss: 0.4360 | Test Static MSE: 1.2030 | Test Seq MSE: 0.3491 | Test GateDist: 0.5711
+[Nomadic NoPolicy] Epoch 050/220 | Train Loss: 0.3894 | Test Static MSE: 1.2704 | Test Seq MSE: 0.2897 | Test GateDist: 0.6740
+[Nomadic NoPolicy] Epoch 075/220 | Train Loss: 0.3865 | Test Static MSE: 1.0649 | Test Seq MSE: 0.3062 | Test GateDist: 0.5860
+[Nomadic NoPolicy] Epoch 100/220 | Train Loss: 0.3791 | Test Static MSE: 1.1891 | Test Seq MSE: 0.2657 | Test GateDist: 0.6666
+[Nomadic NoPolicy] Epoch 125/220 | Train Loss: 0.3891 | Test Static MSE: 1.0935 | Test Seq MSE: 0.2896 | Test GateDist: 0.5283
+[Nomadic NoPolicy] Epoch 150/220 | Train Loss: 0.3804 | Test Static MSE: 1.1110 | Test Seq MSE: 0.2952 | Test GateDist: 0.5970
+[Nomadic NoPolicy] Epoch 175/220 | Train Loss: 0.3700 | Test Static MSE: 1.1736 | Test Seq MSE: 0.2789 | Test GateDist: 0.6578
+[Nomadic NoPolicy] Epoch 200/220 | Train Loss: 0.3638 | Test Static MSE: 1.2062 | Test Seq MSE: 0.2896 | Test GateDist: 0.6177
+[Nomadic] Epoch 001/220 | Train MSE: 1.0646 | Test Static MSE: 1.7034 | Test Seq MSE: 0.4185 | Switch Latency: 1.8056
+[Nomadic] Epoch 025/220 | Train MSE: 0.3586 | Test Static MSE: 1.8592 | Test Seq MSE: 0.5326 | Switch Latency: 1.3333
+[Nomadic] Epoch 050/220 | Train MSE: 0.2787 | Test Static MSE: 2.5290 | Test Seq MSE: 0.2696 | Switch Latency: 1.4722
+[Nomadic] Epoch 075/220 | Train MSE: 0.2577 | Test Static MSE: 2.5028 | Test Seq MSE: 0.2114 | Switch Latency: 1.3333
+[Nomadic] Epoch 100/220 | Train MSE: 0.3016 | Test Static MSE: 2.6406 | Test Seq MSE: 0.2356 | Switch Latency: 0.9444
+[Nomadic] Epoch 125/220 | Train MSE: 0.2313 | Test Static MSE: 2.7781 | Test Seq MSE: 0.1903 | Switch Latency: 0.9444
+[Nomadic] Epoch 150/220 | Train MSE: 0.2967 | Test Static MSE: 3.1218 | Test Seq MSE: 0.3023 | Switch Latency: 0.7222
+[Nomadic] Epoch 175/220 | Train MSE: 0.2500 | Test Static MSE: 3.0737 | Test Seq MSE: 0.2748 | Switch Latency: 1.2778
+[Nomadic] Epoch 200/220 | Train MSE: 0.2502 | Test Static MSE: 2.0180 | Test Seq MSE: 0.2257 | Switch Latency: 2.4444

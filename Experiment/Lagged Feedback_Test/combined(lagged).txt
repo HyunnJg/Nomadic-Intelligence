@@ -1,0 +1,122 @@
+Device: cpu
+Variant: combined
+
+========== Seed 42 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 51385.2070 | ΔH 0.045
+  [StdMoE] Ep 055 | MSE 50486.0938 | ΔH -0.013
+  [StdMoE] Ep 110 | MSE 50399.6953 | ΔH -0.024
+  [StdMoE] Ep 165 | MSE 49622.1094 | ΔH -0.008
+  [StdMoE] Ep 220 | MSE 49857.4258 | ΔH -0.047
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 51442.2695 | StH 0.512 | TrH 0.403 | ΔH -0.109
+  [Nomadic] Ep 055 | MSE 49219.3789 | StH 0.478 | TrH 0.480 | ΔH 0.001
+  [Nomadic] Ep 110 | MSE 53257.8555 | StH 0.493 | TrH 0.510 | ΔH 0.017
+  [Nomadic] Ep 165 | MSE 48066.7227 | StH 0.021 | TrH 0.002 | ΔH -0.019
+  [Nomadic] Ep 220 | MSE 49732.6211 | StH 0.562 | TrH 0.554 | ΔH -0.008
+  Seed 42 done (1590s)
+
+========== Seed 123 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1329.8937 | ΔH 0.057
+  [StdMoE] Ep 055 | MSE 887.2285 | ΔH 0.025
+  [StdMoE] Ep 110 | MSE 744.1605 | ΔH -0.008
+  [StdMoE] Ep 165 | MSE 690.3114 | ΔH -0.008
+  [StdMoE] Ep 220 | MSE 728.1835 | ΔH -0.029
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1366.5880 | StH 0.562 | TrH 0.586 | ΔH 0.025
+  [Nomadic] Ep 055 | MSE 912.1858 | StH 0.638 | TrH 0.572 | ΔH -0.066
+  [Nomadic] Ep 110 | MSE 789.4020 | StH 0.005 | TrH 0.042 | ΔH 0.037
+  [Nomadic] Ep 165 | MSE 822.8605 | StH 0.000 | TrH 0.000 | ΔH -0.000
+  [Nomadic] Ep 220 | MSE 918.8988 | StH 0.016 | TrH 0.000 | ΔH -0.016
+  Seed 123 done (1603s)
+
+========== Seed 456 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1233.2479 | ΔH 0.030
+  [StdMoE] Ep 055 | MSE 970.1364 | ΔH 0.004
+  [StdMoE] Ep 110 | MSE 775.2298 | ΔH 0.000
+  [StdMoE] Ep 165 | MSE 1010.6360 | ΔH -0.000
+  [StdMoE] Ep 220 | MSE 719.7742 | ΔH 0.005
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1265.9147 | StH 0.695 | TrH 0.692 | ΔH -0.003
+  [Nomadic] Ep 055 | MSE 964.0875 | StH 0.462 | TrH 0.444 | ΔH -0.018
+  [Nomadic] Ep 110 | MSE 839.1727 | StH 0.372 | TrH 0.372 | ΔH 0.000
+  [Nomadic] Ep 165 | MSE 777.2909 | StH 0.357 | TrH 0.346 | ΔH -0.010
+  [Nomadic] Ep 220 | MSE 724.6974 | StH 0.380 | TrH 0.394 | ΔH 0.013
+  Seed 456 done (1607s)
+
+=== All seeds complete ===
+
+======================================================================
+TASK GENERALIZATION: COMBINED (Lagged v3) — 3-seed mean
+======================================================================
+  Model  Variant  Seq MSE mean  ΔH mean  Stable Ent  Trans Ent
+  Fixed combined     8425.8197      NaN         NaN        NaN
+ StdMoE combined    17101.7945  -0.0240      0.5889     0.5650
+Nomadic combined    17125.4058  -0.0034      0.3196     0.3162
+
+
+Device: cuda
+Variant: combined
+
+========== Seed 42 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 51385.2930 | ΔH 0.045
+  [StdMoE] Ep 055 | MSE 49822.4180 | ΔH -0.006
+  [StdMoE] Ep 110 | MSE 49202.4531 | ΔH -0.006
+  [StdMoE] Ep 165 | MSE 49144.6484 | ΔH -0.005
+  [StdMoE] Ep 220 | MSE 49159.5156 | ΔH -0.001
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 51442.2148 | StH 0.515 | TrH 0.407 | ΔH -0.108
+  [Nomadic] Ep 055 | MSE 50715.7422 | StH 0.841 | TrH 0.814 | ΔH -0.027
+  [Nomadic] Ep 110 | MSE 53550.1250 | StH 0.603 | TrH 0.542 | ΔH -0.062
+  [Nomadic] Ep 165 | MSE 51159.3711 | StH 0.522 | TrH 0.535 | ΔH 0.013
+  [Nomadic] Ep 220 | MSE 49907.4492 | StH 0.583 | TrH 0.478 | ΔH -0.105
+  Seed 42 done (1569s)
+
+========== Seed 123 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1329.8938 | ΔH 0.057
+  [StdMoE] Ep 055 | MSE 874.9735 | ΔH 0.003
+  [StdMoE] Ep 110 | MSE 745.3160 | ΔH -0.001
+  [StdMoE] Ep 165 | MSE 684.4160 | ΔH 0.050
+  [StdMoE] Ep 220 | MSE 665.9358 | ΔH 0.018
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1369.1837 | StH 0.807 | TrH 0.793 | ΔH -0.014
+  [Nomadic] Ep 055 | MSE 820.1201 | StH 0.526 | TrH 0.545 | ΔH 0.018
+  [Nomadic] Ep 110 | MSE 818.8598 | StH 0.532 | TrH 0.545 | ΔH 0.012
+  [Nomadic] Ep 165 | MSE 694.7081 | StH 0.724 | TrH 0.671 | ΔH -0.053
+  [Nomadic] Ep 220 | MSE 707.8271 | StH 0.522 | TrH 0.492 | ΔH -0.030
+  Seed 123 done (1585s)
+
+========== Seed 456 | variant=combined (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1233.2281 | ΔH 0.028
+  [StdMoE] Ep 055 | MSE 918.3255 | ΔH 0.002
+  [StdMoE] Ep 110 | MSE 770.0262 | ΔH 0.003
+  [StdMoE] Ep 165 | MSE 651.8101 | ΔH 0.001
+  [StdMoE] Ep 220 | MSE 711.5683 | ΔH 0.000
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1265.9297 | StH 0.695 | TrH 0.692 | ΔH -0.003
+  [Nomadic] Ep 055 | MSE 962.4092 | StH 0.240 | TrH 0.311 | ΔH 0.072
+  [Nomadic] Ep 110 | MSE 814.8844 | StH 0.090 | TrH 0.183 | ΔH 0.093
+  [Nomadic] Ep 165 | MSE 799.3110 | StH 0.194 | TrH 0.134 | ΔH -0.060
+  [Nomadic] Ep 220 | MSE 787.2234 | StH 0.508 | TrH 0.551 | ΔH 0.042
+  Seed 456 done (1591s)
+
+=== All seeds complete ===
+
+======================================================================
+TASK GENERALIZATION: COMBINED (Lagged v3) — 3-seed mean
+======================================================================
+  Model  Variant  Seq MSE mean  ΔH mean  Stable Ent  Trans Ent
+  Fixed combined     7771.3120      NaN         NaN        NaN
+ StdMoE combined    16845.6732   0.0058      0.5188     0.5247
+Nomadic combined    17134.1666  -0.0307      0.5378     0.5070

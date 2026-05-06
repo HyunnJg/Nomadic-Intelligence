@@ -1,0 +1,60 @@
+Device: cpu
+Variant: nonlinear
+
+========== Seed 42 | variant=nonlinear (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 0.7636 | ΔH 0.027
+  [StdMoE] Ep 055 | MSE 0.2422 | ΔH 0.061
+  [StdMoE] Ep 110 | MSE 0.3176 | ΔH 0.063
+  [StdMoE] Ep 165 | MSE 0.2271 | ΔH 0.039
+  [StdMoE] Ep 220 | MSE 0.2342 | ΔH 0.032
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 1.1709 | StH 0.787 | TrH 0.797 | ΔH 0.010
+  [Nomadic] Ep 055 | MSE 0.4851 | StH 0.846 | TrH 0.947 | ΔH 0.100
+  [Nomadic] Ep 110 | MSE 0.3431 | StH 0.913 | TrH 0.958 | ΔH 0.045
+  [Nomadic] Ep 165 | MSE 0.3495 | StH 0.924 | TrH 0.975 | ΔH 0.051
+  [Nomadic] Ep 220 | MSE 0.2487 | StH 0.883 | TrH 0.965 | ΔH 0.083
+  Seed 42 done (4069s)
+
+========== Seed 123 | variant=nonlinear (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 1.1257 | ΔH 0.134
+  [StdMoE] Ep 055 | MSE 0.2778 | ΔH 0.142
+  [StdMoE] Ep 110 | MSE 0.2303 | ΔH 0.087
+  [StdMoE] Ep 165 | MSE 0.2334 | ΔH 0.076
+  [StdMoE] Ep 220 | MSE 0.2717 | ΔH 0.082
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 0.9975 | StH 0.962 | TrH 0.951 | ΔH -0.011
+  [Nomadic] Ep 055 | MSE 0.4017 | StH 0.919 | TrH 0.959 | ΔH 0.040
+  [Nomadic] Ep 110 | MSE 0.2899 | StH 0.921 | TrH 0.961 | ΔH 0.041
+  [Nomadic] Ep 165 | MSE 0.2903 | StH 0.867 | TrH 0.976 | ΔH 0.109
+  [Nomadic] Ep 220 | MSE 0.1282 | StH 0.907 | TrH 0.979 | ΔH 0.072
+  Seed 123 done (4061s)
+
+========== Seed 456 | variant=nonlinear (Lagged v3) ==========
+--- Fixed ---
+--- Standard MoE ---
+  [StdMoE] Ep 001 | MSE 2.5901 | ΔH 0.109
+  [StdMoE] Ep 055 | MSE 0.2497 | ΔH -0.006
+  [StdMoE] Ep 110 | MSE 0.3315 | ΔH 0.038
+  [StdMoE] Ep 165 | MSE 0.2794 | ΔH 0.061
+  [StdMoE] Ep 220 | MSE 0.3710 | ΔH 0.036
+--- Nomadic Full ---
+  [Nomadic] Ep 001 | MSE 2.0129 | StH 0.801 | TrH 0.805 | ΔH 0.003
+  [Nomadic] Ep 055 | MSE 0.1423 | StH 0.848 | TrH 0.917 | ΔH 0.068
+  [Nomadic] Ep 110 | MSE 0.3584 | StH 0.881 | TrH 0.973 | ΔH 0.092
+  [Nomadic] Ep 165 | MSE 0.1417 | StH 0.854 | TrH 0.915 | ΔH 0.062
+  [Nomadic] Ep 220 | MSE 0.1310 | StH 0.836 | TrH 0.931 | ΔH 0.095
+  Seed 456 done (4059s)
+
+=== All seeds complete ===
+
+======================================================================
+TASK GENERALIZATION: NONLINEAR (Lagged v3) — 3-seed mean
+======================================================================
+  Model   Variant  Seq MSE mean  ΔH mean  Stable Ent  Trans Ent
+  Fixed nonlinear        0.2335      NaN         NaN        NaN
+ StdMoE nonlinear        0.2923   0.0501      0.9698     1.0199
+Nomadic nonlinear        0.1693   0.0833      0.8751     0.9584
